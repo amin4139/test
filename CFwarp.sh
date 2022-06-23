@@ -3,6 +3,8 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
 red='\033[0;31m'
 bblue='\033[0;34m'
+yellow='\033[0;33m'
+green='\033[0;32m'
 plain='\033[0m'
 red(){ echo -e "\033[31m\033[01m$1\033[0m";}
 green(){ echo -e "\033[32m\033[01m$1\033[0m";}
@@ -32,7 +34,7 @@ release="Ubuntu"
 elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 release="Centos"
 else 
-red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && rm -f CFwarp.sh && exit 1
+red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。请向作者反馈 https://github.com/kkkyg/CFwarp/issues" && rm -f CFwarp.sh && exit 1
 fi
 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
 sys(){
@@ -54,16 +56,21 @@ bbr="openvz版bbr-plus"
 else
 bbr="暂不支持显示"
 fi
+[[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
+[[ $(type -P wget) ]] || (yellow "检测到wget未安装，升级安装中" && $yumapt update;$yumapt install wget)
+[[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
+[[ ! $(type -P python3) ]] && yellow "检测到python3未安装，升级安装中" && $yumapt install python3
+[[ ! $(type -P screen) ]] && yellow "检测到screen未安装，升级安装中" && $yumapt install screen
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
-if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
+if [[ ${TUN} != "cat: /dev/net/tun: File descriptor in bad state" ]]; then 
 red "检测到未开启TUN，现尝试添加TUN支持" && sleep 4
 cd /dev
 mkdir net
 mknod net/tun c 10 200
 chmod 0666 net/tun
 TUN=$(cat /dev/net/tun 2>&1)
-if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
+if [[ ${TUN} != "cat: /dev/net/tun: File descriptor in bad state" ]]; then 
 green "添加TUN支持失败，建议与VPS厂商沟通或后台设置开启" && exit 0
 else
 green "恭喜，添加TUN支持成功，现添加防止重启VPS后TUN失效的TUN守护功能" && sleep 4
@@ -80,11 +87,6 @@ green "TUN守护功能已启动"
 fi
 fi
 fi
-[[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
-[[ $(type -P wget) ]] || (yellow "检测到wget未安装，升级安装中" && $yumapt update;$yumapt install wget)
-[[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
-[[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
-[[ ! $(type -P screen) ]] && (yellow "检测到screen未安装，升级安装中" && $yumapt update;$yumapt install screen)
  
 ud4='sed -i "5 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "6 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "8 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
@@ -98,11 +100,11 @@ c6="sed -i 's/1.1.1.1/2001:4860:4860::8888,8.8.8.8/g' /etc/wireguard/wgcf.conf"
 }
 
 ShowWGCF(){
-UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 v6=$(curl -s6m6 https://ip.gs -k)
 v4=$(curl -s4m6 https://ip.gs -k)
-isp4=`curl -s --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
-isp6=`curl -s --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+isp4=`curl -s -A "Mozilla" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+isp6=`curl -s -A "Mozilla" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 [[ -e /etc/wireguard/wgcf+p.log ]] && cfplus="WARP+普通账户(有限WARP+流量)，设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')" || cfplus="WARP+Teams账户(无限WARP+流量)"
 AE="阿联酋（United Arab Emirates）";AU="澳大利亚（Australia）";BG="保加利亚（Bulgaria）";BR="巴西（Brazil）";CA="加拿大（Canada）";CH="瑞士（Switzerland）";CL="智利（Chile)";CN="中国（China）";CO="哥伦比亚（Colombia）";DE="德国（Germany)";ES="西班牙（Spain)";FI="芬兰（Finland）";FR="法国（France）";GB="英国（United Kingdom）";HK="香港（Hong Kong）";ID="印度尼西亚（Indonesia）";IE="爱尔兰（Ireland）";IL="以色列（Israel）";IN="印度（India）";IT="意大利（Italy）";JP="日本（Japan）";KR="韩国（South Korea）";LU="卢森堡（Luxembourg）";MX="墨西哥（Mexico）";MY="马来西亚（Malaysia）";NL="荷兰（Netherlands）";NZ="新西兰（New Zealand）";PH="菲律宾（Philippines）";RO="罗马尼亚（Romania）";RU="俄罗斯（Russian）";SA="沙特（Saudi Arabia）";SE="瑞典（Sweden）";SG="新加坡（Singapore）";TW="台湾（Taiwan）";US="美国（United States）";VN="越南（Vietnam）";ZA="南非（South Africa）"
 if [[ -n $v4 ]]; then
@@ -111,7 +113,7 @@ result4=$(curl -4 --user-agent "${UA_Browser}" -fsL --write-out %{http_code} --o
 [[ "$result4" == "403" ]] && NF="死心了，当前IP不支持解锁奈飞Netflix....."
 [[ "$result4" == "000" ]] && NF="检测到网络有问题，再次进入脚本可能就好了.."
 [[ "$result4" == "200" ]] && NF="恭喜呀，当前IP可解锁奈飞Netflix流媒体..."
-g4=$(eval echo \$$(curl -s --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "country_code" '{print $2}' | awk -F "region_code" '{print $1}' | sed "s/[,\":}]//g"))
+g4=$(eval echo \$$(curl -s -A "Mozilla" https://api.ip.sb/geoip/$v4 -k | awk -F "country_code" '{print $2}' | awk -F "region_code" '{print $1}' | sed "s/[,\":}]//g"))
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 case ${wgcfv4} in 
 plus) 
@@ -130,7 +132,7 @@ result6=$(curl -6 --user-agent "${UA_Browser}" -fsL --write-out %{http_code} --o
 [[ "$result6" == "403" ]] && NF="死心了，当前IP不支持解锁奈飞Netflix....."
 [[ "$result6" == "000" ]] && NF="检测到网络有问题，再次进入脚本可能就好了.."
 [[ "$result6" == "200" ]] && NF="恭喜呀，当前IP可解锁奈飞Netflix流媒体..."
-g6=$(eval echo \$$(curl -s --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "country_code" '{print $2}' | awk -F "region_code" '{print $1}' | sed "s/[,\":}]//g"))
+g6=$(eval echo \$$(curl -s -A "Mozilla" https://api.ip.sb/geoip/$v6 -k | awk -F "country_code" '{print $2}' | awk -F "region_code" '{print $1}' | sed "s/[,\":}]//g"))
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 case ${wgcfv6} in 
 plus) 
@@ -170,12 +172,48 @@ S5Status=$(white "Socks5 WARP状态：\c" ; red "未安装Socks5-WARP客户端")
 fi
 }
 
+pysocks5(){
+v4=$(curl -s4m6 https://ip.gs -k)
+if [[ -n $v4 ]]; then
+python3 socks5.py stop >/dev/null 2>&1 
+kill -9 $(pgrep -f socks5.py) >/dev/null 2>&1
+wget -N https://raw.githubusercontents.com/kkkyg/pysocks/master/socks5.py
+readp "请输入自定义socks5端口(1024～65535),回车跳过则为默认端口：1080:" pys
+if [[ -z $pys ]]; then
+python3 socks5.py start | sh
+pys=1080
+else
+until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$pys") ]]
+do
+[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$pys") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义Socks5端口:" pys
+done
+python3 socks5.py start --port=$pys | sh
+fi
+green "本地socks5的出站IP：$(curl -sx socks5h://localhost:$pys ip.gs -k)"
+green "本地socks5的端口：$pys"
+sed -i '/socks5.py start/d' /etc/crontab
+echo "@reboot root /usr/bin/python3 /root/socks5.py start --port=$pys | sh >/dev/null 2>&1" >> /etc/crontab
+else
+green "不存在IPV4，不支持安装本地scoks5，建议先安装Wgcf-WARP-IPV4（选项1或者3）添加IPV4"
+fi
+}
+
 docker(){
 if [[ -n $(ip a | grep docker) ]]; then
 red "检测到VPS已安装docker，如继续安装Wgcf-WARP，docker会失效"
 sleep 3s
 yellow "6秒后继续安装，退出安装请按Ctrl+c"
 sleep 6s
+fi
+}
+
+att(){
+if [[ -n $(screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}') ]]; then
+until [[ -z $(screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}' | awk 'NR==1{print}') ]] 
+do
+Attached=`screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}' | awk 'NR==1{print}'`
+screen -d $Attached
+done
 fi
 }
 
@@ -312,18 +350,21 @@ fi
 }
 
 WGCFmenu(){
+pysport=`ss -ntlp | grep $(pgrep -f socks5.py) 2>/dev/null | awk '{print $4}' | awk -F':' '{print $NF}'`
+[[ -z $(pgrep -f socks5.py 2>/dev/null) ]] && pysocks=$(red "本地IPV4 Socks5关闭中") || pysocks=$(green "本地IPV4 Socks5已开启  端口：$pysport") 
 white "------------------------------------------------------------------------------------------------"
-white " 当前VPS IPV4接管出站流量情况如下 "
-blue " ${WARPIPv4Status}"
+white " 当前VPS IPV4接管出站流量情况如下"
+${WARPIPv4Status}
+$pysocks
 white "------------------------------------------------------------------------------------------------"
 white " 当前VPS IPV6接管出站流量情况如下"
-blue " ${WARPIPv6Status}"
+${WARPIPv6Status}
 white "------------------------------------------------------------------------------------------------"
 }
 S5menu(){
 white "------------------------------------------------------------------------------------------------"
 white " 当前Socks5-WARP客户端本地代理127.0.0.1情况如下"
-blue " ${S5Status}"
+${S5Status}
 white "------------------------------------------------------------------------------------------------"
 }
 back(){
@@ -339,14 +380,12 @@ WGCFmenu;S5menu
 }
 
 menu(){
-green "rwkgyg-CFwarp脚本快捷键使用指南"
+green "kkkyg-CFwarp脚本快捷键使用指南"
 green "注意：进入实时显示Screen状态后，退出当前Screen界面：Ctrl+a+d  终止当前Screen运行：Ctrl+c "
 yellow "------------------------------------------"
-blue "cf wd     : Wgcf-warp临时关闭"
-blue "cf wu     : Wgcf-warp开启"
+blue "cf wud    : Wgcf-warp临时关闭、开启"
 blue "cf wr     : Wgcf-warp重新启动"
-blue "cf 5d     : Socks5-warp临时关闭"
-blue "cf 5u     : Socks5-warp开启"
+blue "cf c5ud   : Socks5-warp临时关闭、开启"
 blue "cf sup    : 实时显示Screen运行状态：Wgcf-warp进程守护"          
 blue "cf saw    : 实时显示Screen运行状态：刷Netflix奈飞及区域的warp"   
 blue "cf scr    : 实时显示Screen运行状态：刷指定区域的warp"            
@@ -388,9 +427,10 @@ green "失败建议如下："
 yellow "1、强烈建议使用官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为官方源"
 yellow "2、部分VPS系统极度精简，相关依赖需自行安装后再尝试"
 yellow "3、查看https://www.cloudflarestatus.com/,你当前VPS就近区域可能处于黄色的【Re-routed】状态"
+yellow "有疑问请向作者反馈 https://github.com/kkkyg/CFwarp/issues"
 exit 0
 else 
-screen -d >/dev/null 2>&1
+att
 [[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
 [[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
 [[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
@@ -488,10 +528,10 @@ apt update -y;apt install iproute2 openresolv dnsutils iptables -y;apt install w
 elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iptables -y;apt install wireguard-tools --no-install-recommends -y			
 fi
-[[ $cpu = AMD64 ]] && wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wgcf_2.2.15_amd64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf         
-[[ $cpu = ARM64 ]] && wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wgcf_2.2.15_arm64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf
+[[ $cpu = AMD64 ]] && wget -N https://cdn.jsdelivr.net/gh/kkkyg/CFwarp/wgcf_2.2.13_amd64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf         
+[[ $cpu = ARM64 ]] && wget -N https://cdn.jsdelivr.net/gh/kkkyg/CFwarp/wgcf_2.2.13_arm64 -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf
 if [[ $main -lt 5 || $minor -lt 6 ]] || [[ $vi =~ lxc|openvz ]]; then
-[[ -e /usr/bin/wireguard-go ]] || wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
+[[ -e /usr/bin/wireguard-go ]] || wget -N https://cdn.jsdelivr.net/gh/kkkyg/CFwarp/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
 fi
 echo | wgcf register
 until [[ -e wgcf-account.toml ]]
@@ -540,11 +580,11 @@ ShowWGCF && WGCFmenu && lncf && menu
 SOCKS5ins(){
 yellow "检测Socks5-WARP安装环境中……"
 if [[ $release = Centos ]]; then
-[[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本号：Centos $vsid \nSocks5-WARP仅支持Centos 8 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 8 ]] && red "当前系统版本号：Centos $vsid \nSocks5-WARP仅支持Centos 8 " && bash CFwarp.sh 
 elif [[ $release = Ubuntu ]]; then
-[[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 16|18|20 ]] && red "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04系统 " && bash CFwarp.sh 
 elif [[ $release = Debian ]]; then
-[[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 9|10|11 ]] && red "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
 fi
 [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
@@ -572,8 +612,8 @@ sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/
 sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
 yum clean all && yum makecache
 fi
-yum -y install epel-release && yum -y install net-tools
-rpm -ivh https://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
+yum -y install epel-release
+rpm -ivh http://pkg.cloudflareclient.com/cloudflare-release-el$vsid.rpm
 yum -y install cloudflare-warp
 fi
 if [[ $release = Debian ]]; then
@@ -581,7 +621,6 @@ if [[ $release = Debian ]]; then
 [[ ! $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && apt update && apt install apt-transport-https -y
 fi
 if [[ $release != Centos ]]; then 
-apt install net-tools -y
 curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
 apt update;apt install cloudflare-warp -y
@@ -625,15 +664,16 @@ yellow "如提示Error: Too many devices.说明超过了最多绑定4台设备�
 ShowSOCKS5 && S5menu && back;;
 3 )
 [[ ! $(type -P warp-cli) ]] && red "未安装Socks5-WARP(+)，无法更改端口" && bash CFwarp.sh
-if readp "请输入自定义socks5端口(1024～65535):" port ; then
-if [[ -n $(netstat -ntlp | grep "$port") ]]; then
-until [[ -z $(netstat -ntlp | grep "$port") ]]
+readp "请输入自定义socks5端口(1024～65535),回车跳过则为默认端口：40000:" port
+if [[ -z $port ]]; then
+warp-cli --accept-tos set-proxy-port 40000 >/dev/null 2>&1
+else
+until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]]
 do
-[[ -n $(netstat -ntlp | grep "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义Socks5端口:" port
+[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义Socks5端口:" port
 done
+warp-cli --accept-tos set-proxy-port $port >/dev/null 2>&1
 fi
-fi
-[[ -n $port ]] && warp-cli --accept-tos set-proxy-port $port >/dev/null 2>&1
 ShowSOCKS5 && S5menu && back;;
 0 ) WARPupre
 esac
@@ -660,16 +700,16 @@ else
 red "未复制privateKey或Address，恢复使用WARP普通账户" && cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1 && systemctl restart wg-quick@wgcf && ShowWGCF && WGCFmenu && back
 fi;;
 2 ) WARPup;;
-3 ) wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/ALIILAPRO/warp-plus-cloudflare/wp-plus.py && python3 wp-plus.py;;
+3 ) wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/kkkyg/warp-plus/wp.py && python3 wp.py;;
 4 )
-wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/ALIILAPRO/warp-plus-cloudflare/wp-plus.py
-sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
+wget -N --no-check-certificate https://cdn.jsdelivr.net/gh/kkkyg/warp-plus/wp.py
+sed -i "27 s/[(][^)]*[)]//g" wp.py
 readp "客户端配置ID(36个字符)：" ID
-sed -i "27 s/input/'$ID'/" wp-plus.py
+sed -i "27 s/input/'$ID'/" wp.py
 readp "设置screen窗口名称，回车默认名称为'wp'：" wpp
 [[ -z $wpp ]] && wpp='wp'
-screen -UdmS $wpp bash -c '/usr/bin/python3 /root/wp-plus.py' && back;;
-5 ) wget -N https://gitlab.com/rwkgyg/screen-script/raw/main/screen.sh && bash screen.sh && back;;
+screen -UdmS $wpp bash -c '/usr/bin/python3 /root/wp.py' && back;;
+5 ) wget -N https://raw.githubusercontents.com/kkkyg/screen-script/main/screen.sh && bash screen.sh && back;;
 0 ) bash CFwarp.sh
 esac
 }
@@ -727,8 +767,8 @@ readp "$ab" cd
 case "$cd" in  
 1 )
 [[ -e /root/WARP-CR.sh || -e /root/WARP-CP.sh ]] && yellow "经检测，你正在使用其他刷IP功能，请关闭它后再执行" && REnfwarp
-screen -d >/dev/null 2>&1
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/cfwarp/raw/main/check.sh
+att
+wget -N --no-check-certificate https://raw.githubusercontents.com/kkkyg/Netflix-WARP/main/check.sh
 readp "输入国家区域简称（例：新加坡，输入大写SG;美国，输入大写US）:" gj
 [[ -n $gj ]] && sed -i "s/dd/$gj/g" check.sh || (sed -i "s/dd/\$region/g" check.sh && green "当前设置WARP默认随机分配的国家区域: $g4 ")
 readp "已是奈飞IP或者指定IP区域时，重新检测间隔时间（回车默认45秒）,请输入间隔时间（例：50秒，输入50）:" stop
@@ -742,8 +782,8 @@ green "添加VPS重启后screen后台自动刷奈飞IP功能，重启VPS后自�
 back;;
 2 )
 [[ -e /root/WARP-CP.sh || -e /root/check.sh ]] && yellow "经检测，你正在使用其他刷IP功能，请关闭它后再执行" && REnfwarp
-screen -d >/dev/null 2>&1
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/cfwarp/raw/main/WARP-CR.sh
+att
+wget -N --no-check-certificate https://raw.githubusercontents.com/kkkyg/WARP-CR/main/WARP-CR.sh
 readp "输入国家区域简称（例：新加坡，输入大写SG;美国，输入大写US）:" gj
 [[ -n $gj ]] && sed -i "s/dd4/$gj/g" WARP-CR.sh || (sed -i "s/dd4/\$eg4/g" WARP-CR.sh && green "IPV4当前设置WARP默认分配的国家区域: $g4 ")
 [[ -n $gj ]] && sed -i "s/dd6/$gj/g" WARP-CR.sh || (sed -i "s/dd6/\$eg6/g" WARP-CR.sh && green "IPV6当前设置WARP默认分配的国家区域: $g6 ")
@@ -761,8 +801,8 @@ back;;
 [[ -e /root/WARP-CR.sh || -e /root/check.sh ]] && yellow "经检测，你正在使用其他刷IP功能，请关闭它后再执行" && REnfwarp
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 [[ ! $wgcfv4 =~ on|plus ]] && yellow "当前Wgcf-IPV4未开启" && bash CFwarp.sh
-screen -d >/dev/null 2>&1
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/cfwarp/raw/main/WARP-CP.sh
+att
+wget -N --no-check-certificate https://raw.githubusercontents.com/kkkyg/WARP-CP/main/WARP-CP.sh
 readp "输入WARP-IPV4的第二段.第三段的IP段（例：8.45.46.123 ， 输入 45.46 ）:" gj
 [[ -n $gj ]] && sed -i "s/ipd/$gj/g" WARP-CP.sh || (sed -i "s/ipd/\$v4d/g" WARP-CP.sh && green "未输入，使用当前WARP默认IP段$(curl -s4m3 https://ip.gs -k | awk -F '.' '{print $2"."$3}')")
 readp "已刷到设置的IP段时，重新检测间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
@@ -788,7 +828,7 @@ readp "$ab" cd
 case "$cd" in
 1 ) ReIP;;
 2 ) Rewarp;;
-3 ) wget -N https://gitlab.com/rwkgyg/screen-script/raw/main/screen.sh && bash screen.sh && back;;
+3 ) wget -N https://raw.githubusercontents.com/kkkyg/screen-script/main/screen.sh && bash screen.sh && back;;
 0 ) bash CFwarp.sh
 esac
 }
@@ -848,7 +888,12 @@ warp-cli --accept-tos disable-always-on >/dev/null 2>&1
 warp-cli --accept-tos delete >/dev/null 2>&1
 [[ $release = Centos ]] && (yum autoremove cloudflare-warp -y) || (apt purge cloudflare-warp -y && rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg)
 }
-
+cs5(){
+python3 socks5.py stop
+kill -9 $(pgrep -f socks5.py) >/dev/null 2>&1
+rm -rf socks5.py
+sed -i '/socks5.py start/d' /etc/crontab
+}
 WARPun(){
 wj="rm -rf /usr/local/bin/wgcf /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go wgcf-account.toml wgcf-profile.conf"
 cron1="rm -rf CFwarp.sh screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh /usr/bin/cf"
@@ -858,12 +903,12 @@ sed -i '/check.sh/d' /etc/crontab ; sed -i '/WARP-CR.sh/d' /etc/crontab ; sed -i
 cron3(){
 screen -S up -X quit;screen -S aw -X quit;screen -S cr -X quit;screen -S cp -X quit
 }
-ab="1.卸载Wgcf-WARP(+)\n2.卸载Socks5-WARP(+)\n3.彻底卸载并清除WARP脚本及相关进程文件\n0.返回上一层\n 请选择："
+ab="1.卸载Wgcf-WARP(+)\n2.卸载Socks5-WARP(+)\n3.彻底卸载并清除脚本所有安装内容及相关进程文件\n0.返回上一层\n 请选择："
 readp "$ab" cd
 case "$cd" in     
 1 ) [[ $(type -P wg-quick) ]] && (cwg ; $wj ; green "Wgcf-WARP(+)卸载完成" && ShowWGCF && WGCFmenu && back) || (yellow "并未安装Wgcf-WARP(+)，无法卸载" && bash CFwarp.sh);;
 2 ) [[ $(type -P warp-cli) ]] && (cso ; green "Socks5-WARP(+)卸载完成" && ShowSOCKS5 && S5menu && back) || (yellow "并未安装Socks5-WARP(+)，无法卸载" && bash CFwarp.sh);;
-3 ) [[ ! $(type -P wg-quick) && ! $(type -P warp-cli) ]] && (red "并没有安装任何的WARP功能，无法卸载" && CFwarp.sh) || (cwg ; cso ; $wj ; $cron1 ; cron2 ; cron3 ; green "WARP已全部卸载完成" && ShowSOCKS5 && ShowWGCF && WGCFmenu && S5menu && exit);;
+3 ) [[ ! $(type -P wg-quick) && ! $(type -P warp-cli) ]] && (red "并没有安装任何的WARP功能，无法卸载" && CFwarp.sh) || (cwg ; cso ; $wj ; $cron1 ; cron2 ; cron3 ; cs5 ; green "WARP脚本相关内容已全部卸载完成" && ShowSOCKS5 && ShowWGCF && WGCFmenu && S5menu && exit);;
 0 ) WARPOC
 esac
 }
@@ -889,8 +934,8 @@ echo -e "${bblue} ░██ ██       ${plain} ░██ ██        ░█
 echo -e "${bblue} ░██ ░${plain}██       ░██ ░██       ░██ ░██          ░${red}██         ░██    ░░██${plain}"
 echo -e "${bblue} ░${plain}██  ░░██     ░██  ░░██     ░██  ░░${red}██        ░██          ░██ ██ ██${plain} "
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 
-white "甬哥Gitlab项目  ：gitlab.com/rwkgyg"
-white "甬哥blogger博客 ：ygkkk.blogspot.com"
+white "甬哥Github项目  ：github.com/kkkyg"
+white "甬哥blogger博客 ：kkkyg.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
 yellow "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 bblue " WARP-WGCF/SOCKS5安装脚本：2022.3.24更新 Beta 8 版本"  
@@ -899,11 +944,12 @@ white " ========================================================================
 green "  1. 安装Wgcf-WARP:虚拟IPV4"      
 green "  2. 安装Wgcf-WARP:虚拟IPV6"      
 green "  3. 安装Wgcf-WARP:虚拟IPV4+IPV6" 
-[[ $cpu != AMD64 ]] && red "  4. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP(+)" || green "  4. 安装Socks5-WARP：IPV4本地Socks5代理"
+green "  4. 安装本地独立的Socks5代理，同步IPV4出站IP"
+[[ $cpu != AMD64 ]] && red "  5. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP(+)" || green "  5. 安装Socks5-WARP官方客户端：本地Socks5代理，独立的WARP IPV4 IP"
 white " -------------------------------------------------------------------------------------------"    
-green "  5. WARP账户升级：WARP+账户与WARP+Teams账户"
-green "  6. WARPR解锁NF奈飞：自动识别WARP配置环境" 
-green "  7. WARP开启、停止、卸载"
+green "  6. WARP账户升级：WARP+账户与WARP+Teams账户"
+green "  7. WARP解锁NF奈飞：自动识别WARP配置环境" 
+green "  8. WARP开启、停止、卸载"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
@@ -915,10 +961,11 @@ case "$Input" in
  1 ) WGCFv4;;
  2 ) WGCFv6;;
  3 ) WGCFv4v6;;
- 4 ) [[ $cpu = AMD64 ]] && SOCKS5ins || bash CFwarp.sh;; 
- 5 ) WARPupre;;
- 6 ) REnfwarp;;	
- 7 ) WARPOC;;
+ 4 ) pysocks5;;
+ 5 ) [[ $cpu = AMD64 ]] && SOCKS5ins || bash CFwarp.sh;; 
+ 6 ) WARPupre;;
+ 7 ) REnfwarp;;	
+ 8 ) WARPOC;;
  * ) exit 
 esac
 }
@@ -926,46 +973,40 @@ if [ $# == 0 ]; then
 start
 start_menu
 fi
+
 screenup(){
-screen -Ur up
+att && screen -Ur up
 }
 screenaw(){
-screen -Ur aw
+att && screen -Ur aw
 }
 screencr(){
-screen -Ur cr
+att && screen -Ur cr
 }
 screencp(){
-screen -Ur cp
+att && screen -Ur cp
 }
-wgcfup(){
-wg-quick up wgcf
+wgcfupdn(){
+checkwgcf
+[[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && wg-quick up wgcf || wg-quick down wgcf
 ShowWGCF && WGCFmenu
-}
-wgcfdn(){
-wg-quick down wgcf
-ShowWGCF && WGCFmenu
-}
+
 wgcfre(){
 systemctl restart wg-quick@wgcf
 ShowWGCF && WGCFmenu
 }
-s5up(){
-warp-cli --accept-tos enable-always-on >/dev/null 2>&1
-ShowSOCKS5 && S5menu
-}
-s5dn(){
-warp-cli --accept-tos disable-always-on >/dev/null 2>&1
+
+clis5updn(){
+ShowSOCKS5
+[[ ! $socks5 =~ on|plus ]] && warp-cli --accept-tos enable-always-on >/dev/null 2>&1 || warp-cli --accept-tos disable-always-on >/dev/null 2>&1
 ShowSOCKS5 && S5menu
 }
 
 if [[ $# > 0 ]]; then
 case $1 in
-wd ) wgcfdn 0;;
-wu ) wgcfup 0;;
+wud ) wgcfupdn 0;;
 wr ) wgcfre 0;;
-5d ) s5dn 0;;
-5u ) s5up 0;;
+c5ud ) clis5updn 0;;
 sup ) screenup 0;;
 saw ) screenaw 0;;
 scr ) screencr 0;;
@@ -973,3 +1014,4 @@ scp ) screencp 0;;
 h ) menu;;
 esac
 fi
+
