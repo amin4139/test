@@ -14,7 +14,7 @@ jobs:
         uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@gitlab.com:rwkgyg/CFwarp.git
+            git@gitlab.com:rwkgyg/cfwarp.git
           ssh_private_key:
             ${{ secrets.private_key }}           
   mirror_to_bitbucket:
@@ -26,6 +26,6 @@ jobs:
         uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@bitbucket.com:rwkgyg/CFwarp.git
+            git@bitbucket.com:rwkgyg/cfwarp.git
           ssh_private_key:
             ${{ secrets.private_key }}
