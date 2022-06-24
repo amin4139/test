@@ -480,7 +480,8 @@ sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/
 sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
 yum clean all && yum makecache
 fi
-yum install epel-release -y;yum install iproute iptables wireguard-tools -y
+yum install epel-release -y || yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-${vsid}.noarch.rpm -y
+yum install iproute iptables wireguard-tools -y
 elif [[ $release = Debian ]]; then
 apt install lsb-release -y
 echo "deb http://deb.debian.org/debian $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/backports.list
