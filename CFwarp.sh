@@ -206,7 +206,7 @@ cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 }
 WGCFv4(){
 yellow "稍等3秒，检测VPS内WARP环境"
-docker && checkwgcf && L46
+docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
@@ -243,7 +243,7 @@ fi
 
 WGCFv6(){
 yellow "稍等3秒，检测VPS内WARP环境"
-docker && checkwgcf && L46
+docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
@@ -280,7 +280,7 @@ fi
 
 WGCFv4v6(){
 yellow "稍等3秒，检测VPS内WARP环境"
-docker && checkwgcf && L46
+docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
