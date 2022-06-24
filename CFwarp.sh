@@ -182,7 +182,7 @@ fi
 STOPwgcf(){
 if [[ $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的Wgcf-WARP(+)安装方案" 
-wg-quick up wgcf >/dev/null 2>&1 ; bash CFwarp.sh
+systemctl restart wg-quick@wgcf ; bash CFwarp.sh
 fi
 }
 v4v6(){
@@ -218,7 +218,7 @@ green "当前原生v4单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4单�
 STOPwgcf ; ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && WGCFins
 fi
 else
-wg-quick down wgcf >/dev/null 2>&1
+kill -9 $(pgrep -f wgcf 2>/dev/null)
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4单栈模式" && sleep 2
@@ -255,7 +255,7 @@ green "当前原生v4单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV6单�
 ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && WGCFins
 fi
 else
-wg-quick down wgcf >/dev/null 2>&1
+kill -9 $(pgrep -f wgcf 2>/dev/null)
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV6单栈模式" && sleep 2
@@ -292,7 +292,7 @@ green "当前原生v4单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4+IPV
 STOPwgcf ; ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && WGCFins
 fi
 else
-wg-quick down wgcf >/dev/null 2>&1
+kill -9 $(pgrep -f wgcf 2>/dev/null)
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
