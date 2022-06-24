@@ -86,8 +86,8 @@ fi
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
 [[ ! $(type -P screen) ]] && (yellow "检测到screen未安装，升级安装中" && $yumapt update;$yumapt install screen)
 
-L6=$(ip route get 2606:4700:d0::a29f:c001 | grep -oP 'src \K\S+')
-L4=$(ip route get 162.159.193.1 | grep -oP 'src \K\S+')
+L6=$(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+')
+L4=$(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+')
 ud4='sed -i "5 s/^/PostUp = ip -4 rule add from $L4 lookup main\n/;6 s/^/PostDown = ip -4 rule delete from $L4 lookup main\n/" /etc/wireguard/wgcf.conf'
 ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $L6 lookup main\n/;8 s/^/PostDown = ip -6 rule delete from $L6 lookup main\n/" /etc/wireguard/wgcf.conf'
 ud4ud6='sed -i "5 s/^/PostUp = ip -4 rule add from $L4 lookup main\n/;6 s/^/PostDown = ip -4 rule delete from $L4 lookup main\n/;7 s/^/PostUp = ip -6 rule add from $L6 lookup main\n/;8 s/^/PostDown = ip -6 rule delete from $L6 lookup main\n/" /etc/wireguard/wgcf.conf'
