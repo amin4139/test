@@ -85,12 +85,14 @@ fi
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
 [[ ! $(type -P screen) ]] && (yellow "检测到screen未安装，升级安装中" && $yumapt update;$yumapt install screen)
-
+L46(){
 L6=$(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+')
 L4=$(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+')
-ud4='sed -i "5 s/^/PostUp = ip -4 rule add from $L4 lookup main\n/;6 s/^/PostDown = ip -4 rule delete from $L4 lookup main\n/" /etc/wireguard/wgcf.conf'
-ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $L6 lookup main\n/;8 s/^/PostDown = ip -6 rule delete from $L6 lookup main\n/" /etc/wireguard/wgcf.conf'
-ud4ud6='sed -i "5 s/^/PostUp = ip -4 rule add from $L4 lookup main\n/;6 s/^/PostDown = ip -4 rule delete from $L4 lookup main\n/;7 s/^/PostUp = ip -6 rule add from $L6 lookup main\n/;8 s/^/PostDown = ip -6 rule delete from $L6 lookup main\n/" /etc/wireguard/wgcf.conf'
+}
+L46
+ud4='sed -i "5 s/^/PostUp = ip -4 rule add from '$L4' lookup main\n/;6 s/^/PostDown = ip -4 rule delete from '$L4' lookup main\n/" /etc/wireguard/wgcf.conf'
+ud6='sed -i "7 s/^/PostUp = ip -6 rule add from '$L6' lookup main\n/;8 s/^/PostDown = ip -6 rule delete from '$L6' lookup main\n/" /etc/wireguard/wgcf.conf'
+ud4ud6='sed -i "5 s/^/PostUp = ip -4 rule add from '$L4' lookup main\n/;6 s/^/PostDown = ip -4 rule delete from '$L4' lookup main\n/;7 s/^/PostUp = ip -6 rule add from '$L6' lookup main\n/;8 s/^/PostDown = ip -6 rule delete from '$L6' lookup main\n/" /etc/wireguard/wgcf.conf'
 c1="sed -i '/0\.0\.0\.0\/0/d' /etc/wireguard/wgcf.conf"
 c2="sed -i '/\:\:\/0/d' /etc/wireguard/wgcf.conf"
 c3="sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' /etc/wireguard/wgcf.conf"
@@ -204,7 +206,7 @@ cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 }
 WGCFv4(){
 yellow "稍等3秒，检测VPS内WARP环境"
-docker && checkwgcf
+docker && checkwgcf && L46
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
@@ -241,7 +243,7 @@ fi
 
 WGCFv6(){
 yellow "稍等3秒，检测VPS内WARP环境"
-docker && checkwgcf
+docker && checkwgcf && L46
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
@@ -278,7 +280,7 @@ fi
 
 WGCFv4v6(){
 yellow "稍等3秒，检测VPS内WARP环境"
-docker && checkwgcf
+docker && checkwgcf && L46
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
