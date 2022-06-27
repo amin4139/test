@@ -88,11 +88,9 @@ fi
 }
 
 udc46(){
-rv4=$(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+')
-rv6=$(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+')
-ud4='sed -i "7 s/^/PostUp = ip -4 rule add from '$rv4' lookup main\n/;7 s/^/PostDown = ip -4 rule delete from '$rv4' lookup main\n/" /etc/wireguard/wgcf.conf'
-ud6='sed -i "7 s/^/PostUp = ip -6 rule add from '$rv6' lookup main\n/;7 s/^/PostDown = ip -6 rule delete from '$rv6' lookup main\n/" /etc/wireguard/wgcf.conf'
-ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from '$rv4' lookup main\n/;7 s/^/PostDown = ip -4 rule delete from '$rv4' lookup main\n/;7 s/^/PostUp = ip -6 rule add from '$rv6' lookup main\n/;7 s/^/PostDown = ip -6 rule delete from '$rv6' lookup main\n/" /etc/wireguard/wgcf.conf'
+ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
+ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
+ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 c1="sed -i '/0\.0\.0\.0\/0/d' /etc/wireguard/wgcf.conf"
 c2="sed -i '/\:\:\/0/d' /etc/wireguard/wgcf.conf"
 c3="sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' /etc/wireguard/wgcf.conf"
