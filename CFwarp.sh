@@ -90,9 +90,9 @@ fi
 udc46(){
 lv4=$(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+')
 lv6=$(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+')
-ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $lv4 lookup main\n/;7 s/^/PostDown = ip -4 rule delete from $lv4 lookup main\n/" /etc/wireguard/wgcf.conf'
-ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $lv6 lookup main\n/;7 s/^/PostDown = ip -6 rule delete from $lv6 lookup main\n/" /etc/wireguard/wgcf.conf'
-ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $lv4 lookup main\n/;7 s/^/PostDown = ip -4 rule delete from $lv4 lookup main\n/;7 s/^/PostUp = ip -6 rule add from $lv6 lookup main\n/;7 s/^/PostDown = ip -6 rule delete from $lv6 lookup main\n/" /etc/wireguard/wgcf.conf'
+ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/;7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/" /etc/wireguard/wgcf.conf'
+ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/;7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/" /etc/wireguard/wgcf.conf'
+ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/;7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.193.1 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/;7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/;7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 2>/dev/null | grep -oP 'src \K\S+') lookup main\n/" /etc/wireguard/wgcf.conf'
 c1="sed -i '/0\.0\.0\.0\/0/d' /etc/wireguard/wgcf.conf"
 c2="sed -i '/\:\:\/0/d' /etc/wireguard/wgcf.conf"
 c3="sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' /etc/wireguard/wgcf.conf"
