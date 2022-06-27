@@ -500,7 +500,7 @@ echo | wgcf register
 until [[ -e wgcf-account.toml ]]
 do
 yellow "申请WARP普通账户过程中可能会多次提示：429 Too Many Requests，请等待30秒" && sleep 1
-echo | wgcf register
+echo | wgcf register --accept-tos
 done
 wgcf generate
 yellow "开始自动设置WARP的MTU最佳网络吞吐量值，以优化WARP网络！"
