@@ -87,7 +87,6 @@ fi
 [[ ! $(type -P screen) ]] && (yellow "检测到screen未安装，升级安装中" && $yumapt update;$yumapt install screen)
 }
 
-udc46(){
 ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
@@ -97,7 +96,6 @@ c3="sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' /etc/wireguard/wgcf.
 c4="sed -i 's/engage.cloudflareclient.com/2606:4700:d0::a29f:c001/g' /etc/wireguard/wgcf.conf"
 c5="sed -i 's/1.1.1.1/8.8.8.8,2001:4860:4860::8888/g' /etc/wireguard/wgcf.conf"
 c6="sed -i 's/1.1.1.1/2001:4860:4860::8888,8.8.8.8/g' /etc/wireguard/wgcf.conf"
-}
 
 ShowWGCF(){
 UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
@@ -206,7 +204,7 @@ WGCFv4(){
 yellow "稍等3秒，检测VPS内WARP环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-v4v6 && udc46
+v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4单栈模式" && sleep 2
 ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && WGCFins
@@ -221,7 +219,7 @@ STOPwgcf ; ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && WGCFins
 fi
 else
 wg-quick down wgcf >/dev/null 2>&1
-sleep 1 && v4v6 && udc46
+sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4单栈模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && ABC
@@ -243,7 +241,7 @@ WGCFv6(){
 yellow "稍等3秒，检测VPS内WARP环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-v4v6 && udc46
+v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV6单栈模式" && sleep 2
 ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && WGCFins
@@ -258,7 +256,7 @@ ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && WGCFins
 fi
 else
 wg-quick down wgcf >/dev/null 2>&1
-sleep 1 && v4v6 && udc46
+sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV6单栈模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && ABC
@@ -280,7 +278,7 @@ WGCFv4v6(){
 yellow "稍等3秒，检测VPS内WARP环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-v4v6 && udc46
+v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
 STOPwgcf ; ABC1=$c5 && ABC2=$ud4ud6 && WGCFins
@@ -295,7 +293,7 @@ STOPwgcf ; ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && WGCFins
 fi
 else
 wg-quick down wgcf >/dev/null 2>&1
-sleep 1 && v4v6 && udc46
+sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
 STOPwgcf ; conf && ABC1=$c5 && ABC2=$ud4ud6 && ABC
