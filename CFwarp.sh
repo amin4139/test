@@ -54,7 +54,7 @@ bbr="openvz版bbr-plus"
 else
 bbr="暂不支持显示"
 fi
-if [[ $vi =~ lxc|openvz ]]; then
+if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
 red "检测到未开启TUN，现尝试添加TUN支持" && sleep 4
