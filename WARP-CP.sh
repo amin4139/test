@@ -10,6 +10,44 @@ v4d=$(curl -s4m3 https://ip.gs -k | awk -F '.' '{print $2"."$3}')
 
 BEndpoint(){
 grep Endpoint /etc/wireguard/wgcf.conf
+if [[ -n $(grep -w 2606:4700:d0::a29f:c001 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c001/2606:4700:d0::a29f:c002/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c002 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c002/2606:4700:d0::a29f:c003/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c003 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c003/2606:4700:d0::a29f:c004/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c004 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c004/2606:4700:d0::a29f:c005/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c005 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c005/2606:4700:d0::a29f:c006/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c006 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c006/2606:4700:d0::a29f:c007/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c007 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c007/2606:4700:d0::a29f:c008/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c008 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c008/2606:4700:d0::a29f:c009/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c009 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c009/2606:4700:d0::a29f:c001/g" /etc/wireguard/wgcf.conf
+fi
+if [[ -n $(grep -w 2606:4700:d0::a29f:c101 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c101/2606:4700:d0::a29f:c102/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c102 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c102/2606:4700:d0::a29f:c103/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c103 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c103/2606:4700:d0::a29f:c104/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c104 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c104/2606:4700:d0::a29f:c105/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c105 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c105/2606:4700:d0::a29f:c106/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c106 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c106/2606:4700:d0::a29f:c107/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c107 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c107/2606:4700:d0::a29f:c108/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c108 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c108/2606:4700:d0::a29f:c109/g" /etc/wireguard/wgcf.conf
+elif [[ -n $(grep -w 2606:4700:d0::a29f:c109 /etc/wireguard/wgcf.conf) ]]; then
+sed -i "s/2606:4700:d0::a29f:c109/2606:4700:d0::a29f:c101/g" /etc/wireguard/wgcf.conf
+fi
 if [[ -n $(grep -w 162.159.192.1 /etc/wireguard/wgcf.conf) ]]; then
 sed -i "s/162.159.192.1/162.159.192.2/g" /etc/wireguard/wgcf.conf
 elif [[ -n $(grep -w 162.159.192.2 /etc/wireguard/wgcf.conf) ]]; then
