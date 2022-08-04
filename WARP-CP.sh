@@ -5,7 +5,7 @@ yellow(){ echo -e "\033[33m\033[01m$1\033[0m";}
 
 info(){
 v4=$(curl -s4m3 https://ip.gs -k)
-v4d=$(curl -s4m3 https://ip.gs -k | awk -F '.' '{print $2"."$3}')
+v4d=$(curl -s4m3 https://ip.gs -k | awk -F '.' '{print $1}')
 }
 
 BEndpoint(){
