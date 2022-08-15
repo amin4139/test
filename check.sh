@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 sleep 5
 green(){ echo -e "\033[32m\033[01m$1\033[0m";}
 yellow(){ echo -e "\033[33m\033[01m$1\033[0m";}
