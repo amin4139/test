@@ -81,7 +81,7 @@ while True:
 		print(f"\n[-] 使用 ID: {referrer}")    
 		print(f"[:)] {g} GB 已经成功增加到你的warp+账号中.")
 		print(f"[#] Total: {g} Good {b} Bad")
-		print("[*] 18秒后, 一个新的增加warp+流量的请求将会发送.")
+		print("[*] 18秒后, 一个新的增加warp+流量的请求将会发送, 退出脚本请按ctrl+c.")
 		time.sleep(18)
 	else:
 		b = b + 1
