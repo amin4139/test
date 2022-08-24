@@ -6,7 +6,7 @@ import string
 import time
 import os
 import sys
-os.system("title WARP-PLUS-CLOUDFLARE By ALIILAPRO")
+
 os.system('cls' if os.name == 'nt' else 'clear')
 print('      _______ _      __________________       _______ _______ _______ _______\n'
 '     (  ___  | \     \__   __|__   __( \     (  ___  |  ____ |  ____ |  ___  )\n'
