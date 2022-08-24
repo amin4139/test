@@ -548,6 +548,13 @@ elif [[ $release = Debian ]]; then
 [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
 fi
 [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
+
+
+checkwgcf
+if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
+
+
+
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 v4v6
 if [[ -n $v6 && -z $v4 ]]; then
@@ -556,7 +563,7 @@ red "纯IPV6的VPS目前不支持安装Socks5-WARP" && bash CFwarp.sh
 elif [[ -n $v4 && -z $v6 ]]; then
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
-[[ $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && red "纯IPV4的VPS已安装Wgcf-WARP-IPV4(选项1)，不支持安装Socks5-WARP" && bash CFwarp.sh
+[[ $wgcfv4 =~ on|plus ]] && red "纯IPV4的VPS已安装Wgcf-WARP-IPV4(选项1或者选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
 elif [[ -n $v4 && -n $v6 ]]; then
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
@@ -565,6 +572,9 @@ fi
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
 [[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]] && red "已安装Wgcf-WARP-IPV4+IPV6(选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
+
+
+
 if [[ $release = Centos ]]; then 
 if [[ ${vsid} =~ 8 ]]; then
 cd /etc/yum.repos.d/ && mkdir backup && mv *repo backup/ 
