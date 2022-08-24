@@ -549,12 +549,6 @@ elif [[ $release = Debian ]]; then
 fi
 [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
 
-
-checkwgcf
-if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-
-
-
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 v4v6
 if [[ -n $v6 && -z $v4 ]]; then
@@ -571,9 +565,9 @@ checkwgcf
 fi
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
-[[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]] && red "已安装Wgcf-WARP-IPV4+IPV6(选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
-
-
+if [[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]]; then
+red "已安装Wgcf-WARP-IPV4+IPV6(选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
+fi
 
 if [[ $release = Centos ]]; then 
 if [[ ${vsid} =~ 8 ]]; then
