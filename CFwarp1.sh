@@ -17,7 +17,7 @@ bblue(){ echo -e "\033[34m\033[01m$1\033[0m";}
 rred(){ echo -e "\033[35m\033[01m$1\033[0m";}
 readtp(){ read -t5 -n26 -p "$(yellow "$1")" $2;}
 readp(){ read -p "$(yellow "$1")" $2;}
-[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit 1
+[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
 
 start(){
 yellow " 请稍等3秒……正在扫描vps类型及参数中……"
@@ -36,7 +36,7 @@ release="Ubuntu"
 elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 release="Centos"
 else 
-red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && rm -f CFwarp.sh && exit 1
+red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && rm -f CFwarp.sh && exit
 fi
 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
 sys(){
@@ -61,7 +61,7 @@ mknod net/tun c 10 200
 chmod 0666 net/tun
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
-green "添加TUN支持失败，建议与VPS厂商沟通或后台设置开启" && exit 0
+green "添加TUN支持失败，建议与VPS厂商沟通或后台设置开启" && exit
 else
 cat <<EOF > /root/tun.sh
 #!/bin/bash
