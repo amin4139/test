@@ -659,11 +659,10 @@ echo -e "${bblue}     ░██        ░${plain}██    ░██ ██    
 echo -e "${bblue}     ░██ ${plain}        ░██    ░░██        ░██ ░██       ░${red}██ ░██       ░██ ░██ ${plain}  "
 echo -e "${bblue}     ░█${plain}█          ░██ ██ ██         ░██  ░░${red}██     ░██  ░░██     ░██  ░░██ ${plain}  "
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" 
-white "甬哥Gitlab项目  ：gitlab.com/rwkgyg"
-white "甬哥blogger博客 ：ygkkk.blogspot.com"
-white "甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
+white " 甬哥Gitlab项目  ：gitlab.com/rwkgyg"
+white " 甬哥blogger博客 ：ygkkk.blogspot.com"
+white " 甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 安装warp成功后，进入脚本快捷方式：cf"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 安装wgcf-warp单栈IPV4"      
@@ -677,19 +676,19 @@ green "  7. warp关闭、开启、卸载"
 green "  8. 更新CFwarp脚本" 
 green "  0. 退出脚本 "
 white " ================================================================="
-white " VPS系统信息如下："
-white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-green "当前CFwarp脚本版本号：${wpygV} ，已是最新版本\n"
+green " 当前CFwarp脚本版本号：${wpygV} ，已是最新版本\n"
 else
-green "当前CFwarp脚本版本号：${wpygV}"
-yellow "检测到最新CFwarp安装脚本版本号：${remoteV} ，可选择8进行更新\n"
+green " 当前CFwarp脚本版本号：${wpygV}"
+yellow " 检测到最新CFwarp安装脚本版本号：${remoteV} ，可选择8进行更新\n"
 fi
 fi
+white " VPS系统信息如下："
+white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
 IP_Status_menu
 echo
-readp "请输入数字:" Input
+readp " 请输入数字:" Input
 case "$Input" in     
  1 ) WGCFv4;;
  2 ) WGCFv6;;
