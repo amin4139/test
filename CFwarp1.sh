@@ -670,17 +670,17 @@ green "  3. 安装wgcf-warp双栈IPV4+IPV6"
 green "  4. 显示warp代理节点的配置文件与二维码(Wireguard协议)"
 white " -----------------------------------------------------------------"     
 green "  5. warp刷刷刷选项：warp+流量"
-green "  6. warp账户升级/切换：warp ; warp+ ; warp+Teams"
+green "  6. warp三类账户升级/切换(warp/warp+/warp+Teams)"
 green "  7. warp关闭、开启、卸载"
 green "  8. 更新CFwarp脚本" 
 green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-green " 当前CFwarp脚本版本号：${wpygV} ，已是最新版本\n"
+green " 当前CFwarp脚本版本号：${wpygV}重置版第一版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp安装脚本版本号：${remoteV} ，可选择8进行更新\n"
+yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择8进行更新\n"
 fi
 fi
 white " VPS系统信息如下："
