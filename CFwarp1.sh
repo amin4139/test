@@ -677,7 +677,7 @@ green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-green " 当前CFwarp脚本版本号：${wpygV}重置版第一版 ，已是最新版本\n"
+green " 当前CFwarp脚本版本号：${wpygV} 重置版第一版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
 yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择8进行更新\n"
