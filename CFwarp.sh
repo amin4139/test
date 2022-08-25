@@ -899,7 +899,11 @@ white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
 yellow "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 bblue " WARP-WGCF/SOCKS5安装脚本：2022.3.24更新 Beta 8 版本"  
-yellow " 切记：安装WARP成功后，进入脚本快捷方式：cf  其他说明：cf h"
+echo
+echo
+red " 本脚本将在2022.9月第一周重置更新，功能方面会由 大众化 到 折腾化 每期同步更新油管教程，各位做好心理准备"
+echo
+echo
 white " ========================================================================================"
 green "  1. 安装Wgcf-WARP:虚拟IPV4"      
 green "  2. 安装Wgcf-WARP:虚拟IPV6"      
