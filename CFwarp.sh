@@ -195,119 +195,133 @@ echo $ABC1 | sh
 echo $ABC2 | sh
 echo $ABC3 | sh
 echo $ABC4 | sh
+echo $ABC5 | sh
 }
 conf(){
 rm -rf /etc/wireguard/wgcf.conf
 cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 }
+
+first4(){
+checkwgcf
+if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
+[[ -n /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+sed -i '/^label 2002::\/16   2/d' /etc/gai.conf
+else
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+fi
+}
+
+nat4(){
+[[ -n $(ip route get 162.159.192.1 | grep -oP 'src \K\S+') ]] && ABC4=$ud4 || ABC4=echo
+}
+
 WGCFv4(){
-yellow "稍等3秒，检测VPS内WARP环境"
+yellow "稍等3秒，检测VPS内warp环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
-green "当前原生v4+v6双栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4单栈模式" && sleep 2
+green "当前原生v4+v6双栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && WGCFins
 fi
 if [[ -n $v6 && -z $v4 ]]; then
-green "当前原生v6单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4单栈模式" && sleep 2
-ABC1=$c5 && ABC2=$c4 && ABC3=$c2 && ABC4=$ud4 && WGCFins
+green "当前原生v6单栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
+ABC1=$c5 && ABC2=$c4 && ABC3=$c2 && nat4 && WGCFins
 fi
 if [[ -z $v6 && -n $v4 ]]; then
-green "当前原生v4单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4单栈模式" && sleep 2
+green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
 STOPwgcf ; ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && WGCFins
 fi
+first4
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
-green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4单栈模式" && sleep 2
+green "当前原生v4+v6双栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && ABC
 fi
 if [[ -n $v6 && -z $v4 ]]; then
-green "当前原生v6单栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4单栈模式" && sleep 2
-conf && ABC1=$c5 && ABC2=$c4 && ABC3=$c2 && ABC4=$ud4 && ABC
+green "当前原生v6单栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
+conf && ABC1=$c5 && ABC2=$c4 && ABC3=$c2 && nat4 && ABC
 fi
 if [[ -z $v6 && -n $v4 ]]; then
-green "当前原生v4单栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4单栈模式" && sleep 2
+green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
 STOPwgcf ; conf && ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && ABC
 fi
-CheckWARP
-ShowWGCF && WGCFmenu && back
+CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
 
 WGCFv6(){
-yellow "稍等3秒，检测VPS内WARP环境"
+yellow "稍等3秒，检测VPS内warp环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
-green "当前原生v4+v6双栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV6单栈模式" && sleep 2
+green "当前原生v4+v6双栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && WGCFins
 fi
 if [[ -n $v6 && -z $v4 ]]; then
-green "当前原生v6单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV6单栈模式(无IPV4！！！)" && sleep 2
-ABC1=$c6 && ABC2=$c1 && ABC3=$c4 && ABC4=$ud4ud6 && WGCFins
+green "当前原生v6单栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式(无IPV4！！！)" && sleep 2
+ABC1=$c6 && ABC2=$c1 && ABC3=$c4 && nat4 && ABC5=$ud6 && WGCFins
 fi
 if [[ -z $v6 && -n $v4 ]]; then
-green "当前原生v4单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV6单栈模式" && sleep 2
+green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && WGCFins
 fi
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
-green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV6单栈模式" && sleep 2
+green "当前原生v4+v6双栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && ABC
 fi
 if [[ -n $v6 && -z $v4 ]]; then
-green "当前原生v6单栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV6单栈模式(无IPV4！！！)" && sleep 2
-conf && ABC1=$c6 && ABC2=$c1 && ABC3=$c4 && ABC4=$ud4ud6 && ABC
+green "当前原生v6单栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式(无IPV4！！！)" && sleep 2
+conf && ABC1=$c6 && ABC2=$c1 && ABC3=$c4 && nat4 && ABC5=$ud6 && ABC
 fi
 if [[ -z $v6 && -n $v4 ]]; then
-green "当前原生v4单栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV6单栈模式" && sleep 2
+green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && ABC
 fi
-CheckWARP
-ShowWGCF && WGCFmenu && back
+CheckWARP && ShowWGCF && WGCFmenu
 fi
 }
 
 WGCFv4v6(){
-yellow "稍等3秒，检测VPS内WARP环境"
+yellow "稍等3秒，检测VPS内warp环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
-green "当前原生v4+v6双栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
+green "当前原生v4+v6双栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 STOPwgcf ; ABC1=$c5 && ABC2=$ud4ud6 && WGCFins
 fi
 if [[ -n $v6 && -z $v4 ]]; then
-green "当前原生v6单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
-STOPwgcf ; ABC1=$c5 && ABC2=$c4 && ABC3=$ud4ud6 && WGCFins
+green "当前原生v6单栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
+STOPwgcf ; ABC1=$c5 && ABC2=$c4 && ABC3=$ud6 && nat4 && WGCFins
 fi
 if [[ -z $v6 && -n $v4 ]]; then
-green "当前原生v4单栈vps首次安装Wgcf-WARP\n现添加Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
+green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 STOPwgcf ; ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && WGCFins
 fi
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
-green "当前原生v4+v6双栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
+green "当前原生v4+v6双栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 STOPwgcf ; conf && ABC1=$c5 && ABC2=$ud4ud6 && ABC
 fi
 if [[ -n $v6 && -z $v4 ]]; then
-green "当前原生v6单栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
-STOPwgcf ; conf && ABC1=$c5 && ABC2=$c4 && ABC3=$ud4ud6 && ABC
+green "当前原生v6单栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
+STOPwgcf ; conf && ABC1=$c5 && ABC2=$c4 && ABC3=$ud6 && nat4 && ABC
 fi
 if [[ -z $v6 && -n $v4 ]]; then
-green "当前原生v4单栈vps已安装Wgcf-WARP\n现快速切换Wgcf-WARP-IPV4+IPV6双栈模式" && sleep 2
+green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 STOPwgcf ; conf && ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && ABC
 fi
-CheckWARP
-ShowWGCF && WGCFmenu && back
+CheckWARP && ShowWGCF && WGCFmenu
 fi
 }
 
@@ -531,10 +545,11 @@ echo $ABC1 | sh
 echo $ABC2 | sh
 echo $ABC3 | sh
 echo $ABC4 | sh
+echo $ABC5 | sh
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
-CheckWARP
+CheckWARP && first4
 ShowWGCF && WGCFmenu && lncf && menu
 }
 
