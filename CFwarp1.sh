@@ -231,6 +231,7 @@ echo $ABC1 | sh
 echo $ABC2 | sh
 echo $ABC3 | sh
 echo $ABC4 | sh
+echo $ABC5 | sh
 }
 
 conf(){
