@@ -110,9 +110,8 @@ sed -i "s/162.159.193.8/162.159.193.9/g" /etc/wireguard/wgcf.conf
 elif [[ -n $(grep -w 162.159.193.9 /etc/wireguard/wgcf.conf) ]]; then
 sed -i "s/162.159.193.9/162.159.193.1/g" /etc/wireguard/wgcf.conf
 fi
-wg-quick down wgcf >/dev/null 2>&1
-sleep 1
-wg-quick up wgcf >/dev/null 2>&1
+echo "重启"
+systemctl restart wg-quick@wgcf
 }
 
 info1
