@@ -652,6 +652,25 @@ ln -sf /root/CFwarp.sh /usr/bin/cf
 green "CFwarp安装脚本升级成功"
 }
 
+warpinscha(){
+yellow "提示：VPS的出站IP将被你选择的warp IP所接管，如VPS无该出站IP，则另外生成"
+echo
+green "1. 安装/切换wgcf-warp单栈IPV4（回车默认）"
+green "2. 安装/切换wgcf-warp单栈IPV6"
+green "3. 安装/切换wgcf-warp双栈IPV4+IPV6"
+readp "\n请选择：" wgcfwarp
+if [ -z "${wgcfwarp}" ] || [ $wgcfwarp == "1" ];then
+WGCFv4
+elif [ $wgcfwarp == "2" ];then
+WGCFv6
+elif [ $wgcfwarp == "3" ];then
+WGCFv4v6
+else 
+red "输入错误，请重新选择" && warpinscha
+fi
+echo
+}  
+
 start_menu(){
 ShowWGCF
 clear
@@ -669,15 +688,11 @@ white " 甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装wgcf-warp单栈IPV4"      
-green "  2. 安装wgcf-warp单栈IPV6"      
-green "  3. 安装wgcf-warp双栈IPV4+IPV6"
-green "  4. 显示warp代理节点的配置文件与二维码(Wireguard协议)"
-white " -----------------------------------------------------------------"     
-green "  5. warp刷刷刷选项：warp+流量"
-green "  6. warp三类账户升级/切换(warp/warp+/warp+Teams)"
-green "  7. warp关闭、开启、卸载"
-green "  8. 更新CFwarp脚本" 
+green "  1. 安装/切换wgcf-warp（必选）" 
+green "  2. warp关闭、开启、卸载"
+green "  3. warp刷刷刷选项：warp+流量……"
+green "  4. warp三类账户升级/切换(warp/warp+/warp+Teams)"
+green "  5. 更新CFwarp脚本" 
 green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
@@ -694,14 +709,11 @@ IP_Status_menu
 echo
 readp " 请输入数字:" Input
 case "$Input" in     
- 1 ) WGCFv4;;
- 2 ) WGCFv6;;
- 3 ) WGCFv4v6;;
- 4 ) WGproxy;;
- 5 ) warprefresh;;
- 6 ) WARPup;;
- 7 ) WARPOC;;
- 8 ) UPwpyg;;
+ 1 ) warpinscha;;
+ 2 ) WARPOC;;
+ 3 ) warprefresh;;
+ 4 ) WARPup;;
+ 5 ) UPwpyg;;
  * ) exit 
 esac
 }
