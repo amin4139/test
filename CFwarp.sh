@@ -654,6 +654,7 @@ green "CFwarp安装脚本升级成功"
 
 warpinscha(){
 yellow "提示：VPS的本地出站IP将被你选择的warp IP所接管，如VPS本地无该出站IP，则另外生成warp IP并接管"
+yellow "如果你什么都不懂，回车便是！！！"
 echo
 green "1. 安装/切换wgcf-warp单栈IPV4（回车默认）"
 green "2. 安装/切换wgcf-warp单栈IPV6"
