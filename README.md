@@ -1,5 +1,4 @@
-
-脚本相关说明请查看[甬哥博客](https://ygkkk.blogspot.com/2022/03/githubacmeshipstandalonedns.html)
+脚本相关说明请查看[甬哥博客](https://ygkkk.blogspot.com/2022/09/gitlabcfwarpwarpwarp.html)
 
 ------------------------------------------------------------------------------------------------------------------------------
 
