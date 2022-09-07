@@ -617,7 +617,7 @@ sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.co
 
 WARPun(){
 wj="rm -rf /usr/local/bin/wgcf /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go wgcf-account.toml wgcf-profile.conf"
-cron1="rm -rf CFwarp.sh screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh /usr/bin/cf"
+cron1="rm -rf CFwarp.sh screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh nf /usr/bin/cf"
 cron2(){
 sed -i '/check.sh/d' /etc/crontab ; sed -i '/WARP-CR.sh/d' /etc/crontab ; sed -i '/WARP-CP.sh/d' /etc/crontab ; sed -i '/WARP-UP.sh/d' /etc/crontab
 }
@@ -656,7 +656,7 @@ green "CFwarp安装脚本升级成功"
 }
 
 warpinscha(){
-yellow "提示：VPS的本地出站IP将被你选择的warp IP所接管，如VPS本地无该出站IP，则另外生成warp IP并接管"
+yellow "提示：VPS的本地出站IP将被你选择的warp IP所接管，如VPS本地无该出站IP，则另外生成并接管warp IP"
 yellow "如果你什么都不懂，回车便是！！！"
 echo
 green "1. 安装/切换wgcf-warp单栈IPV4（回车默认）"
@@ -692,7 +692,7 @@ white " 甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换wgcf-warp（必选）" 
+green "  1. 安装/切换wgcf-warp" 
 green "  2. warp关闭、开启、卸载"
 green "  3. warp刷刷刷选项：warp+流量……"
 green "  4. warp三类账户升级/切换(warp/warp+/warp+Teams)"
