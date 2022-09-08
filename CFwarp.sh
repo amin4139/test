@@ -704,7 +704,7 @@ if [ "${wpygV}" = "${remoteV}" ]; then
 green " 当前CFwarp脚本版本号：${wpygV} 重置版第一版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择8进行更新\n"
+yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择5进行更新\n"
 fi
 fi
 white " VPS系统信息如下："
