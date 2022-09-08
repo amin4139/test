@@ -656,7 +656,7 @@ green "CFwarp安装脚本升级成功"
 }
 
 warpinscha(){
-yellow "提示：VPS的本地出站IP将被你选择的warp的IP所接管，如VPS本地无该出站IP，则另外生成并接管warp的IP"
+yellow "提示：VPS的本地出站IP将被你选择的warp的IP所接管，如VPS本地无该出站IP，则被另外生成warp的IP所接管"
 echo
 yellow "如果你什么都不懂，回车便是！！！"
 echo
