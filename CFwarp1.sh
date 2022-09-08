@@ -212,7 +212,7 @@ readp "1. 使用IPV4端点 (支持v4或v6+v4网络环境，回车默认)\n2. 使
 if [ -z "${IPet}" ] || [ $IPet == "1" ];then
 endip=162.159.193.10
 elif [ $IPet == "2" ];then
-endip=[2606:4700:100::a29f:c101]
+endip=[2606:4700:d0::a29f:8964]
 else 
 red "输入错误，请重新选择" && WGproxy
 fi
@@ -383,6 +383,9 @@ checkwgcf
 done
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
+yellow "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
+cwg
+green "卸载Wgcf-WARP组件完成"
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
@@ -614,7 +617,7 @@ sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.co
 
 WARPun(){
 wj="rm -rf /usr/local/bin/wgcf /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go wgcf-account.toml wgcf-profile.conf"
-cron1="rm -rf CFwarp.sh screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh /usr/bin/cf"
+cron1="rm -rf CFwarp.sh screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh nf /usr/bin/cf"
 cron2(){
 sed -i '/check.sh/d' /etc/crontab ; sed -i '/WARP-CR.sh/d' /etc/crontab ; sed -i '/WARP-CP.sh/d' /etc/crontab ; sed -i '/WARP-UP.sh/d' /etc/crontab
 }
@@ -653,7 +656,9 @@ green "CFwarp安装脚本升级成功"
 }
 
 warpinscha(){
-yellow "提示：VPS的出站IP将被你选择的warp IP所接管，如VPS无该出站IP，则另外生成"
+yellow "提示：VPS的本地出站IP将被你选择的warp的IP所接管，如VPS本地无该出站IP，则另外生成并接管warp的IP"
+echo
+yellow "如果你什么都不懂，回车便是！！！"
 echo
 green "1. 安装/切换wgcf-warp单栈IPV4（回车默认）"
 green "2. 安装/切换wgcf-warp单栈IPV6"
@@ -688,11 +693,13 @@ white " 甬哥YouTube频道 ：www.youtube.com/c/甬哥侃侃侃kkkyg"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换wgcf-warp（必选）" 
+green "  1. 安装/切换wgcf-warp" 
 green "  2. warp关闭、开启、卸载"
-green "  3. warp刷刷刷选项：warp+流量……"
-green "  4. warp三类账户升级/切换(warp/warp+/warp+Teams)"
-green "  5. 更新CFwarp脚本" 
+green "  3. 显示wgcf-warp代理节点的配置文件、二维码（WireGuard协议）"
+white " -----------------------------------------------------------------"
+green "  4. warp刷刷刷选项：warp+流量……"
+green "  5. warp三类账户升级/切换(warp/warp+/warp Teams)"
+green "  6. 更新CFwarp脚本" 
 green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
@@ -700,7 +707,7 @@ if [ "${wpygV}" = "${remoteV}" ]; then
 green " 当前CFwarp脚本版本号：${wpygV} 重置版第一版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择8进行更新\n"
+yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择6进行更新\n"
 fi
 fi
 white " VPS系统信息如下："
@@ -711,9 +718,10 @@ readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
  2 ) WARPOC;;
- 3 ) warprefresh;;
- 4 ) WARPup;;
- 5 ) UPwpyg;;
+ 3 ) WGproxy;;
+ 4 ) warprefresh;;
+ 5 ) WARPup;;
+ 6 ) UPwpyg;;
  * ) exit 
 esac
 }
