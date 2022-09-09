@@ -250,7 +250,7 @@ if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
-ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && WGCFins
+ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && ABC4=$c3 && WGCFins
 fi
 if [[ -n $v6 && -z $v4 ]]; then
 green "当前原生v6单栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
@@ -266,7 +266,7 @@ wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
-conf && ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && ABC
+conf && ABC1=$c5 && ABC2=$c2 && ABC3=$ud4 && ABC4=$c3 && ABC
 fi
 if [[ -n $v6 && -z $v4 ]]; then
 green "当前原生v6单栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
@@ -287,7 +287,7 @@ if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式" && sleep 2
-ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && WGCFins
+ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && ABC4=$c3 && WGCFins
 fi
 if [[ -n $v6 && -z $v4 ]]; then
 green "当前原生v6单栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式(无IPV4！！！)" && sleep 2
@@ -302,7 +302,7 @@ wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式" && sleep 2
-conf && ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && ABC
+conf && ABC1=$c5 && ABC2=$c1 && ABC3=$ud6 && ABC4=$c3 && ABC
 fi
 if [[ -n $v6 && -z $v4 ]]; then
 green "当前原生v6单栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式(无IPV4！！！)" && sleep 2
@@ -323,7 +323,7 @@ if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
-STOPwgcf ; ABC1=$c5 && ABC2=$ud4ud6 && WGCFins
+STOPwgcf ; ABC1=$c5 && ABC2=$ud4ud6 && ABC3=$c3 && WGCFins
 fi
 if [[ -n $v6 && -z $v4 ]]; then
 green "当前原生v6单栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
@@ -338,7 +338,7 @@ wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
 if [[ -n $v4 && -n $v6 ]]; then
 green "当前原生v4+v6双栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
-STOPwgcf ; conf && ABC1=$c5 && ABC2=$ud4ud6 && ABC
+STOPwgcf ; conf && ABC1=$c5 && ABC2=$ud4ud6 && ABC3=$c3 && ABC
 fi
 if [[ -n $v6 && -z $v4 ]]; then
 green "当前原生v6单栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
