@@ -99,8 +99,8 @@ c5="sed -i 's/1.1.1.1/8.8.8.8,2001:4860:4860::8888/g' /etc/wireguard/wgcf.conf"
 c6="sed -i 's/1.1.1.1/2001:4860:4860::8888,8.8.8.8/g' /etc/wireguard/wgcf.conf"
 
 v4v6(){
-v6=$(curl -s6m6 https://ip.gs -k)
-v4=$(curl -s4m6 https://ip.gs -k)
+v6=$(curl -s6m5 ip.p3terx.com -k | sed -n "1p")
+v4=$(curl -s4m5 ip.p3terx.com -k | sed -n "1p")
 }
 
 checkwgcf(){
