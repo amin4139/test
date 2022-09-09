@@ -210,9 +210,9 @@ blue "\nWireguard客户端相关设置说明请关注甬哥博客"
 green "\n根据网络环境，选择Wireguard代理节点的Endpoint端点"
 readp "1. 使用IPV4端点 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6端点 (仅支持v6+v4网络环境)\n请选择：" IPet
 if [ -z "${IPet}" ] || [ $IPet == "1" ];then
-endip=162.159.193.10
+endip=162.159.195.10
 elif [ $IPet == "2" ];then
-endip=[2606:4700:d0::a29f:8964]
+endip=[2606:4700:d1::a29f:8964]
 else 
 red "输入错误，请重新选择" && WGproxy
 fi
