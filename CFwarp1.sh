@@ -213,8 +213,8 @@ ShowWGCF && WGCFmenu
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
 blue "\nWireguard客户端相关设置说明请关注甬哥博客"
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint端点"
-readp "1. 使用IPV4端点 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6端点 (仅支持v6+v4网络环境)\n请选择：" IPet
+green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址"
+readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
 if [ -z "${IPet}" ] || [ $IPet == "1" ];then
 endip=162.159.193.10
 elif [ $IPet == "2" ];then
