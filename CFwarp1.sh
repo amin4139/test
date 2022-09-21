@@ -240,7 +240,7 @@ cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 }
 
 nat4(){
-[[ -n $(ip route get 162.159.192.1 | grep -oP 'src \K\S+') ]] && ABC4=$ud4 || ABC4=echo
+[[ -n $(ip route get 162.159.192.1 2>/dev/null | grep -oP 'src \K\S+') ]] && ABC4=$ud4 || ABC4=echo
 }
 
 WGCFv4(){
