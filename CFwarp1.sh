@@ -120,11 +120,11 @@ if [[ -n $v4 ]]; then
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 case ${wgcfv4} in 
 plus) 
-WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4 （$(./nf | awk '{print $1}' | sed -n '4p')）" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')");;  
+WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $(./nf | awk '{print $1}' | sed -n '4p')" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')");;  
 on) 
-WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4 （$(./nf | awk '{print $1}' | sed -n '4p')）" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')");;
+WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $(./nf | awk '{print $1}' | sed -n '4p')" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')");;
 off) 
-WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4 （$(./nf | awk '{print $1}' | sed -n '4p')）" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')");; 
+WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $(./nf | awk '{print $1}' | sed -n '4p')" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')");; 
 esac 
 else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
@@ -133,11 +133,11 @@ if [[ -n $v6 ]]; then
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 case ${wgcfv6} in 
 plus) 
-WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6 （$(./nf | awk '{print $1}' | sed -n '8p')）" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')");;  
+WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $(./nf | awk '{print $1}' | sed -n '8p')" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')");;  
 on) 
-WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6 （$(./nf | awk '{print $1}' | sed -n '8p')）" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')");;
+WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $(./nf | awk '{print $1}' | sed -n '8p')" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')");;
 off) 
-WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6 （$(./nf | awk '{print $1}' | sed -n '8p')）" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')");;
+WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $(./nf | awk '{print $1}' | sed -n '8p')" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')");;
 esac 
 else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
