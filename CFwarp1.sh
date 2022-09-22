@@ -135,8 +135,6 @@ else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
-UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
-v4v6
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 nonf=$(curl -s --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
 sunf=$(./nf | awk '{print $1}' | sed -n '8p')
