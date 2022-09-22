@@ -118,7 +118,7 @@ if [[ -n $v4 ]]; then
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f12 -d"," | cut -f4 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
-[[ -n $isp4a ]] && isp4=$isp6a || isp4=$isp4b
+[[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
 nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
 sunf=$(./nf | awk '{print $1}' | sed -n '4p')
 snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
