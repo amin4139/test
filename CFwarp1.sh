@@ -136,9 +136,16 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-nonf=$(curl -s --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
+nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
 sunf=$(./nf | awk '{print $1}' | sed -n '8p')
-[[ -n $sunf ]] && country=$sunf || country=$nonf
+snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+if [[ -n $sunf ]]; then
+country=$sunf
+elif [[ -z $sunf && -n $nonf ]]; then
+country=$nonf
+else
+country=$snnf
+fi
 case ${wgcfv6} in 
 plus) 
 WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')");;  
