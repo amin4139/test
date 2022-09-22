@@ -138,7 +138,7 @@ if [[ -n $v6 ]]; then
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
 sunf=$(./nf | awk '{print $1}' | sed -n '8p')
-snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
 if [[ -n $sunf ]]; then
 country=$sunf
 elif [[ -z $sunf && -n $nonf ]]; then
