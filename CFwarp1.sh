@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="22.9.4 V 0.2"
+wpygV="22.9.27 V 0.2"
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 red='\033[0;31m'
 bblue='\033[0;34m'
@@ -728,7 +728,7 @@ green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-green " 当前CFwarp脚本版本号：${wpygV} 重置版第一版 ，已是最新版本\n"
+green " 当前CFwarp脚本版本号：${wpygV} 重置版第二版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
 yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择6进行更新\n"
