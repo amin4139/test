@@ -672,7 +672,6 @@ UPwpyg(){
 if [[ ! $(type -P wg-quick) && ! $(type -P warp-cli) ]] && [[ ! -f '/root/CFwarp.sh' ]]; then
 red "未正常安装CFwarp脚本!" && exit
 fi
-rm -rf /root/CFwarp.sh /usr/bin/cf
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
 chmod +x /root/CFwarp.sh 
 ln -sf /root/CFwarp.sh /usr/bin/cf
