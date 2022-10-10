@@ -590,7 +590,7 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 green "已升级为wgcf-warp+账户\nwgcf-warp+账户设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')\nwgcf-warp+账户剩余流量：$flow GB"
 ShowWGCF && WGCFmenu 
 else
-red "升级失败，退出脚本" && CFwarp.sh
+red "升级失败，退出脚本" && exit
 fi;;
 3 )
 [[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp" && bash CFwarp.sh
