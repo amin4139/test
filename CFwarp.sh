@@ -244,7 +244,7 @@ fi
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
 sed -i '/PostUp/d;/PostDown/d;/AllowedIPs/d;/Endpoint/d' /etc/wireguard/wgproxy.conf
 sed -i "8a AllowedIPs = 0.0.0.0\/0\nAllowedIPs = ::\/0\n" /etc/wireguard/wgproxy.conf
-sed -i "10a Endpoint = $endip:2408" /etc/wireguard/wgproxy.conf
+sed -i "10a Endpoint = $endip:1701" /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 yellow "$(cat /etc/wireguard/wgproxy.conf)\n"
 green "当前wireguard节点二维码分享链接如下" && sleep 2
