@@ -337,7 +337,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && ABC
 fi
-CheckWARP && ShowWGCF && WGCFmenu
+CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
 
@@ -373,7 +373,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 STOPwgcf ; conf && ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && ABC
 fi
-CheckWARP && ShowWGCF && WGCFmenu
+CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
 
