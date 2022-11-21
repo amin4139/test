@@ -549,6 +549,7 @@ python3 wp-plus.py
 }
 
 WARPup(){
+[[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp" && bash CFwarp.sh
 backconf(){
 yellow "升级失败，自动恢复warp普通账户"
 sed -i "2s#.*#$(sed -ne 2p /etc/wireguard/wgcf-profile.conf)#;4s#.*#$(sed -ne 4p /etc/wireguard/wgcf-profile.conf)#" /etc/wireguard/wgcf.conf
@@ -575,7 +576,6 @@ else
 backconf
 fi;;
 2 )
-[[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp，无法升级到wgcf-warp+账户" && bash CFwarp.sh
 ShowWGCF
 [[ $wgcfv4 = plus || $wgcfv6 = plus ]] && red "当前已是Wgcf-WARP+账户，无须再升级" && bash CFwarp.sh 
 readp "请确保手机上的warp客户端已处于warp+状态，复制按键许可证秘钥(26个字符):" ID
@@ -594,7 +594,6 @@ else
 red "经IP检测，升级warp+失败，请确保密钥使用的设备不超过5个，建议更换下秘钥再尝试，脚本退出" && exit
 fi;;
 3 )
-[[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp" && bash CFwarp.sh
 checkwgcf
 if [[ $wgcfv4 = plus || $wgcfv6 = plus ]]; then
 fawgcf
@@ -607,11 +606,11 @@ esac
 }
 
 WARPonoff(){
+[[ ! $(type -P wg-quick) ]] && red "wgcf-warp未安装，无法启动或关闭，建议重新安装wgcf-warp" && bash CFwarp.sh
 ab="1.开启或者完全关闭wgcf-warp\n0.返回上一层\n 请选择："
 readp "$ab" cd
 case "$cd" in  
 1 )
-[[ ! $(type -P wg-quick) ]] && red "wgcf-warp未安装，无法启动或关闭，建议重新安装wgcf-warp" && bash CFwarp.sh
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
 yellow "当前wgcf-warp状态：已运行中，现执行:完全关闭……"
