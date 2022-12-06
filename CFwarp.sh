@@ -749,7 +749,14 @@ case "$Input" in
 esac
 }
 
+warpgo(){
+if [[ -n $(type -P warp-go) ]]; then
+red "请先卸载已安装的WARP-GO，否则无法安装当前的WGCF-WARP，脚本退出" && exit
+fi
+}
+
 if [ $# == 0 ]; then
+warpgo
 start
 start_menu
 fi
