@@ -459,7 +459,7 @@ apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 fi
-wget -N --no-check-certificate https://github.com/rkygogo/wlgadego/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
@@ -702,7 +702,7 @@ WARPun && ONEWGCFWARP
 
 WGproxy(){
 if [[ ! $(type -P warp-go) ]]; then
-wget -N --no-check-certificate https://github.com/rkygogo/wlgadego/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf
