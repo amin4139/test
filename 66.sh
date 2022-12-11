@@ -720,14 +720,14 @@ fi
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-wireguard=/usr/local/bin/wgwarp.conf
 sed -i '/Endpoint/d' /usr/local/bin/wgwarp.conf
 sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
-/usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.conf
+/usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
 green "当前Wireguard配置文件如下" && sleep 1
 yellow "$(cat /usr/local/bin/wgwarp.conf)\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
 #green "当前Sing-box出站配置文件如下" && sleep 1
-#yellow "$(cat /usr/local/bin/sbwarp.conf | python3 -mjson.tool)"
+#yellow "$(cat /usr/local/bin/sbwarp.json | python3 -mjson.tool)"
 }
 
 start_menu(){
