@@ -554,7 +554,7 @@ endpoint=$wgo4
 post=$wgo8
 elif [[ -n $v6 && -z $v4 ]]; then
 endpoint=$wgo5
-[[ -n $(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K\S+') ]] && post=$wgo8 || post=$wgo7
+[[ -n $(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K\S+') && -n $(grep 'woiden' /etc/hostname) ]] && post=$wgo8 || post=$wgo7
 elif [[ -z $v6 && -n $v4 ]]; then
 endpoint=$wgo4
 post=$wgo6
