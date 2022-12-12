@@ -554,7 +554,7 @@ endpoint=$wgo4
 post=$wgo8
 elif [[ -n $v6 && -z $v4 ]]; then
 endpoint=$wgo5
-[[ -n $(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K\S+') && -n $(grep 'woiden' /etc/hostname) ]] && post=$wgo8 || post=$wgo7
+[[ -n $(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K\S+') ]] && post=$wgo8 || post=$wgo7
 elif [[ -z $v6 && -n $v4 ]]; then
 endpoint=$wgo4
 post=$wgo6
@@ -589,7 +589,8 @@ freewarp
 fi
 
 if [[ $warpup == 2 ]]; then
-readp "请复制手机WARP客户端WARP+状态下的按键许可证秘钥 或 网络分享的秘钥（26个字符），随意输入有机率获得WARP+1G流量账户:" ID
+green "请复制手机WARP客户端WARP+状态下的按键许可证秘钥 或 网络分享的秘钥（26个字符），随意输入有机率获得1G流量WARP+账户"
+readp "请输入升级WARP+密钥" ID
 readp "设备名称重命名(直接回车随机命名): " dname
 if [[ -z $ID ]]; then
 red "未输入内容" && WARPup
