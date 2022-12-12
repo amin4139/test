@@ -312,7 +312,7 @@ fi
 }
 
 nat4(){
-[[ -n $(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K\S+') && -n $(grep 'woiden' /etc/hostname) ]] && wpgo4=$wgo6 || wpgo4=echo
+[[ -n $(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K\S+') ]] && wpgo4=$wgo6 || wpgo4=echo
 }
 
 WGCFv4(){
