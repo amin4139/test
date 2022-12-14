@@ -1,7 +1,8 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="22.12.15 V 1.0"
+wpygLOGV="22.12.15 V 1.0  重大更新"
+wpygV="22.12.15 V 1.0 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -630,8 +631,8 @@ fi
 fi
     
 if [[ $warpup == 3 ]]; then
-green "Token获取地址：https://web--public--warp-team-api--coia-mfs4.code.run/"
-readp "请输入Teams账户Token: " token
+green "Zero Trust团队Token获取地址：https://web--public--warp-team-api--coia-mfs4.code.run/"
+readp "请输入团队账户Token: " token
 i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次升级WARP Teams账户中……"
