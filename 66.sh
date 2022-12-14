@@ -3,7 +3,7 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
 wpygLOGV="22.12.15 V 1.0  重大更新"
 wpygV="22.12.15 V 1.0 "
-remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
+remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/66.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
 bblue='\033[0;34m'
