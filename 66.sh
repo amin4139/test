@@ -761,13 +761,25 @@ green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/66.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-green " 当前CFwarp脚本版本号：${wpygV} 重置版第二版 ，已是最新版本\n"
+echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第二版 ，已是最新版本\n"
 else
-green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp脚本版本号：${remoteV}"
-yellow " $(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version)"
-green " 可选择7进行更新\n"
+echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
+echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
+echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version)${plain}"
+echo -e " ${bblue}可选择7进行更新${plain}\n"
 fi
+loVERSION="$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')"
+hyVERSION="v$(curl -s https://data.jsdelivr.com/v1/package/gh/apernet/Hysteria | sed -n 4p | tr -d ',"' | awk '{print $1}')"
+if [ "${loVERSION}" = "${hyVERSION}" ]; then
+echo -e "当前 hysteria 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
+else
+echo -e "当前 hysteria 已安装内核版本号：${bblue}${loVERSION}${plain}"
+echo -e "检测到最新 hysteria 内核版本号：${yellow}${hyVERSION}${plain} ，可选择6进行更新"
+fi
+
+
+
+
 fi
 white " VPS系统信息如下："
 white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
