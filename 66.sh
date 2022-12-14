@@ -1,7 +1,6 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygLOGV="22.12.15 V 1.0  重大更新"
 wpygV="22.12.15 V 1.0 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/66.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
@@ -765,7 +764,9 @@ if [ "${wpygV}" = "${remoteV}" ]; then
 green " 当前CFwarp脚本版本号：${wpygV} 重置版第二版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择5进行更新\n"
+yellow " 检测到最新CFwarp脚本版本号：${remoteV}"
+yellow "$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version)"
+green "可选择7进行更新\n"
 fi
 fi
 white " VPS系统信息如下："
@@ -1395,7 +1396,9 @@ if [ "${wpygV}" = "${remoteV}" ]; then
 green " 当前CFwarp脚本版本号：${wpygV} 重置版第二版 ，已是最新版本\n"
 else
 green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp脚本版本号：${remoteV} ，可选择7进行更新\n"
+yellow " 检测到最新CFwarp脚本版本号：${remoteV}"
+yellow "$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version)"
+green "可选择7进行更新\n"
 fi
 fi
 white " VPS系统信息如下："
