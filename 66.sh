@@ -701,6 +701,16 @@ changewarp(){
 WARPun && ONEWGCFWARP
 }
 
+upwarpgo(){
+kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
+wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
+loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
+green " 当前 WARP-GO 已安装内核版本号：${loVERSION} ，已是最新版本"
+}
+
 WGproxy(){
 if [[ ! $(type -P warp-go) ]]; then
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
@@ -755,8 +765,9 @@ white " -----------------------------------------------------------------"
 green "  4. 关闭、开启/重启WARP"
 green "  5. WARP刷刷刷选项：WARP+流量……"
 green "  6. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
-green "  7. 更新CFwarp脚本" 
-green "  8. 卸载WARP-GO切换为WGCF-WARP内核"
+green "  7. 更新CFwarp安装脚本"
+green "  8. 更新WARP-GO内核"
+green "  9. 卸载WARP-GO切换为WGCF-WARP内核"
 green "  0. 退出脚本 "
 white " ================================================================="
 if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/66.sh' ]]; then
@@ -771,10 +782,10 @@ fi
 loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
 wgVERSION="$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpgoV)"
 if [ "${loVERSION}" = "${wgVERSION}" ]; then
-echo -e "当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
+echo -e " 当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
 else
-echo -e "当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain}"
-echo -e "检测到最新 WARP-GO 内核版本号：${yellow}${wgVERSION}${plain} ，可选择8进行更新"
+echo -e " 当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain}"
+echo -e " 检测到最新 WARP-GO 内核版本号：${yellow}${wgVERSION}${plain} ，可选择8进行更新"
 fi
 fi
 white " VPS系统信息如下："
@@ -790,7 +801,8 @@ case "$Input" in
  5 ) warprefresh;;
  6 ) WARPup;;
  7 ) UPwpyg;;
- 8 ) changewarp;;
+ 8 ) upwarpgo;;
+ 9 ) changewarp;;
  * ) exit
 esac
 }
@@ -800,11 +812,6 @@ start
 start_menu
 fi
 }
-
-
-
-
-
 
 ONEWGCFWARP(){
 ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
