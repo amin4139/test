@@ -769,7 +769,7 @@ green "  7. 更新CFwarp安装脚本"
 green "  8. 更新WARP-GO内核"
 green "  9. 卸载WARP-GO切换为WGCF-WARP内核"
 green "  0. 退出脚本 "
-white " ================================================================="
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/66.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第二版 ，已是最新版本\n"
@@ -788,6 +788,7 @@ echo -e " 当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain}
 echo -e " 检测到最新 WARP-GO 内核版本号：${yellow}${wgVERSION}${plain} ，可选择8进行更新"
 fi
 fi
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
 white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
 IP_Status_menu
@@ -1402,20 +1403,21 @@ white " -----------------------------------------------------------------"
 green "  4. 关闭、开启/重启WARP"
 green "  5. WARP刷刷刷选项：WARP+流量……"
 green "  6. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
-green "  7. 更新CFwarp脚本" 
+green "  7. 更新CFwarp安装脚本" 
 green "  8. 卸载WGCF-WARP切换为WARP-GO内核"
 green "  0. 退出脚本 "
-white " ================================================================="
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-green " 当前CFwarp脚本版本号：${wpygV} 重置版第二版 ，已是最新版本\n"
+echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第二版 ，已是最新版本\n"
 else
-green " 当前CFwarp脚本版本号：${wpygV}"
-yellow " 检测到最新CFwarp脚本版本号：${remoteV}"
-yellow " $(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version)"
-green " 可选择7进行更新\n"
+echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
+echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
+echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
+echo -e " ${bblue}可选择7进行更新${plain}\n"
 fi
 fi
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
 white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
 IP_Status_menu
