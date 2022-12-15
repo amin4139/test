@@ -76,4 +76,4 @@ warp-cli --accept-tos settings
 
 ---------------------------------------------------------------------------------------------------------
 #### 感谢P3terx，参考来源：https://github.com/P3TERX/warp.sh
-#### WARP-GO：https://gitlab.com/ProjectWARP/warp-go
+#### 感谢CoiaPrant WARP-GO源项目地址：https://gitlab.com/ProjectWARP/warp-go
