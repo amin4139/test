@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="22.12.15 V 2.9 "
+wpygV="22.12.15 V 3.0 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/66.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -765,21 +765,17 @@ echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第二
 else
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
 echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
-echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version)${plain}"
+echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
 echo -e " ${bblue}可选择7进行更新${plain}\n"
 fi
-loVERSION="$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')"
-hyVERSION="v$(curl -s https://data.jsdelivr.com/v1/package/gh/apernet/Hysteria | sed -n 4p | tr -d ',"' | awk '{print $1}')"
-if [ "${loVERSION}" = "${hyVERSION}" ]; then
-echo -e "当前 hysteria 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
+loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
+wgVERSION="$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpgoV)"
+if [ "${loVERSION}" = "${wgVERSION}" ]; then
+echo -e "当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
 else
-echo -e "当前 hysteria 已安装内核版本号：${bblue}${loVERSION}${plain}"
-echo -e "检测到最新 hysteria 内核版本号：${yellow}${hyVERSION}${plain} ，可选择6进行更新"
+echo -e "当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain}"
+echo -e "检测到最新 WARP-GO 内核版本号：${yellow}${wgVERSION}${plain} ，可选择8进行更新"
 fi
-
-
-
-
 fi
 white " VPS系统信息如下："
 white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
