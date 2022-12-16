@@ -164,6 +164,10 @@ ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
+uncf(){
+rm -rf /root/CFwarp.sh /usr/bin/cf
+}
+
 ShowWGCF(){
 UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 v4v6
@@ -796,7 +800,7 @@ echo
 readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
- 2 ) WARPun;;
+ 2 ) WARPun && uncf ;;
  3 ) WGproxy;;
  4 ) WARPonoff;;
  5 ) warprefresh;;
@@ -1317,7 +1321,7 @@ sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.co
 
 WARPun(){
 wj="rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf"
-cron1="rm -rf CFwarp.sh screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh /usr/bin/cf"
+cron1="rm -rf screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh"
 cron2(){
 sed -i '/check.sh/d' /etc/crontab ; sed -i '/WARP-CR.sh/d' /etc/crontab ; sed -i '/WARP-CP.sh/d' /etc/crontab ; sed -i '/WARP-UP.sh/d' /etc/crontab
 }
@@ -1425,7 +1429,7 @@ echo
 readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
- 2 ) WARPun;;
+ 2 ) WARPun && uncf;;
  3 ) WGproxy;;
  4 ) WARPonoff;;
  5 ) warprefresh;;
