@@ -143,6 +143,10 @@ sleep 6s
 fi
 }
 
+uncf(){
+rm -rf /root/CFwarp.sh /usr/bin/cf
+}
+
 ONEWARPGO(){
 STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
@@ -162,10 +166,6 @@ if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) ]]; then
 chmod +x /root/CFwarp.sh 
 ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
-}
-
-uncf(){
-rm -rf /root/CFwarp.sh /usr/bin/cf
 }
 
 ShowWGCF(){
