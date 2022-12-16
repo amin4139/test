@@ -247,7 +247,8 @@ systemctl enable warp-go
 systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
-green "恭喜！warp的IP获取成功！" && dns && break
+green "恭喜！warp的IP获取成功！" && dns
+break
 else
 red "遗憾！warp的IP获取失败"
 fi
