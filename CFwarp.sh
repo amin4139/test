@@ -246,7 +246,11 @@ systemctl restart warp-go
 systemctl enable warp-go
 systemctl start warp-go
 checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp的IP获取成功！" && dns && break || red "遗憾！warp的IP获取失败"
+if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
+green "恭喜！warp的IP获取成功！" && dns && break
+else
+red "遗憾！warp的IP获取失败"
+fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
