@@ -144,7 +144,7 @@ fi
 }
 
 uncf(){
-rm -rf /root/CFwarp.sh /usr/bin/cf
+rm -rf /root/CFwarp.sh nf /usr/bin/cf
 }
 
 ONEWARPGO(){
