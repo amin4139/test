@@ -151,7 +151,7 @@ ONEWARPGO(){
 STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的WARP安装方案" 
-systemctl restart warp-go ; bash CFwarp.sh
+service warp-go restart ; bash CFwarp.sh
 fi
 }
 
@@ -242,9 +242,9 @@ i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次获取warp的IP中……"
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
 green "恭喜！warp的IP获取成功！" && dns
@@ -264,7 +264,7 @@ yellow "1、强烈建议使用官方源升级系统及内核加速！如已使�
 yellow "2、部分VPS系统极度精简，相关依赖需自行安装后再尝试"
 exit
 else 
-green "ok" && systemctl restart warp-go
+green "ok" && service warp-go restart
 fi
 xyz(){
 att
@@ -489,12 +489,12 @@ WantedBy=multi-user.target
 EOF
 ABC
 systemctl daemon-reload
-systemctl enable warp-go
-systemctl start warp-go
+chkconfig warp-go on 
+service warp-go start
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
 green "恭喜！warp的IP获取成功！" && dns
@@ -582,9 +582,9 @@ sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 CheckWARP && ShowWGCF && WGCFmenu
 }
 
@@ -617,9 +617,9 @@ sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 checkwgcf
 if [[ $wgcfv4 = plus || $wgcfv6 = plus ]]; then
 rm -rf /usr/local/bin/warp.conf.bak /usr/local/bin/warpplus.log
@@ -648,9 +648,9 @@ yellow "共执行5次，第$i次升级WARP Teams账户中……"
 sed -i "2s#.*#$(sed -ne 2p /usr/local/bin/warp.conf.bak)#;3s#.*#$(sed -ne 3p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 sed -i "4s#.*#$(sed -ne 4p /usr/local/bin/warp.conf.bak)#;5s#.*#$(sed -ne 5p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 checkwgcf
 if [[ $wgcfv4 = plus || $wgcfv6 = plus ]]; then
 rm -rf /usr/local/bin/warp.conf.bak /usr/local/bin/warpplus.log
@@ -670,15 +670,15 @@ WARPonoff(){
 readp "1. 关闭WARP功能\n2. 开启/重启WARP功能\n0. 返回上一层\n 请选择：" unwp
 if [ $unwp == "1" ]; then
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl disable warp-go
+chkconfig warp-go off
 checkwgcf 
 [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && green "关闭WARP成功" || red "关闭WARP失败"
 ShowWGCF && WGCFmenu
 elif [ $unwp == "2" ]; then
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 checkwgcf 
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "开启WARP成功" || red "开启WARP失败"
 ShowWGCF && WGCFmenu
@@ -688,7 +688,7 @@ fi
 }
 
 WARPun(){
-systemctl disable warp-go >/dev/null 2>&1
+chkconfig warp-go off >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
@@ -713,9 +713,9 @@ WARPun && ONEWGCFWARP
 upwarpgo(){
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
-systemctl restart warp-go
-systemctl enable warp-go
-systemctl start warp-go
+service warp-go restart
+chkconfig warp-go on 
+service warp-go start
 loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
 green " 当前 WARP-GO 已安装内核版本号：${loVERSION} ，已是最新版本"
 }
