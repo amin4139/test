@@ -488,7 +488,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ABC
-systemctl daemon-reload
+chkconfig warp-go -add
 chkconfig warp-go on 
 service warp-go start
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
