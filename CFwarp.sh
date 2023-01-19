@@ -99,6 +99,8 @@ fi
 }
 
 v4v6(){
+v4=$(curl -s4m6 ip.sb -k)
+v6=$(curl -s6m6 ip.sb -k)
 v6=$(curl -s6m6 api64.ipify.org -k)
 v4=$(curl -s4m6 api64.ipify.org -k)
 }
