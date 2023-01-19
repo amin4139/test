@@ -785,8 +785,8 @@ if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
-echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
-echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
+echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain}"
+echo -e " 检测到最新 CFwarp 脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
 echo -e " 可选择7进行更新\n"
 fi
