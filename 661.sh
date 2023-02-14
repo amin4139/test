@@ -177,7 +177,7 @@ warppflow=$((`grep -oP '"quota":\K\d+' <<< $(curl -sm4 "https://api.cloudflarecl
 flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /usr/local/bin/warpplus.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(sed -n 1p /usr/local/bin/warpplus.log)" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP不支持Chatgpt官网聊天服务' || chat='恭喜，当前IP支持Chatgpt官网聊天服务'
+[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt网页服务' || chat='恭喜，支持访问Chatgpt网页服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -194,17 +194,17 @@ country=$snnf
 fi
 case ${wgcfv4} in 
 plus) 
-WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " OpenAI官网服务支持情况：\c" ; rred "$chat");;  
+WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt服务支持情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " OpenAI官网服务支持情况：\c" ; green "$chat");;
+WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt服务支持情况：\c" ; green "$chat");;
 off) 
-WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " OpenAI官网服务支持情况：\c" ; yellow "$chat");; 
+WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt服务支持情况：\c" ; yellow "$chat");; 
 esac 
 else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP不支持Chatgpt官网聊天服务' || chat='恭喜，当前IP支持Chatgpt官网聊天服务'
+[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt网页服务' || chat='恭喜，支持访问Chatgpt网页服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -221,11 +221,11 @@ country=$snnf
 fi
 case ${wgcfv6} in 
 plus) 
-WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " OpenAI官网服务支持情况：\c" ; rred "$chat");;  
+WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt服务支持情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " OpenAI官网服务支持情况：\c" ; green "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt服务支持情况：\c" ; green "$chat");;
 off) 
-WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " OpenAI官网服务支持情况：\c" ; yellow "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt服务支持情况：\c" ; yellow "$chat");;
 esac 
 else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
@@ -845,7 +845,7 @@ warppflow=$((`grep -oP '"quota":\K\d+' <<< $(curl -sm4 "https://api.cloudflarecl
 flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /etc/wireguard/wgcf+p.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP不支持Chatgpt官网聊天服务' || chat='恭喜，当前IP支持Chatgpt官网聊天服务'
+[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt网页服务' || chat='恭喜，支持访问Chatgpt网页服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -862,17 +862,17 @@ country=$snnf
 fi
 case ${wgcfv4} in 
 plus) 
-WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " OpenAI官网服务支持情况：\c" ; rred "$chat");;  
+WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt服务支持情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " OpenAI官网服务支持情况：\c" ; green "$chat");;
+WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt服务支持情况：\c" ; green "$chat");;
 off) 
-WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " OpenAI官网服务支持情况：\c" ; yellow "$chat");; 
+WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt服务支持情况：\c" ; yellow "$chat");; 
 esac 
 else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP不支持Chatgpt官网聊天服务' || chat='恭喜，当前IP支持Chatgpt官网聊天服务'
+[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt网页服务' || chat='恭喜，支持访问Chatgpt网页服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -889,11 +889,11 @@ country=$snnf
 fi
 case ${wgcfv6} in 
 plus) 
-WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " OpenAI官网服务支持情况：\c" ; rred "$chat");;  
+WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt服务支持情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " OpenAI官网服务支持情况：\c" ; green "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt服务支持情况：\c" ; green "$chat");;
 off) 
-WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " OpenAI官网服务支持情况：\c" ; yellow "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt服务支持情况：\c" ; yellow "$chat");;
 esac 
 else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
