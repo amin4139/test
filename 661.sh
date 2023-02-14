@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="22.12.16 V 0.3.5 "
+wpygV="23.1.19 V 0.3.6 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -19,7 +19,7 @@ rred(){ echo -e "\033[35m\033[01m$1\033[0m";}
 readtp(){ read -t5 -n26 -p "$(yellow "$1")" $2;}
 readp(){ read -p "$(yellow "$1")" $2;}
 [[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
-
+#[[ -e /etc/hosts ]] && grep -qE '^ *172.65.251.78 gitlab.com' /etc/hosts || echo -e '\n172.65.251.78 gitlab.com' >> /etc/hosts
 start(){
 yellow " 请稍等……正在扫描vps类型及参数中……"
 if [[ -f /etc/redhat-release ]]; then
@@ -99,8 +99,10 @@ fi
 }
 
 v4v6(){
-v6=$(curl -s6m6 api64.ipify.org -k)
-v4=$(curl -s4m6 api64.ipify.org -k)
+v4=$(curl -s4m6 ip.sb -k)
+v6=$(curl -s6m6 ip.sb -k)
+#v6=$(curl -s6m6 api64.ipify.org -k)
+#v4=$(curl -s4m6 api64.ipify.org -k)
 }
 
 dig9(){
@@ -151,7 +153,7 @@ ONEWARPGO(){
 STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的WARP安装方案" 
-service warp-go restart ; bash CFwarp.sh
+systemctl restart warp-go ; bash CFwarp.sh
 fi
 }
 
@@ -242,9 +244,9 @@ i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次获取warp的IP中……"
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
 green "恭喜！warp的IP获取成功！" && dns
@@ -255,7 +257,7 @@ fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
-echo
+WARPun
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
@@ -264,7 +266,7 @@ yellow "1、强烈建议使用官方源升级系统及内核加速！如已使�
 yellow "2、部分VPS系统极度精简，相关依赖需自行安装后再尝试"
 exit
 else 
-green "ok" && service warp-go restart
+green "ok" && systemctl restart warp-go
 fi
 xyz(){
 att
@@ -488,13 +490,13 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ABC
-chkconfig warp-go --add
-chkconfig warp-go on 
-service warp-go start
+systemctl daemon-reload
+systemctl enable warp-go
+systemctl start warp-go
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
 green "恭喜！warp的IP获取成功！" && dns
@@ -582,9 +584,9 @@ sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 CheckWARP && ShowWGCF && WGCFmenu
 }
 
@@ -617,9 +619,9 @@ sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 = plus || $wgcfv6 = plus ]]; then
 rm -rf /usr/local/bin/warp.conf.bak /usr/local/bin/warpplus.log
@@ -648,9 +650,9 @@ yellow "共执行5次，第$i次升级WARP Teams账户中……"
 sed -i "2s#.*#$(sed -ne 2p /usr/local/bin/warp.conf.bak)#;3s#.*#$(sed -ne 3p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 sed -i "4s#.*#$(sed -ne 4p /usr/local/bin/warp.conf.bak)#;5s#.*#$(sed -ne 5p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 = plus || $wgcfv6 = plus ]]; then
 rm -rf /usr/local/bin/warp.conf.bak /usr/local/bin/warpplus.log
@@ -670,15 +672,15 @@ WARPonoff(){
 readp "1. 关闭WARP功能\n2. 开启/重启WARP功能\n0. 返回上一层\n 请选择：" unwp
 if [ $unwp == "1" ]; then
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-chkconfig warp-go off
+systemctl disable warp-go
 checkwgcf 
 [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && green "关闭WARP成功" || red "关闭WARP失败"
 ShowWGCF && WGCFmenu
 elif [ $unwp == "2" ]; then
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 checkwgcf 
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "开启WARP成功" || red "开启WARP失败"
 ShowWGCF && WGCFmenu
@@ -688,7 +690,7 @@ fi
 }
 
 WARPun(){
-chkconfig warp-go off >/dev/null 2>&1
+systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
@@ -713,9 +715,9 @@ WARPun && ONEWGCFWARP
 upwarpgo(){
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
-service warp-go restart
-chkconfig warp-go on 
-service warp-go start
+systemctl restart warp-go
+systemctl enable warp-go
+systemctl start warp-go
 loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
 green " 当前 WARP-GO 已安装内核版本号：${loVERSION} ，已是最新版本"
 }
@@ -783,8 +785,8 @@ if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
-echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
-echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
+echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain}"
+echo -e " 检测到最新 CFwarp 脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
 echo -e " 可选择7进行更新\n"
 fi
