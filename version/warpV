@@ -1,1 +1,1 @@
-V 0.3.6 更新内容：更换IP识别api为ip.sb,修正无法识别IP的问题
+V 0.4 更新内容：加入当前IP是否支持Chatgpt官网服务的显示，安装WARP可支持Chatgpt官网服务哦！
