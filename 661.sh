@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.1.19 V 0.3.6 "
+wpygV="23.2.18 V 0.4 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -1480,7 +1480,7 @@ white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 使用 WARP-GO 安装WARP " 
+green "  1. 使用 WARP-GO 安装WARP(推荐)" 
 green "  2. 使用 WGCF    安装WARP"
 green "  0. 退出脚本"
 white " ================================================================="
