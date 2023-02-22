@@ -901,6 +901,8 @@ fi
 }
 
 
+
+
 STOPwgcf(){
 if [[ $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的wgcf-warp安装方案" 
@@ -1083,6 +1085,13 @@ white " 当前 IPV6 接管出站流量情况如下"
 white " ${WARPIPv6Status}"
 white "------------------------------------------------------------------------------------"
 }
+S5menu(){
+white "------------------------------------------------------------------------------------------------"
+white " 当前Socks5-WARP客户端本地代理127.0.0.1情况如下"
+blue " ${S5Status}"
+white "------------------------------------------------------------------------------------------------"
+}
+
 back(){
 white "------------------------------------------------------------------------------------"
 white " 回主菜单，请按任意键"
@@ -1091,7 +1100,7 @@ get_char && bash CFwarp.sh
 }
 
 IP_Status_menu(){
-WGCFmenu 
+WGCFmenu;S5menu 
 }
 
 CheckWARP(){
@@ -1395,6 +1404,44 @@ WARPun && ONEWARPGO
 }
 
 
+ShowSOCKS5(){
+if [[ $(systemctl is-active warp-svc) = active ]]; then
+mport=`warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}'`
+
+s5ip=`curl -sx socks5h://localhost:$mport ip.gs -k`
+#./nf -proxy socks5://127.0.0.1:$mport
+
+[[ $(curl -sx socks5h://localhost:$mport https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
+
+isp4a=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
+isp4b=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
+[[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
+nonf=$(curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
+sunf=$(./nf | awk '{print $1}' | sed -n '4p')
+snnf=$(curl -sx socks5h://localhost:$mport ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
+if [[ -n $sunf ]]; then
+country=$sunf
+elif [[ -z $sunf && -n $nonf ]]; then
+country=$nonf
+else
+country=$snnf
+fi
+
+
+
+socks5=$(curl -sx socks5h://localhost:$mport www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2) 
+case ${socks5} in 
+plus) 
+S5Status=$(white "Socks5 WARP+状态：\c" ; rred "运行中，WARP+普通账户(剩余WARP+流量:$((`warp-cli --accept-tos account | grep Quota | awk '{ print $(NF) }'`/1000000000))GiB)" ; white " Socks5 端口：\c" ; rred "$mport" ; white " [ Cloudflare服务商 ]获取IPV4：\c" ; rred "$s5ip" ; white " IPV4 奈飞NF解锁情况：\c" ; rred "$NF  \c" ; white " IPV4 所在地区：\c" ; rred "$country");;  
+on) 
+S5Status=$(white "Socks5 WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " Socks5 端口：\c" ; green "$mport" ; white " [ Cloudflare服务商 ]获取IPV4：\c" ; green "$s5ip" ; white " IPV4 奈飞NF解锁情况：\c" ; green "$NF  \c"; white " IPV4 所在地区：\c" ; green "$country");;  
+*) 
+S5Status=$(white "Socks5 WARP状态：\c" ; yellow "已安装Socks5-WARP客户端，但端口处于关闭状态")
+esac 
+else
+S5Status=$(white "Socks5 WARP状态：\c" ; red "未安装Socks5-WARP客户端")
+fi
+}
 
 
 SOCKS5ins(){
@@ -1402,7 +1449,7 @@ yellow "检测Socks5-WARP安装环境中……"
 if [[ $release = Centos ]]; then
 [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本号：Centos $vsid \nSocks5-WARP仅支持Centos 8 " && bash CFwarp.sh 
 elif [[ $release = Ubuntu ]]; then
-[[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04/22.04系统 " && bash CFwarp.sh 
 elif [[ $release = Debian ]]; then
 [[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
 fi
@@ -1416,16 +1463,16 @@ red "纯IPV6的VPS目前不支持安装Socks5-WARP" && bash CFwarp.sh
 elif [[ -n $v4 && -z $v6 ]]; then
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
-[[ $wgcfv4 =~ on|plus ]] && red "纯IPV4的VPS已安装Wgcf-WARP-IPV4(选项1或者选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
+[[ $wgcfv4 =~ on|plus ]] && red "纯IPV4的VPS已安装Wgcf-WARP-IPV4，不支持安装Socks5-WARP" && bash CFwarp.sh
 elif [[ -n $v4 && -n $v6 ]]; then
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && red "原生双栈VPS已安装Wgcf-WARP-IPV4/IPV6(选项1或选项2)，请先卸载。然后安装Socks5-WARP，最后安装Wgcf-WARP-IPV4/IPV6" && bash CFwarp.sh
+[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && red "原生双栈VPS已安装Wgcf-WARP-IPV4/IPV6，请先卸载。然后安装Socks5-WARP，最后安装Wgcf-WARP-IPV4/IPV6" && bash CFwarp.sh
 fi
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]]; then
-red "已安装Wgcf-WARP-IPV4+IPV6(选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
+red "已安装Wgcf-WARP-IPV4+IPV6，不支持安装Socks5-WARP" && bash CFwarp.sh
 fi
 
 if [[ $release = Centos ]]; then 
@@ -1454,10 +1501,7 @@ warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
 sleep 2 && ShowSOCKS5
-[[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
-[[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
-[[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
-S5menu && lncf && menu
+S5menu 
 }
 
 
@@ -1486,6 +1530,7 @@ white " ================================================================="
 green "  1. 安装/切换WGCF-WARP（三模式）" 
 green "  2. WARP卸载"
 green "  3. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
+[[ $cpu != AMD64 ]] && red "  66. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP(+)" || green "  66. 安装Socks5-WARP：IPV4本地Socks5代理"
 white " -----------------------------------------------------------------"
 green "  4. 关闭、开启/重启WARP"
 green "  5. WARP刷刷刷选项：WARP+流量……"
@@ -1519,6 +1564,7 @@ case "$Input" in
  6 ) WARPup;;
  7 ) UPwpyg;;
  8 ) changewarp;;
+ 66 ) SOCKS5ins
  * ) exit 
 esac
 }
