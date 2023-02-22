@@ -1394,6 +1394,78 @@ changewarp(){
 WARPun && ONEWARPGO
 }
 
+
+
+
+SOCKS5ins(){
+yellow "检测Socks5-WARP安装环境中……"
+if [[ $release = Centos ]]; then
+[[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本号：Centos $vsid \nSocks5-WARP仅支持Centos 8 " && bash CFwarp.sh 
+elif [[ $release = Ubuntu ]]; then
+[[ ! ${vsid} =~ 16|18|20 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04系统 " && bash CFwarp.sh 
+elif [[ $release = Debian ]]; then
+[[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
+fi
+[[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
+
+systemctl stop wg-quick@wgcf >/dev/null 2>&1
+v4v6
+if [[ -n $v6 && -z $v4 ]]; then
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+red "纯IPV6的VPS目前不支持安装Socks5-WARP" && bash CFwarp.sh
+elif [[ -n $v4 && -z $v6 ]]; then
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+checkwgcf
+[[ $wgcfv4 =~ on|plus ]] && red "纯IPV4的VPS已安装Wgcf-WARP-IPV4(选项1或者选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
+elif [[ -n $v4 && -n $v6 ]]; then
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+checkwgcf
+[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && red "原生双栈VPS已安装Wgcf-WARP-IPV4/IPV6(选项1或选项2)，请先卸载。然后安装Socks5-WARP，最后安装Wgcf-WARP-IPV4/IPV6" && bash CFwarp.sh
+fi
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+checkwgcf
+if [[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]]; then
+red "已安装Wgcf-WARP-IPV4+IPV6(选项3)，不支持安装Socks5-WARP" && bash CFwarp.sh
+fi
+
+if [[ $release = Centos ]]; then 
+if [[ ${vsid} =~ 8 ]]; then
+cd /etc/yum.repos.d/ && mkdir backup && mv *repo backup/ 
+curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
+sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/CentOS-*
+sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
+yum clean all && yum makecache
+fi
+yum -y install epel-release && yum -y install net-tools
+rpm -ivh https://pkg.cloudflareclient.com/cloudflare-release-el8.rpm
+yum -y install cloudflare-warp
+fi
+if [[ $release = Debian ]]; then
+[[ ! $(type -P gpg) ]] && apt update && apt install gnupg -y
+[[ ! $(apt list 2>/dev/null | grep apt-transport-https | grep installed) ]] && apt update && apt install apt-transport-https -y
+fi
+if [[ $release != Centos ]]; then 
+apt install net-tools -y
+curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
+apt update;apt install cloudflare-warp -y
+fi
+warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
+warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
+warp-cli --accept-tos enable-always-on >/dev/null 2>&1
+sleep 2 && ShowSOCKS5
+[[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
+[[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
+[[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
+S5menu && lncf && menu
+}
+
+
+
+
+
+
+
 start_menu(){
 ShowWGCF
 clear
