@@ -1564,7 +1564,7 @@ case "$Input" in
  6 ) WARPup;;
  7 ) UPwpyg;;
  8 ) changewarp;;
- 66 ) SOCKS5ins
+ 66 ) SOCKS5ins;;
  * ) exit 
 esac
 }
