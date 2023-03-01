@@ -1406,7 +1406,7 @@ WARPun && ONEWARPGO
 ShowSOCKS5(){
 if [[ $(systemctl is-active warp-svc) = active ]]; then
 mport=`warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}'`
-s5ip=`curl -sx socks5h://localhost:$mport ip.gs -k`
+s5ip=`curl -sx socks5h://localhost:$mport ip.sb -k`
 NF=$(./nf -proxy socks5h://localhost:$mport | awk '{print $1}' | sed -n '3p')
 [[ $(curl -sx socks5h://localhost:$mport https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
 isp4a=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
