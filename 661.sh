@@ -146,7 +146,17 @@ fi
 }
 
 uncf(){
+if [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -z $(type -P warp-cli) ]]; then
 rm -rf /root/CFwarp.sh nf /usr/bin/cf
+fi
+}
+
+cso(){
+warp-cli --accept-tos disconnect >/dev/null 2>&1
+warp-cli --accept-tos disable-always-on >/dev/null 2>&1
+warp-cli --accept-tos delete >/dev/null 2>&1
+[[ $release = Centos ]] && (yum autoremove cloudflare-warp -y) || (apt purge cloudflare-warp -y && rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg)
+$yumapt autoremove
 }
 
 ShowSOCKS5(){
@@ -240,9 +250,6 @@ warp-cli --accept-tos enable-always-on >/dev/null 2>&1
 sleep 2 && ShowSOCKS5
 S5menu 
 }
-
-
-
 
 ONEWARPGO(){
 STOPwgcf(){
@@ -354,7 +361,7 @@ fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
-WARPun
+cwg
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
@@ -793,7 +800,7 @@ bash CFwarp.sh
 fi
 }
 
-WARPun(){
+cwg(){
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
@@ -801,6 +808,18 @@ sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.co
 rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.conf /usr/bin/warp-go /lib/systemd/system/warp-go.service
 green "WARP已彻底卸载!" && ShowWGCF && WGCFmenu
 }
+
+WARPun(){
+ab="1.卸载warp\n2.卸载Socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
+readp "$ab" cd
+case "$cd" in
+1 ) cwg ; green "warp卸载完成" && ShowWGCF && WGCFmenu;;
+2 ) cso ; green "Socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
+3 ) cwg ; cso && green "warp与Socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+esac
+}
+
+
 
 UPwpyg(){
 if [[ ! $(type -P warp-go) && ! $(type -P warp-cli) ]] && [[ ! -f '/root/CFwarp.sh' ]]; then
@@ -873,7 +892,8 @@ white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换WARP-GO（三模式）" 
+green "  1. 安装/切换WARP-GO（三模式）"
+[[ $cpu != amd64 ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP：IPV4本地Socks5代理"
 green "  2. 卸载WARP"
 green "  3. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
 white " -----------------------------------------------------------------"
@@ -911,14 +931,15 @@ echo
 readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
- 2 ) WARPun && uncf ;;
- 3 ) WGproxy;;
- 4 ) WARPonoff;;
- 5 ) warprefresh;;
- 6 ) WARPup;;
- 7 ) UPwpyg;;
- 8 ) upwarpgo;;
- 9 ) changewarp;;
+ 2 ) [[ $cpu = amd64 ]] && SOCKS5ins || bash CFwarp.sh;;
+ 3 ) WARPun && uncf ;;
+ 4 ) WGproxy;;
+ 5 ) WARPonoff;;
+ 6 ) warprefresh;;
+ 7 ) WARPup;;
+ 8 ) UPwpyg;;
+ 9 ) upwarpgo;;
+ 10 ) changewarp;;
  * ) exit
 esac
 }
@@ -1001,9 +1022,6 @@ else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
 fi 
 }
-
-
-
 
 STOPwgcf(){
 if [[ $(type -P warp-cli) ]]; then
@@ -1441,14 +1459,6 @@ dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
 }
 
-cso(){
-warp-cli --accept-tos disconnect >/dev/null 2>&1
-warp-cli --accept-tos disable-always-on >/dev/null 2>&1
-warp-cli --accept-tos delete >/dev/null 2>&1
-[[ $release = Centos ]] && (yum autoremove cloudflare-warp -y) || (apt purge cloudflare-warp -y && rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg)
-$yumapt autoremove
-}
-
 WARPun(){
 wj="rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf"
 ab="1.卸载warp\n2.卸载Socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
@@ -1513,15 +1523,15 @@ green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 安装/切换WGCF-WARP（三模式）"
-[[ $cpu != amd64 ]] && red "  s. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP(+)" || green "  s. 安装Socks5-WARP：IPV4本地Socks5代理"
-green "  2. WARP卸载"
-green "  3. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
+[[ $cpu != amd64 ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP：IPV4本地Socks5代理"
+green "  3. WARP卸载"
+green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
 white " -----------------------------------------------------------------"
-green "  4. 关闭、开启/重启WARP"
-green "  5. WARP刷刷刷选项：WARP+流量……"
-green "  6. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
-green "  7. 更新CFwarp安装脚本" 
-green "  8. 卸载WGCF-WARP切换为WARP-GO内核"
+green "  5. 关闭、开启/重启WARP"
+green "  6. WARP刷刷刷选项：WARP+流量……"
+green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
+green "  8. 更新CFwarp安装脚本" 
+green "  9. 卸载WGCF-WARP切换为WARP-GO内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
@@ -1542,14 +1552,14 @@ echo
 readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
- 2 ) WARPun && uncf;;
- 3 ) WGproxy;;
- 4 ) WARPonoff;;
- 5 ) warprefresh;;
- 6 ) WARPup;;
- 7 ) UPwpyg;;
- 8 ) changewarp;;
- s ) SOCKS5ins;;
+ 2 ) [[ $cpu = amd64 ]] && SOCKS5ins || bash CFwarp.sh;;
+ 3 ) WARPun && uncf;;
+ 4 ) WGproxy;;
+ 5 ) WARPonoff;;
+ 6 ) warprefresh;;
+ 7 ) WARPup;;
+ 8 ) UPwpyg;;
+ 9 ) changewarp;;
  * ) exit 
 esac
 }
