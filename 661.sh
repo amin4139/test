@@ -1596,9 +1596,15 @@ esac
 }
 if [ $# == 0 ]; then
 start
-if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+if [[ -n $(type -P warp-go) ]] && [[ -f '/root/661.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P wg-quick) || -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+ONEWARPGO
+elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+ONEWARPGO
+elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/661.sh' ]]; then
+ONEWGCFWARP
+elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
 ONEWGCFWARP
 else
 startCFwarp
