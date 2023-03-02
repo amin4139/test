@@ -1331,7 +1331,7 @@ fi
 }
 
 cwg(){
-screen -S up -X quit ; rm -rf WARP-UP.sh ; sed -i '/WARP-UP.sh/d' /etc/crontab
+#screen -S up -X quit ; rm -rf WARP-UP.sh ; sed -i '/WARP-UP.sh/d' /etc/crontab
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt autoremove wireguard-tools
@@ -1339,32 +1339,28 @@ dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
 }
 
-WARPun(){
-wj="rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf"
-cron1="rm -rf screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh"
-cron2(){
-sed -i '/check.sh/d' /etc/crontab ; sed -i '/WARP-CR.sh/d' /etc/crontab ; sed -i '/WARP-CP.sh/d' /etc/crontab ; sed -i '/WARP-UP.sh/d' /etc/crontab
-}
-cron3(){
-screen -S up -X quit;screen -S aw -X quit;screen -S cr -X quit;screen -S cp -X quit
-}
-ab="1.彻底卸载并清除warp脚本及相关进程文件\n0.返回上一层\n 请选择："
-readp "$ab" cd
-case "$cd" in     
-# 1 ) [[ $(type -P wg-quick) ]] && (cwg ; $wj ; green "Wgcf-WARP(+)卸载完成" && ShowWGCF && WGCFmenu && back) || (yellow "并未安装Wgcf-WARP(+)，无法卸载" && bash CFwarp.sh);;
-# 2 ) [[ $(type -P warp-cli) ]] && (cso ; green "Socks5-WARP(+)卸载完成" && ShowSOCKS5 && S5menu && back) || (yellow "并未安装Socks5-WARP(+)，无法卸载" && bash CFwarp.sh);;
-1 ) [[ ! $(type -P wg-quick) && ! $(type -P warp-cli) ]] && (red "并没有安装任何的warp功能，无法卸载" && CFwarp.sh) || (cron3 ; cron2 ; $cron1 ; cwg ; $wj ; green "warp已全部卸载完成" && ShowWGCF && WGCFmenu && exit);;
-0 ) WARPOC
-esac
+cso(){
+warp-cli --accept-tos disconnect >/dev/null 2>&1
+warp-cli --accept-tos disable-always-on >/dev/null 2>&1
+warp-cli --accept-tos delete >/dev/null 2>&1
+[[ $release = Centos ]] && (yum autoremove cloudflare-warp -y) || (apt purge cloudflare-warp -y && rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg)
 }
 
-WARPOC(){
-ab="1.完全关闭或开启warp功能\n2.卸载warp功能\n0.返回上一层\n 请选择："
+WARPun(){
+wj="rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf"
+#cron1="rm -rf screen.sh check.sh WARP-CR.sh WARP-CP.sh WARP-UP.sh"
+#cron2(){
+sed -i '/check.sh/d' /etc/crontab ; sed -i '/WARP-CR.sh/d' /etc/crontab ; sed -i '/WARP-CP.sh/d' /etc/crontab ; sed -i '/WARP-UP.sh/d' /etc/crontab
+}
+#cron3(){
+screen -S up -X quit;screen -S aw -X quit;screen -S cr -X quit;screen -S cp -X quit
+}
+ab="1.卸载warp\n2.卸载Socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
 readp "$ab" cd
 case "$cd" in
-1 ) WARPonoff;;
-2 ) WARPun;;
-0 ) bash CFwarp.sh
+1 ) cwg ; $wj ; green "warp卸载完成" && ShowWGCF && WGCFmenu;;
+2 ) cso ; green "Socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
+3 ) cwg ; $wj ; cso && green "warp与Socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -1514,10 +1510,10 @@ white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换WGCF-WARP（三模式）" 
+green "  1. 安装/切换WGCF-WARP（三模式）"
+[[ $cpu != amd64 ]] && red "  s. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP(+)" || green "  s. 安装Socks5-WARP：IPV4本地Socks5代理"
 green "  2. WARP卸载"
 green "  3. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
-[[ $cpu != amd64 ]] && red "  66. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP(+)" || green "  66. 安装Socks5-WARP：IPV4本地Socks5代理"
 white " -----------------------------------------------------------------"
 green "  4. 关闭、开启/重启WARP"
 green "  5. WARP刷刷刷选项：WARP+流量……"
@@ -1551,7 +1547,7 @@ case "$Input" in
  6 ) WARPup;;
  7 ) UPwpyg;;
  8 ) changewarp;;
- 66 ) SOCKS5ins;;
+ s ) SOCKS5ins;;
  * ) exit 
 esac
 }
@@ -1601,7 +1597,7 @@ if [ $# == 0 ]; then
 start
 if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
 startCFwarp
