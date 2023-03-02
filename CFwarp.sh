@@ -472,7 +472,7 @@ apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 fi
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
@@ -716,7 +716,7 @@ WARPun && ONEWGCFWARP
 
 upwarpgo(){
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 systemctl restart warp-go
 systemctl enable warp-go
 systemctl start warp-go
@@ -726,7 +726,7 @@ green " 当前 WARP-GO 已安装内核版本号：${loVERSION} ，已是最新�
 
 WGproxy(){
 if [[ ! $(type -P warp-go) ]]; then
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.6_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf
