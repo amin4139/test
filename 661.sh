@@ -208,11 +208,15 @@ elif [[ $release = Debian ]]; then
 fi
 [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
 
-#systemctl stop wg-quick@wgcf >/dev/null 2>&1
-#v4v6
-#if [[ -n $v6 && -z $v4 ]]; then
-#systemctl start wg-quick@wgcf >/dev/null 2>&1
-#red "纯IPV6的VPS目前不支持安装Socks5-WARP" && bash CFwarp.sh
+systemctl stop wg-quick@wgcf >/dev/null 2>&1
+kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
+v4v6
+if [[ -n $v6 && -z $v4 ]]; then
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
+systemctl start warp-go >/dev/null 2>&1
+red "纯IPV6的VPS目前不支持安装Socks5-WARP" && sleep 2 && bash CFwarp.sh
 #elif [[ -n $v4 && -z $v6 ]]; then
 #systemctl start wg-quick@wgcf >/dev/null 2>&1
 #checkwgcf
@@ -221,7 +225,7 @@ fi
 #systemctl start wg-quick@wgcf >/dev/null 2>&1
 #checkwgcf
 #[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && red "原生双栈VPS已安装Wgcf-WARP-IPV4/IPV6，请先卸载。然后安装Socks5-WARP，最后安装Wgcf-WARP-IPV4/IPV6" && bash CFwarp.sh
-#fi
+fi
 #systemctl start wg-quick@wgcf >/dev/null 2>&1
 #checkwgcf
 #if [[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]]; then
