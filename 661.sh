@@ -885,7 +885,7 @@ green "  8. 更新WARP-GO内核"
 green "  9. 卸载WARP-GO切换为WGCF-WARP内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
@@ -1523,7 +1523,7 @@ green "  7. 更新CFwarp安装脚本"
 green "  8. 卸载WGCF-WARP切换为WARP-GO内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
