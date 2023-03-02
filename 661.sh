@@ -155,7 +155,12 @@ cso(){
 warp-cli --accept-tos disconnect >/dev/null 2>&1
 warp-cli --accept-tos disable-always-on >/dev/null 2>&1
 warp-cli --accept-tos delete >/dev/null 2>&1
-[[ $release = Centos ]] && (yum autoremove cloudflare-warp -y) || (apt purge cloudflare-warp -y && rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg)
+if [[ $release = Centos ]]; then
+yum autoremove cloudflare-warp -y
+else
+apt purge cloudflare-warp -y
+rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+fi
 $yumapt autoremove
 }
 
