@@ -815,16 +815,15 @@ kill -15 $(pgrep warp-go) >/dev/null 2>&1
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
 rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.conf /usr/bin/warp-go /lib/systemd/system/warp-go.service
-green "WARP已彻底卸载!" && ShowWGCF && WGCFmenu
 }
 
 WARPun(){
-ab="1.卸载warp\n2.卸载Socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
+ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
 readp "$ab" cd
 case "$cd" in
 1 ) cwg ; green "warp卸载完成" && ShowWGCF && WGCFmenu;;
-2 ) cso ; green "Socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg ; cso && green "warp与Socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+2 ) cso ; green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
+3 ) cwg ; cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -839,7 +838,7 @@ green "CFwarp安装脚本升级成功"
 }
 
 changewarp(){
-WARPun && ONEWGCFWARP
+cwg && ONEWGCFWARP
 }
 
 upwarpgo(){
@@ -1431,22 +1430,23 @@ fi
 }
 
 cwg(){
-#screen -S up -X quit ; rm -rf WARP-UP.sh ; sed -i '/WARP-UP.sh/d' /etc/crontab
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt autoremove wireguard-tools
 dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
 }
 
+
+
 WARPun(){
-wj="rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf"
-ab="1.卸载warp\n2.卸载Socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
+ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
 readp "$ab" cd
 case "$cd" in
-1 ) cwg ; $wj ; green "warp卸载完成" && ShowWGCF && WGCFmenu;;
-2 ) cso ; green "Socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg ; $wj ; cso && green "warp与Socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
+2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
+3 ) cwg && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -1482,7 +1482,7 @@ echo
 }  
 
 changewarp(){
-WARPun && ONEWARPGO
+cwg && ONEWARPGO
 }
 
 start_menu(){
