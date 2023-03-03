@@ -126,6 +126,34 @@ stty echo
 stty $SAVEDSTTY
 }
 
+mtuwarp(){
+v4v6
+yellow "开始自动设置warp的MTU最佳网络吞吐量值，以优化WARP网络！"
+MTUy=1500
+MTUc=10
+if [[ -n $v6 && -z $v4 ]]; then
+ping='ping6'
+IP1='2606:4700:4700::1111'
+IP2='2001:4860:4860::8888'
+else
+ping='ping'
+IP1='1.1.1.1'
+IP2='8.8.8.8'
+fi
+while true; do
+if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
+MTUc=1
+MTUy=$((${MTUy} + ${MTUc}))
+else
+MTUy=$((${MTUy} - ${MTUc}))
+[[ ${MTUc} = 1 ]] && break
+fi
+[[ ${MTUy} -le 1360 ]] && MTUy='1360' && break
+done
+MTU=$((${MTUy} - 80))
+green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
+}
+
 first4(){
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
@@ -615,6 +643,8 @@ until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
 done
+mtuwarp
+sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 cat > /lib/systemd/system/warp-go.service << EOF
 [Unit]
 Description=warp-go service
@@ -699,6 +729,8 @@ rm -rf /usr/local/bin/warp.conf /usr/local/bin/warp.conf.bak /usr/local/bin/warp
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf
+mtuwarp
+sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 done
 sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
@@ -857,6 +889,8 @@ wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf
+mtuwarp
+sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 done
 fi
 green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址"
@@ -1311,30 +1345,7 @@ yellow "申请warp普通账户过程中可能会多次提示：429 Too Many Requ
 echo | wgcf register --accept-tos
 done
 wgcf generate
-yellow "开始自动设置warp的MTU最佳网络吞吐量值，以优化WARP网络！"
-MTUy=1500
-MTUc=10
-if [[ -n $v6 && -z $v4 ]]; then
-ping='ping6'
-IP1='2606:4700:4700::1111'
-IP2='2001:4860:4860::8888'
-else
-ping='ping'
-IP1='1.1.1.1'
-IP2='8.8.8.8'
-fi
-while true; do
-if ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP1} >/dev/null 2>&1 || ${ping} -c1 -W1 -s$((${MTUy} - 28)) -Mdo ${IP2} >/dev/null 2>&1; then
-MTUc=1
-MTUy=$((${MTUy} + ${MTUc}))
-else
-MTUy=$((${MTUy} - ${MTUc}))
-[[ ${MTUc} = 1 ]] && break
-fi
-[[ ${MTUy} -le 1360 ]] && MTUy='1360' && break
-done
-MTU=$((${MTUy} - 80))
-green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
+mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
 cp -f wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 cp -f wgcf-account.toml /etc/wireguard/buckup-account.toml  >/dev/null 2>&1
