@@ -947,7 +947,7 @@ green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
+echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
 echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain}"
 echo -e " 检测到最新 CFwarp 脚本版本号：${yellow}${remoteV}${plain}"
