@@ -1,1 +1,1 @@
-V 0.4 更新内容：加入当前VPS的出站IP是否支持Chatgpt官网服务的显示，安装WARP可支持Chatgpt官网服务哦！
+V 0.5 更新内容：warp-go内核升级到1.0.8。加入warp-cli,也就是走socks5的warp。
