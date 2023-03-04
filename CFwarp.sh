@@ -51,13 +51,13 @@ minor=`uname -r | awk -F . '{print $2}'`
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
-cpu=amd64
-#amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
-#case "$amdv" in
-#*avx512*) cpu=amd64v4;;
-#*avx2*) cpu=amd64v3;;
-#*sse3*) cpu=amd64v2;;
-#*) cpu=amd64;;
+#cpu=amd64
+amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
+case "$amdv" in
+*avx512*) cpu=amd64v4;;
+*avx2*) cpu=amd64v3;;
+*sse3*) cpu=amd64v2;;
+*) cpu=amd64;;
 #esac
 fi
 vi=`systemd-detect-virt`
@@ -933,7 +933,7 @@ green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 安装/切换WARP-GO（三模式）"
-[[ $cpu != amd64 ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
 green "  3. 卸载WARP"
 green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
 white " -----------------------------------------------------------------"
@@ -1514,7 +1514,7 @@ green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 安装/切换WGCF-WARP（三模式）"
-[[ $cpu != amd64 ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
 green "  3. WARP卸载"
 green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
 white " -----------------------------------------------------------------"
