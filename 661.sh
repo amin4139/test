@@ -1532,7 +1532,7 @@ else
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
 echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
-echo -e " 可选择7进行更新\n"
+echo -e " 可选择8进行更新\n"
 fi
 fi
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
