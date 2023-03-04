@@ -87,6 +87,11 @@ fi
 fi
 fi
 if [[ ! -f /root/nf || ! -s /root/nf ]]; then
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+cpu=amd64
+fi
 wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
 chmod +x nf
 fi
