@@ -945,7 +945,7 @@ green "  9. 更新WARP-GO内核"
 green " 10. 卸载WARP-GO切换为WGCF-WARP内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
@@ -1525,7 +1525,7 @@ green "  8. 更新CFwarp安装脚本"
 green "  9. 卸载WGCF-WARP切换为WARP-GO内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
 else
@@ -1598,15 +1598,15 @@ esac
 }
 if [ $# == 0 ]; then
 start
-if [[ -n $(type -P warp-go) ]] && [[ -f '/root/661.sh' ]]; then
+if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
-elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
 startCFwarp
