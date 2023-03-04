@@ -952,7 +952,7 @@ else
 echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain}"
 echo -e " 检测到最新 CFwarp 脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
-echo -e " 可选择7进行更新\n"
+echo -e " 可选择8进行更新\n"
 fi
 loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
 wgVERSION="$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpgoV)"
@@ -960,7 +960,7 @@ if [ "${loVERSION}" = "${wgVERSION}" ]; then
 echo -e " 当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
 else
 echo -e " 当前 WARP-GO 已安装内核版本号：${bblue}${loVERSION}${plain}"
-echo -e " 检测到最新 WARP-GO 内核版本号：${yellow}${wgVERSION}${plain} ，可选择8进行更新"
+echo -e " 检测到最新 WARP-GO 内核版本号：${yellow}${wgVERSION}${plain} ，可选择9进行更新"
 fi
 fi
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
