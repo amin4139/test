@@ -58,7 +58,7 @@ case "$amdv" in
 *avx2*) cpu=amd64v3;;
 *sse3*) cpu=amd64v2;;
 *) cpu=amd64;;
-#esac
+esac
 fi
 vi=`systemd-detect-virt`
 if [[ $vi = openvz ]]; then
