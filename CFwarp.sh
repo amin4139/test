@@ -239,6 +239,10 @@ systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 red "纯IPV6的VPS目前不支持安装Socks5-WARP" && sleep 2 && bash CFwarp.sh
+else
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
+systemctl start warp-go >/dev/null 2>&1
 #elif [[ -n $v4 && -z $v6 ]]; then
 #systemctl start wg-quick@wgcf >/dev/null 2>&1
 #checkwgcf
