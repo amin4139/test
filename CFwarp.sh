@@ -965,7 +965,7 @@ echo
 readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
- 2 ) [[ $cpu = amd64 ]] && SOCKS5ins || bash CFwarp.sh;;
+ 2 ) [[ $cpu = amd64* ]] && SOCKS5ins || bash CFwarp.sh;;
  3 ) WARPun && uncf ;;
  4 ) WGproxy;;
  5 ) WARPonoff;;
