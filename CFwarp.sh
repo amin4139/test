@@ -48,18 +48,7 @@ op=`sys`
 version=`uname -r | awk -F "-" '{print $1}'`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-#cpu=amd64
-amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
-case "$amdv" in
-*avx512*) cpu=amd64v4;;
-*avx2*) cpu=amd64v3;;
-*sse3*) cpu=amd64v2;;
-*) cpu=amd64;;
-esac
-fi
+
 vi=`systemd-detect-virt`
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
@@ -991,6 +980,18 @@ esac
 if [ $# == 0 ]; then
 warpwgcf
 start
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+#cpu=amd64
+amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
+case "$amdv" in
+*avx512*) cpu=amd64v4;;
+*avx2*) cpu=amd64v3;;
+*sse3*) cpu=amd64v2;;
+*) cpu=amd64;;
+esac
+fi
 start_menu
 fi
 }
@@ -1569,6 +1570,11 @@ fi
 if [ $# == 0 ]; then
 warpgo
 start
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+cpu=amd64
+fi
 start_menu
 fi
 }
