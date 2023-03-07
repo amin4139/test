@@ -943,7 +943,6 @@ green "  9. 更新WARP-GO内核"
 green " 10. 卸载WARP-GO切换为WGCF-WARP内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
 echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain} 重置版第四版 ，已是最新版本\n"
 else
@@ -952,6 +951,7 @@ echo -e " 检测到最新 CFwarp 脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
 echo -e " 可选择8进行更新\n"
 fi
+if [[ $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
 wgVERSION="$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpgoV)"
 if [ "${loVERSION}" = "${wgVERSION}" ]; then
