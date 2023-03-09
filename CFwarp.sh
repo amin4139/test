@@ -89,7 +89,6 @@ fi
 [[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
-[[ ! $(type -P screen) ]] && (yellow "检测到screen未安装，升级安装中" && $yumapt update;$yumapt install screen)
 }
 
 v4v6(){
