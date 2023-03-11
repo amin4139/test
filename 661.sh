@@ -908,8 +908,8 @@ yellow "$(cat /usr/local/bin/wgwarp.conf)\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
-#green "当前Sing-box出站配置文件如下" && sleep 1
-#yellow "$(cat /usr/local/bin/sbwarp.json | python3 -mjson.tool)"
+green "当前Sing-box出站配置文件如下" && sleep 1
+yellow "$(cat /usr/local/bin/sbwarp.json | python3 -mjson.tool)"
 }
 
 start_menu(){
