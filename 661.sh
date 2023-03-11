@@ -904,7 +904,7 @@ sed -i '/Endpoint/d' /usr/local/bin/wgwarp.conf
 sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
 green "当前Wireguard配置文件如下" && sleep 1
-yellow "$(cat /usr/local/bin/wgwarp.conf)\n"
+white "$(cat /usr/local/bin/wgwarp.conf)\n"
 yellow "提示：Xray添加出站 Wireguard warp 时，原先 reserved 后三个数字[x,x,x]替换为$(grep -o '\[[^]]*\]' /usr/local/bin/sbwarp.json | awk 'NR==3')\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
