@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.2.18 V 0.4 "
+wpygV="23.3.7 V 0.8 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -48,18 +48,7 @@ op=`sys`
 version=`uname -r | awk -F "-" '{print $1}'`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-#amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
-#case "$amdv" in
-#*avx512*) cpu=amd64v4;;
-#*avx2*) cpu=amd64v3;;
-#*sse3*) cpu=amd64v2;;
-#*) cpu=amd64;;
-#esac
-fi
+
 vi=`systemd-detect-virt`
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
@@ -87,6 +76,11 @@ fi
 fi
 fi
 if [[ ! -f /root/nf || ! -s /root/nf ]]; then
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+cpu=amd64
+fi
 wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
 chmod +x nf
 fi
@@ -95,7 +89,6 @@ fi
 [[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
-[[ ! $(type -P screen) ]] && (yellow "检测到screen未安装，升级安装中" && $yumapt update;$yumapt install screen)
 }
 
 v4v6(){
@@ -166,7 +159,7 @@ fi
 
 docker(){
 if [[ -n $(ip a | grep docker) ]]; then
-red "检测到VPS已安装docker，如继续安装WARP，docker可能会失效"
+red "检测到VPS已安装docker，如继续安装WARP，docker就会失效"
 sleep 3s
 yellow "6秒后继续安装，退出安装请按Ctrl+c"
 sleep 6s
@@ -245,6 +238,10 @@ systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 red "纯IPV6的VPS目前不支持安装Socks5-WARP" && sleep 2 && bash CFwarp.sh
+else
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
+systemctl start warp-go >/dev/null 2>&1
 #elif [[ -n $v4 && -z $v6 ]]; then
 #systemctl start wg-quick@wgcf >/dev/null 2>&1
 #checkwgcf
@@ -299,7 +296,7 @@ white "-------------------------------------------------------------------------
 }
 S5menu(){
 white "------------------------------------------------------------------------------------------------"
-white " 当前Socks5-WARP客户端本地代理情况如下(不支持 纯IPV6)"
+white " 当前Socks5-WARP客户端本地代理情况如下  (不支持 纯IPV6 VPS)"
 blue " ${S5Status}"
 white "------------------------------------------------------------------------------------------------"
 }
@@ -933,7 +930,7 @@ green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 安装/切换WARP-GO（三模式）"
-[[ $cpu != amd64 ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
 green "  3. 卸载WARP"
 green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
 white " -----------------------------------------------------------------"
@@ -945,15 +942,15 @@ green "  9. 更新WARP-GO内核"
 green " 10. 卸载WARP-GO切换为WGCF-WARP内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P warp-go) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
+echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain} 重置版第四版 ，已是最新版本\n"
 else
 echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain}"
 echo -e " 检测到最新 CFwarp 脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
 echo -e " 可选择8进行更新\n"
 fi
+if [[ $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 loVERSION="$(/usr/local/bin/warp-go -v | sed -n 1p | awk '{print $1}' | awk -F"/" '{print $NF}')"
 wgVERSION="$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpgoV)"
 if [ "${loVERSION}" = "${wgVERSION}" ]; then
@@ -971,7 +968,7 @@ echo
 readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
- 2 ) [[ $cpu = amd64 ]] && SOCKS5ins || bash CFwarp.sh;;
+ 2 ) [[ $cpu = amd64* ]] && SOCKS5ins || bash CFwarp.sh;;
  3 ) WARPun && uncf ;;
  4 ) WGproxy;;
  5 ) WARPonoff;;
@@ -986,6 +983,18 @@ esac
 if [ $# == 0 ]; then
 warpwgcf
 start
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+#cpu=amd64
+amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
+case "$amdv" in
+*avx512*) cpu=amd64v4;;
+*avx2*) cpu=amd64v3;;
+*sse3*) cpu=amd64v2;;
+*) cpu=amd64;;
+esac
+fi
 start_menu
 fi
 }
@@ -1514,7 +1523,7 @@ green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 yellow " 安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 安装/切换WGCF-WARP（三模式）"
-[[ $cpu != amd64 ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
 green "  3. WARP卸载"
 green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
 white " -----------------------------------------------------------------"
@@ -1525,11 +1534,11 @@ green "  8. 更新CFwarp安装脚本"
 green "  9. 卸载WGCF-WARP切换为WARP-GO内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 if [ "${wpygV}" = "${remoteV}" ]; then
-echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain} 重置版第三版 ，已是最新版本\n"
+echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain} 重置版第四版 ，已是最新版本\n"
 else
-echo -e " 当前CFwarp脚本版本号：${bblue}${wpygV}${plain}"
+echo -e " 当前 CFwarp 脚本版本号：${bblue}${wpygV}${plain}"
 echo -e " 检测到最新CFwarp脚本版本号：${yellow}${remoteV}${plain}"
 echo -e " ${yellow}$(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/version/warpV)${plain}"
 echo -e " 可选择8进行更新\n"
@@ -1564,6 +1573,11 @@ fi
 if [ $# == 0 ]; then
 warpgo
 start
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+cpu=amd64
+fi
 start_menu
 fi
 }
@@ -1598,15 +1612,15 @@ esac
 }
 if [ $# == 0 ]; then
 start
-if [[ -n $(type -P warp-go) ]] && [[ -f '/root/661.sh' ]]; then
+if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
-elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/661.sh' ]]; then
+elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
 startCFwarp
