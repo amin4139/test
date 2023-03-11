@@ -905,11 +905,12 @@ sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
 green "当前Wireguard配置文件如下" && sleep 1
 yellow "$(cat /usr/local/bin/wgwarp.conf)\n"
+yellow "当提取Xray的出站Wireguard WARP时，请将原先reserved后[x,x,x]替换为$(grep -o '\[[^]]*\]' /usr/local/bin/sbwarp.json | awk 'NR==3')\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
-green "当前Sing-box出站配置文件如下" && sleep 1
-yellow "$(cat /usr/local/bin/sbwarp.json | python3 -m json.tool)"
+#green "当前Sing-box出站配置文件如下" && sleep 1
+#yellow "$(cat /usr/local/bin/sbwarp.json | python3 -m json.tool)"
 }
 
 start_menu(){
