@@ -635,6 +635,8 @@ fi
 }
 
 ABC(){
+search
+echo $endpoint
 echo $wpgo1 | sh
 echo $wpgo2 | sh
 echo $wpgo3 | sh
@@ -690,7 +692,6 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOF
-search
 ABC
 systemctl daemon-reload
 systemctl enable warp-go
