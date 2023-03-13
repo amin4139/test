@@ -119,6 +119,35 @@ stty echo
 stty $SAVEDSTTY
 }
 
+point(){
+checkpt(){
+bit=`uname -m`
+[[ $bit = aarch64 ]] && cpu=arm64
+if [[ $bit = x86_64 ]]; then
+cpu=amd64
+fi
+mkdir /root/warpip
+wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
+wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
+mv $cpu ip.txt warpip/
+./root/warpip/$cpu >/dev/null 2>&1
+endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+}
+wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
+checkpt
+else
+systemctl stop wg-quick@wgcf >/dev/null 2>&1
+kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
+checkpt
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
+systemctl start warp-go >/dev/null 2>&1
+fi
+}
+
 mtuwarp(){
 v4v6
 yellow "开始自动设置warp的MTU最佳网络吞吐量值，以优化WARP网络！"
@@ -395,14 +424,17 @@ WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
 fi 
 }
 
+search(){
+point
 wgo1='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0#g" /usr/local/bin/warp.conf'
 wgo2='sed -i "s#.*AllowedIPs.*#AllowedIPs = ::/0#g" /usr/local/bin/warp.conf'
 wgo3='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0,::/0#g" /usr/local/bin/warp.conf'
-wgo4='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/162.159.193.10:1701/g" /usr/local/bin/warp.conf'
+wgo4='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$endpoint/g" /usr/local/bin/warp.conf'
 wgo5='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/[2606:4700:d0::a29f:c003]:1701/g" /usr/local/bin/warp.conf'
 wgo6='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
+}
 
 CheckWARP(){
 i=0
@@ -656,6 +688,7 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOF
+search
 ABC
 systemctl daemon-reload
 systemctl enable warp-go
