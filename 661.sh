@@ -426,8 +426,8 @@ WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
 fi 
 }
 
-search(){
-point
+
+
 wgo1='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0#g" /usr/local/bin/warp.conf'
 wgo2='sed -i "s#.*AllowedIPs.*#AllowedIPs = ::/0#g" /usr/local/bin/warp.conf'
 wgo3='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0,::/0#g" /usr/local/bin/warp.conf'
@@ -436,7 +436,7 @@ wgo5='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/[260
 wgo6='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
-}
+
 
 CheckWARP(){
 i=0
@@ -526,6 +526,8 @@ nat4(){
 }
 
 WGCFv4(){
+point
+echo $endpoint
 yellow "稍等3秒，检测VPS内warp环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -563,6 +565,8 @@ fi
 }
 
 WGCFv6(){
+point
+echo $endpoint
 yellow "稍等3秒，检测VPS内warp环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -599,6 +603,8 @@ fi
 }
 
 WGCFv4v6(){
+point
+echo $endpoint
 yellow "稍等3秒，检测VPS内warp环境"
 docker && checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -635,8 +641,6 @@ fi
 }
 
 ABC(){
-search
-echo $endpoint
 echo $wpgo1 | sh
 echo $wpgo2 | sh
 echo $wpgo3 | sh
