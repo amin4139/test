@@ -130,7 +130,9 @@ mkdir /root/warpip
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 mv $cpu ip.txt warpip/
-./root/warpip/$cpu >/dev/null 2>&1
+cd /root/warpip
+./$cpu >/dev/null 2>&1
+cd
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 }
 wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
