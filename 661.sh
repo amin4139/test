@@ -136,6 +136,10 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1
 cd
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf >/dev/null 2>&1`
+powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf >/dev/null 2>&1`
+sed -i "s/$pogo/$endpoint/g" /usr/local/bin/warp.conf >/dev/null 2>&1
+sed -i "s/$powgcf/$endpoint/g" /etc/wireguard/wgcf.conf >/dev/null 2>&1
 }
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -150,7 +154,6 @@ systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 fi
 }
-
 
 mtuwarp(){
 v4v6
@@ -691,10 +694,6 @@ WantedBy=multi-user.target
 EOF
 ABC
 point
-echo $endpoint
-po1=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf`
-echo $po1
-sed -i "s/$po1/$endpoint/g" /usr/local/bin/warp.conf >/dev/null 2>&1
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -1400,10 +1399,6 @@ ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
 point
-echo $endpoint
-po1=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf`
-echo $po1
-sed -i "s/$po1/$endpoint/g" /etc/wireguard/wgcf.conf >/dev/null 2>&1
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf
 }
