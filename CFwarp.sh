@@ -127,9 +127,9 @@ stty $SAVEDSTTY
 
 point(){
 checkpt(){
-if [[ ! -f '/root/warpip/result.csv' 2>/dev/null ]]; then
+mkdir -p /root/warpip 
+if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
-mkdir -p /root/warpip
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 mv $cpu ip.txt warpip/
