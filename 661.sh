@@ -127,6 +127,7 @@ stty $SAVEDSTTY
 
 point(){
 checkpt(){
+if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 mkdir -p /root/warpip
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
@@ -135,6 +136,7 @@ mv $cpu ip.txt warpip/
 cd /root/warpip
 ./$cpu >/dev/null 2>&1
 cd
+fi
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf >/dev/null 2>&1`
 powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf >/dev/null 2>&1`
@@ -769,6 +771,7 @@ done
 sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
+point
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -804,6 +807,7 @@ yellow "共执行5次，第$i次升级WARP+账户中……"
 sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
+point
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -835,6 +839,7 @@ yellow "共执行5次，第$i次升级WARP Teams账户中……"
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf.bak --team-config "$token"
 sed -i "2s#.*#$(sed -ne 2p /usr/local/bin/warp.conf.bak)#;3s#.*#$(sed -ne 3p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 sed -i "4s#.*#$(sed -ne 4p /usr/local/bin/warp.conf.bak)#;5s#.*#$(sed -ne 5p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
+point
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
