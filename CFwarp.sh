@@ -127,7 +127,7 @@ stty $SAVEDSTTY
 
 point(){
 checkpt(){
-if [[ ! -f '/root/warpip/result.csv' ]]; then
+if [[ ! -f '/root/warpip/result.csv' 2>/dev/null ]]; then
 cpujg
 mkdir -p /root/warpip
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
