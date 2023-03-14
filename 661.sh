@@ -693,9 +693,7 @@ point
 echo $endpoint
 po1=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf`
 echo $po1
-
 sed -i "s/$po1/$endpoint/g" /usr/local/bin/warp.conf
-
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -1401,6 +1399,11 @@ cp -f wgcf-account.toml /etc/wireguard/buckup-account.toml  >/dev/null 2>&1
 ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
+point
+echo $endpoint
+po1=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf`
+echo $po1
+sed -i "s/$po1/$endpoint/g" /etc/wireguard/wgcf.conf
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf
 }
