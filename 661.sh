@@ -138,10 +138,10 @@ cd /root/warpip
 cd
 fi
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
-powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
-sed -i "s/$pogo/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
-sed -i "s/$powgcf/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
+#pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
+#powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
+sed -i "s/162.159.193.10:1701/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
+sed -i "s/162.159.193.10:2408/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
 }
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -443,6 +443,7 @@ wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 
 CheckWARP(){
+point
 i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次获取warp的IP中……"
@@ -1172,7 +1173,6 @@ echo $ABC5 | sh
 conf(){
 rm -rf /etc/wireguard/wgcf.conf
 cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
-point
 }
 
 nat4(){
@@ -1289,6 +1289,7 @@ fi
 }
 
 CheckWARP(){
+point
 i=0
 wg-quick down wgcf >/dev/null 2>&1
 while [ $i -le 4 ]; do let i++
