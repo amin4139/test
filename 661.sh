@@ -1172,6 +1172,7 @@ echo $ABC5 | sh
 conf(){
 rm -rf /etc/wireguard/wgcf.conf
 cp -f /etc/wireguard/wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
+point
 }
 
 nat4(){
