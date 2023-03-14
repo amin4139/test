@@ -1,1 +1,1 @@
-V 0.9 更新内容：一、warp-go内核升级到1.0.8，并加入自动TUM值设置。二、脚本加入warp-cli的支持,也就是走socks5的warp。三、当Xray添加出站Wireguard warp时，加入reserved参数更新提示
+V 0.9.5 更新内容：加入VPS本地自动筛选延迟最低的endpoint功能，提高安装warp（wgcf与warp-go）的成功率。
