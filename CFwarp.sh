@@ -902,7 +902,7 @@ red "未正常安装CFwarp脚本!" && exit
 fi
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
 chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
+ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
 green "CFwarp安装脚本升级成功"
 }
 
@@ -1516,7 +1516,7 @@ red "未正常安装CFwarp脚本!" && exit
 fi
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
 chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
+ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
 green "CFwarp安装脚本升级成功"
 }
 
