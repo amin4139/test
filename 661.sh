@@ -130,13 +130,23 @@ checkpt(){
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 mkdir -p /root/warpip
+v4v6
+if [[ -z $v4 ]]; then
+wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
+mv ip6.txt ip.txt
+else
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
+fi
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 mv $cpu ip.txt warpip/
 cd /root/warpip
 ./$cpu >/dev/null 2>&1
 cd
 fi
+
+grep -qoE '\[[:xdigit:]+(:[[:xdigit:]]+)?\]:[0-9]+' /usr/local/bin/warp.conf && echo y || echo n
+grep -qoE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf && echo y || echo n
+
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 sed -i "s/162.159.193.10:1701/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
 sed -i "s/162.159.193.10:2408/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
