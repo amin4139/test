@@ -48,8 +48,17 @@ op=`sys`
 version=`uname -r | awk -F "-" '{print $1}'`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
-
 vi=`systemd-detect-virt`
+cpujg(){
+bit=`uname -m`
+if [[ $bit = aarch64 ]]; then
+cpu=arm64
+elif [[ $bit = x86_64 ]]; then
+cpu=amd64
+else
+red "目前脚本不支持$bit架构" && exit
+fi
+}
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
@@ -75,12 +84,9 @@ green "TUN守护功能已启动"
 fi
 fi
 fi
+
 if [[ ! -f /root/nf || ! -s /root/nf ]]; then
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-fi
+cpujg
 wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
 chmod +x nf
 fi
@@ -117,6 +123,36 @@ dd if=/dev/tty bs=1 count=1 2> /dev/null
 stty -raw
 stty echo
 stty $SAVEDSTTY
+}
+
+point(){
+checkpt(){
+if [[ ! -f '/root/warpip/result.csv' ]]; then
+cpujg
+mkdir -p /root/warpip
+wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
+wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
+mv $cpu ip.txt warpip/
+cd /root/warpip
+./$cpu >/dev/null 2>&1
+cd
+fi
+endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+sed -i "s/162.159.193.10:1701/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
+sed -i "s/162.159.193.10:2408/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
+}
+checkwgcf
+if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
+checkpt
+else
+systemctl stop wg-quick@wgcf >/dev/null 2>&1
+kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
+checkpt
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
+systemctl start warp-go >/dev/null 2>&1
+fi
 }
 
 mtuwarp(){
@@ -405,6 +441,7 @@ wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 
 CheckWARP(){
+point
 i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次获取warp的IP中……"
@@ -657,6 +694,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ABC
+point
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -767,6 +805,7 @@ yellow "共执行5次，第$i次升级WARP+账户中……"
 sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
+point
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -798,6 +837,7 @@ yellow "共执行5次，第$i次升级WARP Teams账户中……"
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf.bak --team-config "$token"
 sed -i "2s#.*#$(sed -ne 2p /usr/local/bin/warp.conf.bak)#;3s#.*#$(sed -ne 3p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 sed -i "4s#.*#$(sed -ne 4p /usr/local/bin/warp.conf.bak)#;5s#.*#$(sed -ne 5p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
+point
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -843,7 +883,7 @@ systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.conf /usr/bin/warp-go /lib/systemd/system/warp-go.service
+rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service /root/warpip
 }
 
 WARPun(){
@@ -987,7 +1027,6 @@ start
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
-#cpu=amd64
 amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
 case "$amdv" in
 *avx512*) cpu=amd64v4;;
@@ -1247,6 +1286,7 @@ fi
 }
 
 CheckWARP(){
+point
 i=0
 wg-quick down wgcf >/dev/null 2>&1
 while [ $i -le 4 ]; do let i++
@@ -1362,6 +1402,7 @@ cp -f wgcf-account.toml /etc/wireguard/buckup-account.toml  >/dev/null 2>&1
 ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
+point
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf
 }
@@ -1456,10 +1497,8 @@ systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt autoremove wireguard-tools
 dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
+rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf /root/warpip
 }
-
-
 
 WARPun(){
 ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
@@ -1574,11 +1613,7 @@ fi
 if [ $# == 0 ]; then
 warpgo
 start
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-fi
+cpujg
 start_menu
 fi
 }
