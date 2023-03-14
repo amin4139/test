@@ -138,10 +138,10 @@ cd /root/warpip
 cd
 fi
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf >/dev/null 2>&1`
-powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf >/dev/null 2>&1`
-sed -i "s/$pogo/$endpoint/g" /usr/local/bin/warp.conf >/dev/null 2>&1
-sed -i "s/$powgcf/$endpoint/g" /etc/wireguard/wgcf.conf >/dev/null 2>&1
+pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
+powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
+sed -i "s/$pogo/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
+sed -i "s/$powgcf/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
 }
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
