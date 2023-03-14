@@ -138,8 +138,6 @@ cd /root/warpip
 cd
 fi
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-#pogo=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
-#powgcf=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
 sed -i "s/162.159.193.10:1701/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
 sed -i "s/162.159.193.10:2408/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
 }
