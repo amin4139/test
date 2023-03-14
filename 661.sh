@@ -48,8 +48,17 @@ op=`sys`
 version=`uname -r | awk -F "-" '{print $1}'`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
-
 vi=`systemd-detect-virt`
+cpujg(){
+bit=`uname -m`
+if [[ $bit = aarch64 ]]; then
+cpu=arm64
+elif [[ $bit = x86_64 ]]; then
+cpu=amd64
+else
+red "目前脚本不支持$bit架构" && exit
+fi
+}
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
@@ -75,12 +84,9 @@ green "TUN守护功能已启动"
 fi
 fi
 fi
+
 if [[ ! -f /root/nf || ! -s /root/nf ]]; then
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-fi
+cpujg
 wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
 chmod +x nf
 fi
@@ -121,11 +127,7 @@ stty $SAVEDSTTY
 
 point(){
 checkpt(){
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-fi
+cpujg
 mkdir /root/warpip
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
@@ -135,8 +137,7 @@ cd /root/warpip
 cd
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 }
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 checkpt
 else
@@ -693,7 +694,7 @@ point
 echo $endpoint
 po1=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf`
 echo $po1
-sed -i "s/$po1/$endpoint/g" /usr/local/bin/warp.conf
+sed -i "s/$po1/$endpoint/g" /usr/local/bin/warp.conf >/dev/null 2>&1
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -1024,7 +1025,6 @@ start
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
-#cpu=amd64
 amdv=$(cat /proc/cpuinfo | grep flags | head -n 1 | cut -d: -f2)
 case "$amdv" in
 *avx512*) cpu=amd64v4;;
@@ -1403,7 +1403,7 @@ point
 echo $endpoint
 po1=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf`
 echo $po1
-sed -i "s/$po1/$endpoint/g" /etc/wireguard/wgcf.conf
+sed -i "s/$po1/$endpoint/g" /etc/wireguard/wgcf.conf >/dev/null 2>&1
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf
 }
@@ -1616,11 +1616,7 @@ fi
 if [ $# == 0 ]; then
 warpgo
 start
-bit=`uname -m`
-[[ $bit = aarch64 ]] && cpu=arm64
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-fi
+cpujg
 start_menu
 fi
 }
