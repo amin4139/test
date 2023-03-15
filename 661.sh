@@ -448,7 +448,7 @@ fi
 }
 
 warpwgcf(){
-if [[ -n $(type -P wg-quick) ]]; then
+if [[ -e "/usr/local/bin/wgcf" ]]; then
 red "请先卸载已安装的WGCF-WARP，否则无法安装当前的WARP-GO，脚本退出" && exit
 fi
 }
