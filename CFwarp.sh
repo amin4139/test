@@ -20,7 +20,6 @@ readtp(){ read -t5 -n26 -p "$(yellow "$1")" $2;}
 readp(){ read -p "$(yellow "$1")" $2;}
 [[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
 #[[ -e /etc/hosts ]] && grep -qE '^ *172.65.251.78 gitlab.com' /etc/hosts || echo -e '\n172.65.251.78 gitlab.com' >> /etc/hosts
-start(){
 yellow " 请稍等……正在扫描vps类型及参数中……"
 if [[ -f /etc/redhat-release ]]; then
 release="Centos"
@@ -59,6 +58,7 @@ else
 red "目前脚本不支持$bit架构" && exit
 fi
 }
+
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
@@ -90,12 +90,12 @@ cpujg
 wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
 chmod +x nf
 fi
+
 [[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
-}
 
 v4v6(){
 v4=$(curl -s4m6 ip.sb -k)
@@ -104,44 +104,111 @@ v6=$(curl -s6m6 ip.sb -k)
 #v4=$(curl -s4m6 api64.ipify.org -k)
 }
 
-dig9(){
-if [[ -n $(grep 'DiG 9' /etc/hosts) ]]; then
-echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:5::1c\nnameserver 2a02:180:6:5::4\nnameserver 2a02:180:6:5::1e\nnameserver 2a02:180:6:5::1d" > /etc/resolv.conf
-fi
-}
-
 checkwgcf(){
 wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 
-get_char(){
-SAVEDSTTY=`stty -g`
-stty -echo
-stty cbreak
-dd if=/dev/tty bs=1 count=1 2> /dev/null
-stty -raw
-stty echo
-stty $SAVEDSTTY
-}
-
-point(){
 checkpt(){
-mkdir -p /root/warpip 
-if [[ ! -f '/root/warpip/result.csv' ]]; then
+mkdir -p /root/warpip
 cpujg
-wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
-wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
-mv $cpu ip.txt warpip/
+v4v6
+if [[ -z $v4 ]]; then
+n=0
+	iplist=100
+	while true
+	do
+		temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+	done
+	while true
+	do
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+			n=$[$n+1]
+		fi
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+			n=$[$n+1]
+		fi
+	done
+else
+	n=0
+	iplist=100
+	while true
+	do
+		temp[$n]=$(echo 162.159.192.$(($RANDOM%256)))
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo 162.159.193.$(($RANDOM%256)))
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo 162.159.195.$(($RANDOM%256)))
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+	done
+	while true
+	do
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo 162.159.192.$(($RANDOM%256)))
+			n=$[$n+1]
+		fi
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo 162.159.193.$(($RANDOM%256)))
+			n=$[$n+1]
+		fi
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo 162.159.195.$(($RANDOM%256)))
+			n=$[$n+1]
+		fi
+	done
+fi
+echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
+wget -qO /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x /root/warpip/$cpu
 cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-fi
-endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-sed -i "s/162.159.193.10:1701/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
-sed -i "s/162.159.193.10:2408/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
+export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+green "本地VPS优选的warp对端IP地址：$endpoint"
 }
+
+warpip(){
+if [[ ! -f '/root/warpip/result.csv' ]]; then
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 checkpt
@@ -154,6 +221,27 @@ systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 fi
+else
+export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+green "本地VPS优选的warp对端IP地址：$endpoint"
+fi
+}
+warpip
+
+dig9(){
+if [[ -n $(grep 'DiG 9' /etc/hosts) ]]; then
+echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:5::1c\nnameserver 2a02:180:6:5::4\nnameserver 2a02:180:6:5::1e\nnameserver 2a02:180:6:5::1d" > /etc/resolv.conf
+fi
+}
+
+get_char(){
+SAVEDSTTY=`stty -g`
+stty -echo
+stty cbreak
+dd if=/dev/tty bs=1 count=1 2> /dev/null
+stty -raw
+stty echo
+stty $SAVEDSTTY
 }
 
 mtuwarp(){
@@ -315,8 +403,10 @@ curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output 
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
 apt update;apt install cloudflare-warp -y
 fi
+warpip
 warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
+warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
 sleep 2 && ShowSOCKS5
 S5menu 
@@ -358,7 +448,7 @@ fi
 }
 
 warpwgcf(){
-if [[ -n $(type -P wg-quick) ]]; then
+if [[ -e "/usr/local/bin/wgcf" ]]; then
 red "请先卸载已安装的WGCF-WARP，否则无法安装当前的WARP-GO，脚本退出" && exit
 fi
 }
@@ -435,14 +525,13 @@ fi
 wgo1='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0#g" /usr/local/bin/warp.conf'
 wgo2='sed -i "s#.*AllowedIPs.*#AllowedIPs = ::/0#g" /usr/local/bin/warp.conf'
 wgo3='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0,::/0#g" /usr/local/bin/warp.conf'
-wgo4='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/162.159.193.10:1701/g" /usr/local/bin/warp.conf'
-wgo5='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/[2606:4700:d0::a29f:c003]:1701/g" /usr/local/bin/warp.conf'
+wgo4="sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$endpoint/g" /usr/local/bin/warp.conf"
+wgo5="sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$endpoint/g" /usr/local/bin/warp.conf"
 wgo6='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 
 CheckWARP(){
-point
 i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次获取warp的IP中……"
@@ -460,7 +549,7 @@ fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
-cwg
+cwg && rm -rf /root/warpip
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
@@ -695,7 +784,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ABC
-point
+warpip
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -806,7 +895,7 @@ yellow "共执行5次，第$i次升级WARP+账户中……"
 sed -i "s#.*AllowedIPs.*#$allowips#g" /usr/local/bin/warp.conf
 echo $endpoint | sh
 echo $post | sh
-point
+warpip
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -838,7 +927,7 @@ yellow "共执行5次，第$i次升级WARP Teams账户中……"
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf.bak --team-config "$token"
 sed -i "2s#.*#$(sed -ne 2p /usr/local/bin/warp.conf.bak)#;3s#.*#$(sed -ne 3p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
 sed -i "4s#.*#$(sed -ne 4p /usr/local/bin/warp.conf.bak)#;5s#.*#$(sed -ne 5p /usr/local/bin/warp.conf.bak)#" /usr/local/bin/warp.conf >/dev/null 2>&1
-point
+warpip
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -884,16 +973,15 @@ systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service /root/warpip
+rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
 }
-
 WARPun(){
 ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
 readp "$ab" cd
 case "$cd" in
-1 ) cwg ; green "warp卸载完成" && ShowWGCF && WGCFmenu;;
-2 ) cso ; green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg ; cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
+2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
+3 ) cwg && rm -rf /root/warpip && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -1024,7 +1112,6 @@ esac
 }
 if [ $# == 0 ]; then
 warpwgcf
-start
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
@@ -1046,8 +1133,8 @@ ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29
 ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 c1="sed -i '/0\.0\.0\.0\/0/d' /etc/wireguard/wgcf.conf"
 c2="sed -i '/\:\:\/0/d' /etc/wireguard/wgcf.conf"
-c3="sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' /etc/wireguard/wgcf.conf"
-c4="sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' /etc/wireguard/wgcf.conf"
+c3="sed -i "s/engage.cloudflareclient.com:2408/$endpoint/g" /etc/wireguard/wgcf.conf"
+c4="sed -i "s/engage.cloudflareclient.com:2408/$endpoint/g" /etc/wireguard/wgcf.conf"
 c5="sed -i 's/1.1.1.1/8.8.8.8,2001:4860:4860::8888/g' /etc/wireguard/wgcf.conf"
 c6="sed -i 's/1.1.1.1/2001:4860:4860::8888,8.8.8.8/g' /etc/wireguard/wgcf.conf"
 
@@ -1287,7 +1374,6 @@ fi
 }
 
 CheckWARP(){
-point
 i=0
 wg-quick down wgcf >/dev/null 2>&1
 while [ $i -le 4 ]; do let i++
@@ -1299,7 +1385,7 @@ done
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
-cwg
+cwg && rm -rf /root/warpip
 green "卸载Wgcf-WARP组件完成"
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
@@ -1398,12 +1484,12 @@ done
 wgcf generate
 mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
+warpip
 cp -f wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 cp -f wgcf-account.toml /etc/wireguard/buckup-account.toml  >/dev/null 2>&1
 ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
-point
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf
 }
@@ -1495,10 +1581,11 @@ fi
 cwg(){
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
-$yumapt autoremove wireguard-tools
+$yumapt remove wireguard-tools
+$yumapt autoremove
 dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf /root/warpip
+rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
 }
 
 WARPun(){
@@ -1507,7 +1594,7 @@ readp "$ab" cd
 case "$cd" in
 1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
 2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+3 ) cwg && rm -rf /root/warpip && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -1613,7 +1700,6 @@ fi
 
 if [ $# == 0 ]; then
 warpgo
-start
 cpujg
 start_menu
 fi
@@ -1633,7 +1719,9 @@ white "甬哥Github项目  ：github.com/yonggekkk"
 white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 安装warp成功后，进入脚本快捷方式：cf"
+yellow " 提示："
+yellow " 一、选项1与2任意选，支持相互切换"
+yellow " 二、安装warp成功后，进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 使用 WARP-GO 安装WARP(推荐)" 
 green "  2. 使用 WGCF    安装WARP"
@@ -1648,7 +1736,6 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-start
 if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
 elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
