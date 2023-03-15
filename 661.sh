@@ -233,7 +233,7 @@ cd /root/warpip
 wait
 cd
 fi
-endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
 opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
 opgo4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
