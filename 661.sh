@@ -127,9 +127,9 @@ stty $SAVEDSTTY
 
 point(){
 checkpt(){
+mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
-mkdir -p /root/warpip
 v4v6
 if [[ -z $v4 ]]; then
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
@@ -325,8 +325,10 @@ curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output 
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
 apt update;apt install cloudflare-warp -y
 fi
+point
 warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
+warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
 sleep 2 && ShowSOCKS5
 S5menu 
