@@ -234,9 +234,15 @@ cd /root/warpip
 wait
 cd
 fi
-endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
-opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
+endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}' | tr -d '[]'`
+#opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
+
+opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null | tr -d '[]'` 
+
+#opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
+
+opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null | tr -d '[]'`
+
 opgo4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
 opcf4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
 sed -i "s/$opgo4/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
