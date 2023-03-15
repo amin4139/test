@@ -227,7 +227,7 @@ echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
 cpujg
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 #mv $cpu ip.txt warpip/
-mv $cpu /root/warpip/
+mv /root/$cpu /root/warpip/
 cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
