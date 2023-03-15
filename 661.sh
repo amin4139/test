@@ -975,7 +975,6 @@ chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
 rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
 }
-rm -rf /root/warpip
 WARPun(){
 ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
 readp "$ab" cd
