@@ -129,6 +129,7 @@ stty $SAVEDSTTY
 checkpt(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
+cpujg
 v4v6
 if [[ -z $v4 ]]; then
 #wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
@@ -224,7 +225,6 @@ else
 #wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
 fi
 echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
-cpujg
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 #mv $cpu ip.txt warpip/
 mv /root/$cpu /root/warpip/
