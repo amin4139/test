@@ -235,14 +235,14 @@ wait
 cd
 fi
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
-opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
-opgo4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
-opcf4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
-sed -i "s/$opgo4/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
-sed -i "s/$opcf4/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
-sed -i "s/$opgo6/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
-sed -i "s/$opcf6/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
+opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
+opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
+opgo4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
+opcf4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
+sed -i "s/$opgo4/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
+sed -i "s/$opcf4/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/null
+sed -i "s/$opgo6/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
+sed -i "s/$opcf6/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/null
 }
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
