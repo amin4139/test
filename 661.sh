@@ -403,10 +403,10 @@ curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output 
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] http://pkg.cloudflareclient.com/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/cloudflare-client.list
 apt update;apt install cloudflare-warp -y
 fi
-warpip
+#warpip
 warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
-warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
+#warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
 sleep 2 && ShowSOCKS5
 S5menu 
