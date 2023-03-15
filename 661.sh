@@ -140,7 +140,8 @@ fi
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 mv $cpu ip.txt warpip/
 cd /root/warpip
-./$cpu >/dev/null 2>&1
+./$cpu >/dev/null 2>&1 &
+wait
 cd
 fi
 
