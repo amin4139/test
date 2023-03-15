@@ -1735,7 +1735,6 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-start
 if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
 elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
