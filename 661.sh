@@ -192,7 +192,7 @@ cd /root/warpip
 wait
 cd
 export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-green "优选的warp endpoint为：$endpoint"
+green "本地VPS优选的warp对端IP地址：$endpoint"
 }
 
 warpip(){
@@ -211,7 +211,7 @@ systemctl start warp-go >/dev/null 2>&1
 fi
 else
 export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-green "优选的warp endpoint为：$endpoint"
+green "本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
 
@@ -1719,8 +1719,9 @@ white "甬哥Github项目  ：github.com/yonggekkk"
 white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 提示：一、选项1与2任意选，支持相互切换"
-yellow "      二、安装warp成功后，进入脚本快捷方式：cf"
+yellow " 提示："
+yellow " 一、选项1与2任意选，支持相互切换"
+yellow " 二、安装warp成功后，进入脚本快捷方式：cf"
 warpip
 white " ================================================================="
 green "  1. 使用 WARP-GO 安装WARP(推荐)" 
