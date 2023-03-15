@@ -214,7 +214,7 @@ export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 green "本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
-
+warpip
 v4v6(){
 v4=$(curl -s4m6 ip.sb -k)
 v6=$(curl -s6m6 ip.sb -k)
