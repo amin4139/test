@@ -144,13 +144,15 @@ cd /root/warpip
 wait
 cd
 fi
-
-grep -qoE '\[[:xdigit:]+(:[[:xdigit:]]+)?\]:[0-9]+' /usr/local/bin/warp.conf && echo y || echo n
-grep -qoE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf && echo y || echo n
-
 endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
-sed -i "s/162.159.193.10:1701/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
-sed -i "s/162.159.193.10:2408/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
+opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
+opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
+opgo4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/nul`
+opcf4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/nul`
+sed -i "s/$opgo4/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
+sed -i "s/$opcf4/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
+sed -i "s/$opgo6/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/nul
+sed -i "s/$opcf6/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/nul
 }
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -1059,7 +1061,7 @@ ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 
 c1="sed -i '/0\.0\.0\.0\/0/d' /etc/wireguard/wgcf.conf"
 c2="sed -i '/\:\:\/0/d' /etc/wireguard/wgcf.conf"
 c3="sed -i 's/engage.cloudflareclient.com/162.159.193.10/g' /etc/wireguard/wgcf.conf"
-c4="sed -i 's/engage.cloudflareclient.com/2606:4700:d0::a29f:c001/g' /etc/wireguard/wgcf.conf"
+c4="sed -i 's/engage.cloudflareclient.com/[2606:4700:d0::a29f:c001]/g' /etc/wireguard/wgcf.conf"
 c5="sed -i 's/1.1.1.1/8.8.8.8,2001:4860:4860::8888/g' /etc/wireguard/wgcf.conf"
 c6="sed -i 's/1.1.1.1/2001:4860:4860::8888,8.8.8.8/g' /etc/wireguard/wgcf.conf"
 
