@@ -531,7 +531,6 @@ wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 
 CheckWARP(){
-warpip
 i=0
 while [ $i -le 4 ]; do let i++
 yellow "共执行5次，第$i次获取warp的IP中……"
@@ -784,6 +783,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ABC
+warpip
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -1374,7 +1374,6 @@ fi
 }
 
 CheckWARP(){
-warpip
 i=0
 wg-quick down wgcf >/dev/null 2>&1
 while [ $i -le 4 ]; do let i++
@@ -1485,6 +1484,7 @@ done
 wgcf generate
 mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
+warpip
 cp -f wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 cp -f wgcf-account.toml /etc/wireguard/buckup-account.toml  >/dev/null 2>&1
 ABC
