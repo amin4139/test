@@ -186,7 +186,7 @@ else
 	done
 fi
 echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
-wget -Oq /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x /root/warpip/$cpu
+wget -qO /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x /root/warpip/$cpu
 cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
@@ -549,7 +549,7 @@ fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
-cwg
+cwg && rm -rf /root/warpip
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
@@ -972,16 +972,16 @@ systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service /root/warpip
+rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
 }
-
+rm -rf /root/warpip
 WARPun(){
 ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
 readp "$ab" cd
 case "$cd" in
-1 ) cwg ; green "warp卸载完成" && ShowWGCF && WGCFmenu;;
-2 ) cso ; green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg ; cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
+2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
+3 ) cwg && rm -rf /root/warpip && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -1386,7 +1386,7 @@ done
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
-cwg
+cwg && rm -rf /root/warpip
 green "卸载Wgcf-WARP组件完成"
 green "安装WARP失败，建议如下："
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
@@ -1585,7 +1585,7 @@ systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt autoremove wireguard-tools
 dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf /root/warpip
+rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
 }
 
 WARPun(){
@@ -1594,7 +1594,7 @@ readp "$ab" cd
 case "$cd" in
 1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
 2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+3 ) cwg && rm -rf /root/warpip && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
