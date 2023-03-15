@@ -90,40 +90,12 @@ cpujg
 wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
 chmod +x nf
 fi
+
 [[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
-warpip
-
-v4v6(){
-v4=$(curl -s4m6 ip.sb -k)
-v6=$(curl -s6m6 ip.sb -k)
-#v6=$(curl -s6m6 api64.ipify.org -k)
-#v4=$(curl -s4m6 api64.ipify.org -k)
-}
-
-dig9(){
-if [[ -n $(grep 'DiG 9' /etc/hosts) ]]; then
-echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:5::1c\nnameserver 2a02:180:6:5::4\nnameserver 2a02:180:6:5::1e\nnameserver 2a02:180:6:5::1d" > /etc/resolv.conf
-fi
-}
-
-checkwgcf(){
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-}
-
-get_char(){
-SAVEDSTTY=`stty -g`
-stty -echo
-stty cbreak
-dd if=/dev/tty bs=1 count=1 2> /dev/null
-stty -raw
-stty echo
-stty $SAVEDSTTY
-}
 
 checkpt(){
 mkdir -p /root/warpip
@@ -219,7 +191,6 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-fi
 export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 green "优选的warp endpoint为：$endpoint"
 }
@@ -242,6 +213,35 @@ else
 export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
 green "优选的warp endpoint为：$endpoint"
 fi
+}
+warpip
+
+v4v6(){
+v4=$(curl -s4m6 ip.sb -k)
+v6=$(curl -s6m6 ip.sb -k)
+#v6=$(curl -s6m6 api64.ipify.org -k)
+#v4=$(curl -s4m6 api64.ipify.org -k)
+}
+
+dig9(){
+if [[ -n $(grep 'DiG 9' /etc/hosts) ]]; then
+echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:5::1c\nnameserver 2a02:180:6:5::4\nnameserver 2a02:180:6:5::1e\nnameserver 2a02:180:6:5::1d" > /etc/resolv.conf
+fi
+}
+
+checkwgcf(){
+wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+}
+
+get_char(){
+SAVEDSTTY=`stty -g`
+stty -echo
+stty cbreak
+dd if=/dev/tty bs=1 count=1 2> /dev/null
+stty -raw
+stty echo
+stty $SAVEDSTTY
 }
 
 mtuwarp(){
