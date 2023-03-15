@@ -234,21 +234,15 @@ cd /root/warpip
 wait
 cd
 fi
-endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}' | tr -d '[]'`
-#opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
-
-opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null | tr -d '[]'` 
-
-#opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
-
-opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null | tr -d '[]'`
-
+endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+opgo6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
+opcf6=`grep -oE '\[[0-9a-fA-F:]+\]:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
 opgo4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /usr/local/bin/warp.conf 2>/dev/null`
 opcf4=`grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' /etc/wireguard/wgcf.conf 2>/dev/null`
-sed -i "s/$opgo4/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
-sed -i "s/$opcf4/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/null
-sed -i "s/$opgo6/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
-sed -i "s/$opcf6/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/null
+#sed -i "s/$opgo4/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
+#sed -i "s/$opcf4/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/null
+#sed -i "s/$opgo6/$endpoint/g" /usr/local/bin/warp.conf 2>/dev/null
+#sed -i "s/$opcf6/$endpoint/g" /etc/wireguard/wgcf.conf 2>/dev/null
 }
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
@@ -545,8 +539,8 @@ fi
 wgo1='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0#g" /usr/local/bin/warp.conf'
 wgo2='sed -i "s#.*AllowedIPs.*#AllowedIPs = ::/0#g" /usr/local/bin/warp.conf'
 wgo3='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0,::/0#g" /usr/local/bin/warp.conf'
-wgo4='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/162.159.193.10:1701/g" /usr/local/bin/warp.conf'
-wgo5='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/[2606:4700:d0::a29f:c003]:1701/g" /usr/local/bin/warp.conf'
+wgo4='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$opgo4/g" /usr/local/bin/warp.conf'
+wgo5='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$opgo6/g" /usr/local/bin/warp.conf'
 wgo6='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
