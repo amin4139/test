@@ -20,7 +20,6 @@ readtp(){ read -t5 -n26 -p "$(yellow "$1")" $2;}
 readp(){ read -p "$(yellow "$1")" $2;}
 [[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
 #[[ -e /etc/hosts ]] && grep -qE '^ *172.65.251.78 gitlab.com' /etc/hosts || echo -e '\n172.65.251.78 gitlab.com' >> /etc/hosts
-start(){
 yellow " 请稍等……正在扫描vps类型及参数中……"
 if [[ -f /etc/redhat-release ]]; then
 release="Centos"
@@ -59,6 +58,7 @@ else
 red "目前脚本不支持$bit架构" && exit
 fi
 }
+start(){
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
