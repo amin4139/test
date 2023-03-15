@@ -125,7 +125,7 @@ stty echo
 stty $SAVEDSTTY
 }
 
-point(){
+#point(){
 checkpt(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
@@ -256,7 +256,7 @@ systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 fi
-}
+#}
 
 mtuwarp(){
 v4v6
