@@ -97,6 +97,18 @@ fi
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
 
+v4v6(){
+v4=$(curl -s4m6 ip.sb -k)
+v6=$(curl -s6m6 ip.sb -k)
+#v6=$(curl -s6m6 api64.ipify.org -k)
+#v4=$(curl -s4m6 api64.ipify.org -k)
+}
+
+checkwgcf(){
+wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+}
+
 checkpt(){
 mkdir -p /root/warpip
 cpujg
@@ -215,22 +227,11 @@ green "本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
 warpip
-v4v6(){
-v4=$(curl -s4m6 ip.sb -k)
-v6=$(curl -s6m6 ip.sb -k)
-#v6=$(curl -s6m6 api64.ipify.org -k)
-#v4=$(curl -s4m6 api64.ipify.org -k)
-}
 
 dig9(){
 if [[ -n $(grep 'DiG 9' /etc/hosts) ]]; then
 echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:5::1c\nnameserver 2a02:180:6:5::4\nnameserver 2a02:180:6:5::1e\nnameserver 2a02:180:6:5::1d" > /etc/resolv.conf
 fi
-}
-
-checkwgcf(){
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 
 get_char(){
