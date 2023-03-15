@@ -132,13 +132,103 @@ if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 v4v6
 if [[ -z $v4 ]]; then
-wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
-mv ip6.txt ip.txt
+#wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
+#mv ip6.txt ip.txt
+
+n=0
+	iplist=100
+	while true
+	do
+		temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+	done
+	while true
+	do
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+			n=$[$n+1]
+		fi
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+			n=$[$n+1]
+		fi
+	done
+
+
 else
-wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
+
+	n=0
+	iplist=100
+	while true
+	do
+		temp[$n]=$(echo 162.159.192.$(($RANDOM%256)))
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo 162.159.193.$(($RANDOM%256)))
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo 162.159.195.$(($RANDOM%256)))
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+	done
+	while true
+	do
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo 162.159.192.$(($RANDOM%256)))
+			n=$[$n+1]
+		fi
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo 162.159.193.$(($RANDOM%256)))
+			n=$[$n+1]
+		fi
+		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+		then
+			break
+		else
+			temp[$n]=$(echo 162.159.195.$(($RANDOM%256)))
+			n=$[$n+1]
+		fi
+	done
+
+
+#wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
 fi
+echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
+ulimit -n 102400
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
-mv $cpu ip.txt warpip/
+#mv $cpu ip.txt warpip/
+mv $cpu warpip/
 cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
