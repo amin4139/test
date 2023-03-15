@@ -129,7 +129,6 @@ stty $SAVEDSTTY
 checkpt(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
-cpujg
 v4v6
 if [[ -z $v4 ]]; then
 #wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
@@ -225,7 +224,7 @@ else
 #wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
 fi
 echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
-ulimit -n 102400
+cpujg
 wget -qN https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x $cpu
 #mv $cpu ip.txt warpip/
 mv $cpu warpip/
@@ -539,8 +538,8 @@ fi
 wgo1='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0#g" /usr/local/bin/warp.conf'
 wgo2='sed -i "s#.*AllowedIPs.*#AllowedIPs = ::/0#g" /usr/local/bin/warp.conf'
 wgo3='sed -i "s#.*AllowedIPs.*#AllowedIPs = 0.0.0.0/0,::/0#g" /usr/local/bin/warp.conf'
-wgo4='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$opgo4/g" /usr/local/bin/warp.conf'
-wgo5='sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$opgo6/g" /usr/local/bin/warp.conf'
+wgo4="sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$endpoint/g" /usr/local/bin/warp.conf"
+wgo5="sed -i "/Endpoint6/d" /usr/local/bin/warp.conf && sed -i "s/162.159.*/$endpoint/g" /usr/local/bin/warp.conf"
 wgo6='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo7='sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
 wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf && sed -i "20 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP "src \K\S+") lookup main\n/" /usr/local/bin/warp.conf'
