@@ -87,7 +87,7 @@ fi
 
 if [[ ! -f /root/nf || ! -s /root/nf ]]; then
 cpujg
-wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
+wget -O nf https://gitlab.com/rwkgyg/CFwarp/-/raw/main/nf_linux_${cpu}
 chmod +x nf
 fi
 
