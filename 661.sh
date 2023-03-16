@@ -85,18 +85,52 @@ fi
 fi
 fi
 
-if [[ ! -f /root/nf || ! -s /root/nf ]]; then
-cpujg
-wget -O nf https://gitlab.com/rwkgyg/CFwarp/-/raw/main/nf_linux_${cpu}
+#if [[ ! -f /root/nf || ! -s /root/nf ]]; then
+#cpujg
+#wget -O nf https://gitlab.com/rwkgyg/CFwarp/-/raw/main/nf_linux_${cpu}
 #wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
-chmod +x nf
-fi
+#chmod +x nf
+#fi
 
 [[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
+
+nf4() {
+result=`curl --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
+[ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && echo $NF && return
+[[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && echo $NF && return
+result=`curl -4sL "https://www.netflix.com/title/80018499" 2>&1`
+[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="很遗憾 你的IP不能看Netflix" && echo $NF && return
+result1=`curl -4sL "https://www.netflix.com/title/70143836" 2>&1`
+result2=`curl -4sL "https://www.netflix.com/title/80027042" 2>&1`
+result3=`curl -4sL "https://www.netflix.com/title/70140425" 2>&1`
+result4=`curl -4sL "https://www.netflix.com/title/70283261" 2>&1`
+result5=`curl -4sL "https://www.netflix.com/title/70143860" 2>&1`
+result6=`curl -4sL "https://www.netflix.com/title/70202589" 2>&1`
+[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="你的IP可以打开Netflix 但是仅解锁自制剧" && echo $NF && return
+NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && echo $NF && return
+}
+
+nf6() {
+result=`curl --connect-timeout 5 -6sSL "https://www.netflix.com/" 2>&1`
+[ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && echo $NF && return
+[[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && echo $NF && return
+result=`curl -6sL "https://www.netflix.com/title/80018499" 2>&1`
+[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="很遗憾 你的IP不能看Netflix" && echo $NF && return
+result1=`curl -6sL "https://www.netflix.com/title/70143836" 2>&1`
+result2=`curl -6sL "https://www.netflix.com/title/80027042" 2>&1`
+result3=`curl -6sL "https://www.netflix.com/title/70140425" 2>&1`
+result4=`curl -6sL "https://www.netflix.com/title/70283261" 2>&1`
+result5=`curl -6sL "https://www.netflix.com/title/70143860" 2>&1`
+result6=`curl -6sL "https://www.netflix.com/title/70202589" 2>&1`
+[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="你的IP可以打开Netflix 但是仅解锁自制剧" && echo $NF && return
+NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && echo $NF && return
+}
+
+
 
 v4v6(){
 v4=$(curl -s4m6 ip.sb -k)
@@ -468,6 +502,7 @@ warppflow=$((`grep -oP '"quota":\K\d+' <<< $(curl -sm4 "https://api.cloudflarecl
 flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /usr/local/bin/warpplus.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(sed -n 1p /usr/local/bin/warpplus.log)" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
+nf4
 [[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
@@ -495,6 +530,7 @@ else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
+nf6
 [[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
