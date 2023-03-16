@@ -130,7 +130,21 @@ result6=`curl -6sL "https://www.netflix.com/title/70202589" 2>&1`
 NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && return
 }
 
-
+test_socks5() {
+result=`curl -x socks5h://127.0.0.1:40000 --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
+[ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && return
+[[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && return
+result=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/80018499" 2>&1`
+[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="很遗憾 你的IP不能看Netflix" && return
+result1=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70143836" 2>&1`
+result2=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/80027042" 2>&1`
+result3=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70140425" 2>&1`
+result4=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70283261" 2>&1`
+result5=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70143860" 2>&1`
+result6=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70202589" 2>&1`
+[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="你的IP可以打开Netflix 但是仅解锁自制剧" && return
+NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && return
+}
 
 v4v6(){
 v4=$(curl -s4m6 ip.sb -k)
