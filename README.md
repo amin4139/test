@@ -9,4 +9,4 @@ wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.
 ----------------------------------------------------------------------------------------------------------------------
 #### 感谢WGCF源项目代码地址：https://github.com/ViRb3/wgcf
 #### 感谢CoiaPrant，WARP-GO源项目代码地址：https://gitlab.com/ProjectWARP/warp-go
-#### 相关功能参考来源： [P3terx](https://github.com/P3TERX/warp.sh)、[fscarmen](https://github.com/fscarmen/warp)、[奈非检测：sjlleo](https://github.com/sjlleo/netflix-verify)、不愿意透露ID的热心网友提供的endpoint优选IP方案
+#### 相关功能参考来源： [P3terx](https://github.com/P3TERX/warp.sh)、[fscarmen](https://github.com/fscarmen/warp)、[奈非检测:sjlleo](https://github.com/sjlleo/netflix-verify)、不愿意透露ID的热心网友提供的endpoint优选IP方案
