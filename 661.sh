@@ -130,7 +130,7 @@ result6=`curl -6sL "https://www.netflix.com/title/70202589" 2>&1`
 NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && return
 }
 
-test_socks5() {
+nfs5() {
 result=`curl -x socks5h://127.0.0.1:40000 --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
 [ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && return
 [[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && return
