@@ -100,50 +100,50 @@ fi
 
 nf4() {
 result=`curl --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
-[ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && return
-[[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && return
+[ "$result" == "Not Available" ] && NF="死心吧，Netflix不服务当前IP地区" && return
+[[ "$result" == "curl"* ]] && NF="错误，无法连接到Netflix官网" && return
 result=`curl -4sL "https://www.netflix.com/title/80018499" 2>&1`
-[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="很遗憾 你的IP不能看Netflix" && return
+[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="杯具，当前IP不能看Netflix" && return
 result1=`curl -4sL "https://www.netflix.com/title/70143836" 2>&1`
 result2=`curl -4sL "https://www.netflix.com/title/80027042" 2>&1`
 result3=`curl -4sL "https://www.netflix.com/title/70140425" 2>&1`
 result4=`curl -4sL "https://www.netflix.com/title/70283261" 2>&1`
 result5=`curl -4sL "https://www.netflix.com/title/70143860" 2>&1`
 result6=`curl -4sL "https://www.netflix.com/title/70202589" 2>&1`
-[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="你的IP可以打开Netflix 但是仅解锁自制剧" && return
-NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && return
+[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="遗憾，当前IP仅可观看Netflix自制剧" && return
+NF="恭喜，当前IP支持观看Netflix非自制剧" && return
 }
 
 nf6() {
 result=`curl --connect-timeout 5 -6sSL "https://www.netflix.com/" 2>&1`
-[ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && return
-[[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && return
+[ "$result" == "Not Available" ] && NF="死心吧，Netflix不服务当前IP地区" && return
+[[ "$result" == "curl"* ]] && NF="错误，无法连接到Netflix官网" && return
 result=`curl -6sL "https://www.netflix.com/title/80018499" 2>&1`
-[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="很遗憾 你的IP不能看Netflix" && return
+[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="杯具，当前IP不能看Netflix" && return
 result1=`curl -6sL "https://www.netflix.com/title/70143836" 2>&1`
 result2=`curl -6sL "https://www.netflix.com/title/80027042" 2>&1`
 result3=`curl -6sL "https://www.netflix.com/title/70140425" 2>&1`
 result4=`curl -6sL "https://www.netflix.com/title/70283261" 2>&1`
 result5=`curl -6sL "https://www.netflix.com/title/70143860" 2>&1`
 result6=`curl -6sL "https://www.netflix.com/title/70202589" 2>&1`
-[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="你的IP可以打开Netflix 但是仅解锁自制剧" && return
-NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && return
+[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="遗憾，当前IP仅可观看Netflix自制剧" && return
+NF="恭喜，当前IP支持观看Netflix非自制剧" && return
 }
 
 nfs5() {
-result=`curl -x socks5h://127.0.0.1:40000 --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
-[ "$result" == "Not Available" ] && NF="很遗憾 Netflix不服务此地区" && return
-[[ "$result" == "curl"* ]] && NF="错误 无法连接到Netflix官网" && return
-result=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/80018499" 2>&1`
-[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="很遗憾 你的IP不能看Netflix" && return
-result1=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70143836" 2>&1`
-result2=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/80027042" 2>&1`
-result3=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70140425" 2>&1`
-result4=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70283261" 2>&1`
-result5=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70143860" 2>&1`
-result6=`curl -x socks5://127.0.0.1:40000 -4sL "https://www.netflix.com/title/70202589" 2>&1`
-[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="你的IP可以打开Netflix 但是仅解锁自制剧" && return
-NF="恭喜 你的IP可以打开Netflix 并解锁全部流媒体" && return
+result=`curl -sx socks5h://localhost:$mport --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
+[ "$result" == "Not Available" ] && NF="死心吧，Netflix不服务当前IP地区" && return
+[[ "$result" == "curl"* ]] && NF="错误，无法连接到Netflix官网" && return
+result=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/80018499" 2>&1`
+[[ "$result" == *"page-404"* || "$result" == *"NSEZ-403"* ]] && NF="杯具，当前IP不能看Netflix" && return
+result1=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/70143836" 2>&1`
+result2=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/80027042" 2>&1`
+result3=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/70140425" 2>&1`
+result4=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/70283261" 2>&1`
+result5=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/70143860" 2>&1`
+result6=`curl -sx socks5h://localhost:$mport -4sL "https://www.netflix.com/title/70202589" 2>&1`
+[[ "$result1" == *"page-404"* && "$result2" == *"page-404"* && "$result3" == *"page-404"* && "$result4" == *"page-404"* && "$result5" == *"page-404"* && "$result6" == *"page-404"* ]] && NF="遗憾，当前IP仅可观看Netflix自制剧" && return
+NF="恭喜，当前IP支持观看Netflix非自制剧" && return
 }
 
 v4v6(){
@@ -363,21 +363,16 @@ ShowSOCKS5(){
 if [[ $(systemctl is-active warp-svc) = active ]]; then
 mport=`warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}'`
 s5ip=`curl -sx socks5h://localhost:$mport ip.sb -k`
-NF=$(./nf -proxy socks5h://localhost:$mport | awk '{print $1}' | sed -n '3p')
-[[ $(curl -sx socks5h://localhost:$mport https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
+nfs5
+#NF=$(./nf -proxy socks5h://localhost:$mport | awk '{print $1}' | sed -n '3p')
+[[ $(curl -sx socks5h://localhost:$mport https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
 isp4a=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
 [[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
 nonf=$(curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
-sunf=$(./nf | awk '{print $1}' | sed -n '4p')
-snnf=$(curl -sx socks5h://localhost:$mport ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
-if [[ -n $sunf ]]; then
-country=$sunf
-elif [[ -z $sunf && -n $nonf ]]; then
+#sunf=$(./nf | awk '{print $1}' | sed -n '4p')
+#snnf=$(curl -sx socks5h://localhost:$mport ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
 country=$nonf
-else
-country=$snnf
-fi
 socks5=$(curl -sx socks5h://localhost:$mport www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2) 
 case ${socks5} in 
 plus) 
@@ -517,21 +512,15 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /usr/local/bin/warpplus.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(sed -n 1p /usr/local/bin/warpplus.log)" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
+[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
 [[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
 nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
-sunf=$(./nf | awk '{print $1}' | sed -n '4p')
-snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
-if [[ -n $sunf ]]; then
-country=$sunf
-elif [[ -z $sunf && -n $nonf ]]; then
+#sunf=$(./nf | awk '{print $1}' | sed -n '4p')
+#snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
 country=$nonf
-else
-country=$snnf
-fi
 case ${wgcfv4} in 
 plus) 
 WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
@@ -545,21 +534,15 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
+[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
 [[ -n $isp6a ]] && isp6=$isp6a || isp6=$isp6b
 nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
-sunf=$(./nf | awk '{print $1}' | sed -n '8p')
-snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
-if [[ -n $sunf ]]; then
-country=$sunf
-elif [[ -z $sunf && -n $nonf ]]; then
+#sunf=$(./nf | awk '{print $1}' | sed -n '8p')
+#snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
 country=$nonf
-else
-country=$snnf
-fi
 case ${wgcfv6} in 
 plus) 
 WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
@@ -1196,55 +1179,45 @@ warppflow=$((`grep -oP '"quota":\K\d+' <<< $(curl -sm4 "https://api.cloudflarecl
 flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /etc/wireguard/wgcf+p.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
+nf4
+[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
 [[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
 nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
-sunf=$(./nf | awk '{print $1}' | sed -n '4p')
-snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
-if [[ -n $sunf ]]; then
-country=$sunf
-elif [[ -z $sunf && -n $nonf ]]; then
+#sunf=$(./nf | awk '{print $1}' | sed -n '4p')
+#snnf=$(curl -s4m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
 country=$nonf
-else
-country=$snnf
-fi
 case ${wgcfv4} in 
 plus) 
-WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt支持情况：\c" ; green "$chat");;
+WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;
 off) 
-WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '3p')" ; white " Chatgpt支持情况：\c" ; yellow "$chat");; 
+WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " Chatgpt支持情况：\c" ; yellow "$chat");; 
 esac 
 else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，无法访问Chatgpt官网服务' || chat='恭喜，支持访问Chatgpt官网服务'
+nf6
+[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
 [[ -n $isp6a ]] && isp6=$isp6a || isp6=$isp6b
 nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f2 -d"," | cut -f4 -d '"')
-sunf=$(./nf | awk '{print $1}' | sed -n '8p')
-snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
-if [[ -n $sunf ]]; then
-country=$sunf
-elif [[ -z $sunf && -n $nonf ]]; then
+#sunf=$(./nf | awk '{print $1}' | sed -n '8p')
+#snnf=$(curl -s6m6 ip.p3terx.com -k | sed -n 2p | awk '{print $3}')
 country=$nonf
-else
-country=$snnf
-fi
 case ${wgcfv6} in 
 plus) 
-WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt支持情况：\c" ; green "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;
 off) 
-WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$(./nf | awk '{print $1}' | sed -n '7p')" ; white " Chatgpt支持情况：\c" ; yellow "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " Chatgpt支持情况：\c" ; yellow "$chat");;
 esac 
 else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
