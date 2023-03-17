@@ -349,8 +349,8 @@ fi
 upcfwarp(){
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
 chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
-green "CFwarp安装脚本升级成功"
+ln -sf /root/CFwarp.sh /usr/bin/cf
+green "CFwarp安装脚本升级成功" && cf
 }
 
 cso(){
