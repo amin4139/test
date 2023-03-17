@@ -346,6 +346,13 @@ rm -rf /root/CFwarp.sh nf /usr/bin/cf
 fi
 }
 
+upcfwarp(){
+wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
+chmod +x /root/CFwarp.sh 
+ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
+green "CFwarp安装脚本升级成功"
+}
+
 cso(){
 warp-cli --accept-tos disconnect >/dev/null 2>&1
 warp-cli --accept-tos disable-always-on >/dev/null 2>&1
@@ -1023,10 +1030,7 @@ UPwpyg(){
 if [[ ! $(type -P warp-go) && ! $(type -P warp-cli) ]] && [[ ! -f '/root/CFwarp.sh' ]]; then
 red "未正常安装CFwarp脚本!" && exit
 fi
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
-green "CFwarp安装脚本升级成功"
+upcfwarp
 }
 
 changewarp(){
@@ -1626,10 +1630,7 @@ UPwpyg(){
 if [[ ! $(type -P wg-quick) && ! $(type -P warp-cli) ]] && [[ ! -f '/root/CFwarp.sh' ]]; then
 red "未正常安装CFwarp脚本!" && exit
 fi
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
-green "CFwarp安装脚本升级成功"
+upcfwarp
 }
 
 warpinscha(){
