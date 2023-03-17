@@ -376,9 +376,9 @@ country=$nonf
 socks5=$(curl -sx socks5h://localhost:$mport www.cloudflare.com/cdn-cgi/trace -k --connect-timeout 2 | grep warp | cut -d= -f2) 
 case ${socks5} in 
 plus) 
-S5Status=$(white "Socks5 WARP+状态：\c" ; rred "运行中，WARP+普通账户(剩余WARP+流量:$((`warp-cli --accept-tos account | grep Quota | awk '{ print $(NF) }'`/1000000000))GiB)" ; white " Socks5 端口：\c" ; rred "$mport" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$s5ip  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+S5Status=$(white "Socks5 WARP+状态：\c" ; rred "运行中，WARP+普通账户(剩余WARP+流量:$((`warp-cli --accept-tos account | grep Quota | awk '{ print $(NF) }'`/1000000000))GiB)" ; white " Socks5 端口：\c" ; rred "$mport" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$s5ip  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " ChatGPT解锁情况：\c" ; rred "$chat");;  
 on) 
-S5Status=$(white "Socks5 WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " Socks5 端口：\c" ; green "$mport" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$s5ip  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;  
+S5Status=$(white "Socks5 WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " Socks5 端口：\c" ; green "$mport" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$s5ip  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " ChatGPT解锁情况：\c" ; green "$chat");;  
 *) 
 S5Status=$(white "Socks5 WARP状态：\c" ; yellow "已安装Socks5-WARP客户端，但端口处于关闭状态")
 esac 
@@ -523,11 +523,11 @@ nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh
 country=$nonf
 case ${wgcfv4} in 
 plus) 
-WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " ChatGPT解锁情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;
+WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " ChatGPT解锁情况：\c" ; green "$chat");;
 off) 
-WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " Chatgpt支持情况：\c" ; yellow "$chat");; 
+WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " ChatGPT解锁情况：\c" ; yellow "$chat");; 
 esac 
 else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
@@ -545,11 +545,11 @@ nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh
 country=$nonf
 case ${wgcfv6} in 
 plus) 
-WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " ChatGPT解锁情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " ChatGPT解锁情况：\c" ; green "$chat");;
 off) 
-WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " Chatgpt支持情况：\c" ; yellow "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " ChatGPT解锁情况：\c" ; yellow "$chat");;
 esac 
 else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
@@ -567,8 +567,8 @@ wgo8='sed -i "20 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 |
 
 CheckWARP(){
 i=0
-while [ $i -le 4 ]; do let i++
-yellow "共执行5次，第$i次获取warp的IP中……"
+while [ $i -le 9 ]; do let i++
+yellow "共执行10次，第$i次获取warp的IP中……"
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
@@ -1191,11 +1191,11 @@ nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh
 country=$nonf
 case ${wgcfv4} in 
 plus) 
-WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+WARPIPv4Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; rred "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " ChatGPT解锁情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;
+WARPIPv4Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV4地址：\c" ; green "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " ChatGPT解锁情况：\c" ; green "$chat");;
 off) 
-WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " Chatgpt支持情况：\c" ; yellow "$chat");; 
+WARPIPv4Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp4 获取IPV4地址：\c" ; yellow "$v4  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " ChatGPT解锁情况：\c" ; yellow "$chat");; 
 esac 
 else
 WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
@@ -1213,11 +1213,11 @@ nonf=$(curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh
 country=$nonf
 case ${wgcfv6} in 
 plus) 
-WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " Chatgpt支持情况：\c" ; rred "$chat");;  
+WARPIPv6Status=$(white "WARP+状态：\c" ; rred "运行中，$cfplus" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; rred "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; rred "$NF" ; white " ChatGPT解锁情况：\c" ; rred "$chat");;  
 on) 
-WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " Chatgpt支持情况：\c" ; green "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; green "运行中，WARP普通账户(无限WARP流量)" ; white " 服务商 Cloudflare 获取IPV6地址：\c" ; green "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; green "$NF" ; white " ChatGPT解锁情况：\c" ; green "$chat");;
 off) 
-WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " Chatgpt支持情况：\c" ; yellow "$chat");;
+WARPIPv6Status=$(white "WARP状态：\c" ; yellow "关闭中" ; white " 服务商 $isp6 获取IPV6地址：\c" ; yellow "$v6  $country" ; white " 奈飞NF解锁情况：\c" ; yellow "$NF" ; white " ChatGPT解锁情况：\c" ; yellow "$chat");;
 esac 
 else
 WARPIPv6Status=$(white "IPV6状态：\c" ; red "不存在IPV6地址 ")
@@ -1400,8 +1400,8 @@ fi
 CheckWARP(){
 i=0
 wg-quick down wgcf >/dev/null 2>&1
-while [ $i -le 4 ]; do let i++
-yellow "共执行5次，第$i次获取warp的IP中……"
+while [ $i -le 9 ]; do let i++
+yellow "共执行10次，第$i次获取warp的IP中……"
 systemctl restart wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp的IP获取成功！" && break || red "遗憾！warp的IP获取失败"
