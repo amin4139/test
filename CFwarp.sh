@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.3.17 V 0.9.6 "
+wpygV="23.3.17 V 0.9.61 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -1025,7 +1025,7 @@ red "未正常安装CFwarp脚本!" && exit
 fi
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
 chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
+ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null || true
 green "CFwarp安装脚本升级成功"
 }
 
