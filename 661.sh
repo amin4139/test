@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.3.14 V 0.9.5 "
+wpygV="23.3.17 V 0.9.6 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -346,6 +346,13 @@ rm -rf /root/CFwarp.sh nf /usr/bin/cf
 fi
 }
 
+upcfwarp(){
+wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
+chmod +x /root/CFwarp.sh 
+ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
+green "CFwarp安装脚本升级成功"
+}
+
 cso(){
 warp-cli --accept-tos disconnect >/dev/null 2>&1
 warp-cli --accept-tos disable-always-on >/dev/null 2>&1
@@ -365,7 +372,7 @@ mport=`warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | a
 s5ip=`curl -sx socks5h://localhost:$mport ip.sb -k`
 nfs5
 #NF=$(./nf -proxy socks5h://localhost:$mport | awk '{print $1}' | sed -n '3p')
-[[ $(curl -sx socks5h://localhost:$mport https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
+[[ $(curl -sx socks5h://localhost:$mport https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 isp4a=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sx socks5h://localhost:$mport --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
 [[ -n $isp4a ]] && isp4=$isp4a || isp4=$isp4b
@@ -512,7 +519,7 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /usr/local/bin/warpplus.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(sed -n 1p /usr/local/bin/warpplus.log)" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
+[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -534,7 +541,7 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
+[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1023,10 +1030,7 @@ UPwpyg(){
 if [[ ! $(type -P warp-go) && ! $(type -P warp-cli) ]] && [[ ! -f '/root/CFwarp.sh' ]]; then
 red "未正常安装CFwarp脚本!" && exit
 fi
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
-green "CFwarp安装脚本升级成功"
+upcfwarp
 }
 
 changewarp(){
@@ -1180,7 +1184,7 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /etc/wireguard/wgcf+p.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
+[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1202,7 +1206,7 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问Chatgpt官网服务' || chat='恭喜，当前IP支持访问Chatgpt官网服务'
+[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1626,10 +1630,7 @@ UPwpyg(){
 if [[ ! $(type -P wg-quick) && ! $(type -P warp-cli) ]] && [[ ! -f '/root/CFwarp.sh' ]]; then
 red "未正常安装CFwarp脚本!" && exit
 fi
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf 2>/dev/null
-green "CFwarp安装脚本升级成功"
+upcfwarp
 }
 
 warpinscha(){
