@@ -4,7 +4,7 @@
 
 #### 一键脚本：
 ```
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh && bash CFwarp.sh
+wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh && bash CFwarp.sh
 ```
 ----------------------------------------------------------------------------------------------------------------------
 #### 感谢WGCF源项目代码地址：https://github.com/ViRb3/wgcf
