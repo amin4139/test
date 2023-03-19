@@ -491,6 +491,7 @@ WGCFmenu;S5menu
 }
 
 ONEWARPGO(){
+yellow "请稍等……" && sleep 2
 STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的WARP安装方案" 
@@ -1167,6 +1168,7 @@ fi
 }
 
 ONEWGCFWARP(){
+yellow "请稍等……" && sleep 2
 ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
@@ -1757,8 +1759,8 @@ white " ================================================================="
 echo
 readp " 请输入数字:" Input
 case "$Input" in     
- 1 ) ONEWARPGO && yellow "请稍等……";;
- 2 ) ONEWGCFWARP && yellow "请稍等……";;
+ 1 ) ONEWARPGO;;
+ 2 ) ONEWGCFWARP;;
  * ) exit 
 esac
 }
