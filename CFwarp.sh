@@ -1095,12 +1095,13 @@ white "甬哥Github项目  ：github.com/yonggekkk"
 white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 安装warp成功后，进入脚本快捷方式：cf"
+yellow " 选择适合自己的三个warp现实方案（选项1、2、3）"
+yellow " 进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换WARP-GO（三模式）"
-[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
-green "  3. 卸载WARP"
-green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
+green "  1. 方案一：安装/切换WARP-GO"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 方案二：安装Socks5-WARP"
+green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
+green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
 green "  6. WARP刷刷刷选项：WARP+流量……"
@@ -1137,8 +1138,8 @@ readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
  2 ) [[ $cpu = amd64* ]] && SOCKS5ins || bash CFwarp.sh;;
- 3 ) WARPun && uncf ;;
- 4 ) WGproxy;;
+ 3 ) WGproxy;;
+ 4 ) WARPun && uncf ;;
  5 ) WARPonoff;;
  6 ) warprefresh;;
  7 ) WARPup;;
@@ -1673,12 +1674,13 @@ white "甬哥Github项目  ：github.com/yonggekkk"
 white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 安装warp成功后，进入脚本快捷方式：cf"
+yellow " 选择适合自己的三个warp现实方案（选项1、2、3）"
+yellow " 进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换WGCF-WARP（三模式）"
-[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
-green "  3. WARP卸载"
-green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
+green "  1. 方案一：安装/切换WGCF-WARP"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 方案二：安装Socks5-WARP"
+green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
+green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
 green "  6. WARP刷刷刷选项：WARP+流量……"
@@ -1706,8 +1708,8 @@ readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
  2 ) [[ $cpu = amd64 ]] && SOCKS5ins || bash CFwarp.sh;;
- 3 ) WARPun && uncf;;
- 4 ) WGproxy;;
+ 3 ) WGproxy;;
+ 4 ) WARPun && uncf;;
  5 ) WARPonoff;;
  6 ) warprefresh;;
  7 ) WARPup;;
