@@ -803,7 +803,7 @@ apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 fi
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
@@ -1049,7 +1049,7 @@ green " 当前 WARP-GO 已安装内核版本号：${loVERSION} ，已是最新�
 
 WGproxy(){
 if [[ ! $(type -P warp-go) ]]; then
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf
@@ -1057,7 +1057,7 @@ mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 done
 fi
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址"
+green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址，不懂就回车吧"
 readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
 if [ -z "${IPet}" ] || [ $IPet == "1" ]; then
 endip=162.159.193.10
@@ -1072,7 +1072,12 @@ sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
 green "当前Wireguard配置文件如下" && sleep 1
 white "$(cat /usr/local/bin/wgwarp.conf)\n"
-yellow "提示：Xray添加出站 Wireguard warp 时，原先 reserved 后三个数字[x,x,x]替换为$(grep -o '\[[^]]*\]' /usr/local/bin/sbwarp.json | awk 'NR==3')\n"
+yellow "说明："
+yellow "一、以上参数可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
+yellow "二、Endpoint参数可替换为各平台本地网络测试后的优选Endpoint的IP"
+yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
+yellow "三、PrivateKey、Address的V6地址、reserved，三个参数相互绑定关联，注意替换(Wireguard客户端无需reserved参数)"
+yellow "当前VPS的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
@@ -1250,8 +1255,7 @@ ShowWGCF && WGCFmenu
 
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
-blue "\nWireguard客户端相关设置说明请关注甬哥博客"
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址"
+green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址，不懂就回车吧"
 readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
 if [ -z "${IPet}" ] || [ $IPet == "1" ];then
 endip=162.159.193.10
@@ -1266,6 +1270,7 @@ sed -i "8a AllowedIPs = 0.0.0.0\/0\nAllowedIPs = ::\/0\n" /etc/wireguard/wgproxy
 sed -i "10a Endpoint = $endip:1701" /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 yellow "$(cat /etc/wireguard/wgproxy.conf)\n"
+yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
 green "当前wireguard节点二维码分享链接如下" && sleep 2
 qrencode -t ansiutf8 < /etc/wireguard/wgproxy.conf
 }
