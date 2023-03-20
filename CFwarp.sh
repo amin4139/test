@@ -342,7 +342,7 @@ fi
 
 uncf(){
 if [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -z $(type -P warp-cli) ]]; then
-rm -rf /root/CFwarp.sh nf /usr/bin/cf
+rm -rf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
@@ -364,6 +364,13 @@ apt purge cloudflare-warp -y
 rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
 fi
 $yumapt autoremove
+}
+
+lncf(){
+if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) || -n $(type -P wg-quick) ]]; then
+chmod +x /root/CFwarp.sh 
+ln -sf /root/CFwarp.sh /usr/bin/cf
+fi
 }
 
 ShowSOCKS5(){
@@ -459,8 +466,7 @@ warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
-sleep 2 && ShowSOCKS5
-S5menu 
+sleep 2 && ShowSOCKS5 && S5menu && lncf
 }
 
 WGCFmenu(){
@@ -502,13 +508,6 @@ fi
 warpwgcf(){
 if [[ -e "/usr/local/bin/wgcf" ]]; then
 red "请先卸载已安装的WGCF-WARP，否则无法安装当前的WARP-GO，脚本退出" && exit
-fi
-}
-
-lncf(){
-if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) ]]; then
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
@@ -1235,13 +1234,6 @@ STOPwgcf(){
 if [[ $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的wgcf-warp安装方案" 
 systemctl restart wg-quick@wgcf ; bash CFwarp.sh
-fi
-}
-
-lncf(){
-if [[ $(type -P wg-quick) || $(type -P warp-cli) ]]; then
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
