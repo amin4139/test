@@ -591,12 +591,11 @@ done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
 cwg && rm -rf /root/warpip
-green "安装WARP失败，建议如下："
+echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
-yellow "1、强烈建议使用官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为官方源"
-yellow "2、部分VPS系统极度精简，相关依赖需自行安装后再尝试"
+red "建议选择WGCF核心来安装WARP"
 exit
 else 
 green "ok" && systemctl restart warp-go
@@ -1414,14 +1413,11 @@ checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 yellow "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
 cwg && rm -rf /root/warpip
-green "卸载Wgcf-WARP组件完成"
-green "安装WARP失败，建议如下："
+echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
-yellow "1、强烈建议使用官方源升级系统及内核加速！如已使用第三方源及内核加速，请务必更新到最新版，或重置为官方源"
-yellow "2、部分VPS系统极度精简，相关依赖需自行安装后再尝试"
-yellow "3、查看https://www.cloudflarestatus.com/,你当前VPS就近区域可能处于黄色的【Re-routed】状态"
+red "建议选择WARP-GO核心来安装WARP"
 exit
 else 
 green "ok"
@@ -1747,7 +1743,7 @@ white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 yellow " 提示："
 yellow " 一、选项1与2任意选，支持相互切换"
-yellow " 二、安装warp成功后，进入脚本快捷方式：cf"
+yellow " 二、进入脚本快捷方式：cf"
 white " ================================================================="
 green "  1. 使用 WARP-GO 安装WARP(推荐)" 
 green "  2. 使用 WGCF    安装WARP"
