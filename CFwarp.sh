@@ -324,7 +324,7 @@ green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
 first4(){
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
-[[ -e /etc/gai.conf 2>/dev/null ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+[[ -e /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf 2>/dev/null
 sed -i '/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 else
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
