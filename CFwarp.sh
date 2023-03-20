@@ -271,7 +271,7 @@ systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 fi
 else
-export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
@@ -324,10 +324,10 @@ green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
 first4(){
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
-[[ -n /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
-sed -i '/^label 2002::\/16   2/d' /etc/gai.conf
+[[ -n /etc/gai.conf 2>/dev/null ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf 2>/dev/null
+sed -i '/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 else
-sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 fi
 }
 
@@ -1014,7 +1014,7 @@ cwg(){
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
-sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
 }
 WARPun(){
@@ -1615,7 +1615,7 @@ systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt remove wireguard-tools
 $yumapt autoremove
 dig9
-sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
 }
 
