@@ -252,7 +252,7 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "本地VPS优选的warp对端IP地址：$endpoint"
 }
 
