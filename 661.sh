@@ -252,7 +252,7 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "本地VPS优选的warp对端IP地址：$endpoint"
 }
 
@@ -271,7 +271,7 @@ systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
 fi
 else
-export endpoint=`sed -n '2p' /root/warpip/result.csv | awk -F ',' '{print $1}'`
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
@@ -324,10 +324,10 @@ green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
 first4(){
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
-[[ -n /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
-sed -i '/^label 2002::\/16   2/d' /etc/gai.conf
+[[ -e /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf 2>/dev/null
+sed -i '/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 else
-sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 fi
 }
 
@@ -342,14 +342,14 @@ fi
 
 uncf(){
 if [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -z $(type -P warp-cli) ]]; then
-rm -rf /root/CFwarp.sh nf /usr/bin/cf
+rm -rf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
 upcfwarp(){
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh
 chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
+ln -sf /root/CFwarp.sh /usr/bin/cf 
 green "CFwarp安装脚本升级成功" && cf
 }
 
@@ -364,6 +364,13 @@ apt purge cloudflare-warp -y
 rm -f /etc/apt/sources.list.d/cloudflare-client.list /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
 fi
 $yumapt autoremove
+}
+
+lncf(){
+if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) || -n $(type -P wg-quick) ]]; then
+chmod +x /root/CFwarp.sh 
+ln -sf /root/CFwarp.sh /usr/bin/cf
+fi
 }
 
 ShowSOCKS5(){
@@ -459,8 +466,7 @@ warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
-sleep 2 && ShowSOCKS5
-S5menu 
+sleep 2 && ShowSOCKS5 && S5menu && lncf
 }
 
 WGCFmenu(){
@@ -491,6 +497,7 @@ WGCFmenu;S5menu
 }
 
 ONEWARPGO(){
+yellow "\n 请稍等……" && sleep 2
 STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP(+)，不支持当前选择的WARP安装方案" 
@@ -501,13 +508,6 @@ fi
 warpwgcf(){
 if [[ -e "/usr/local/bin/wgcf" ]]; then
 red "请先卸载已安装的WGCF-WARP，否则无法安装当前的WARP-GO，脚本退出" && exit
-fi
-}
-
-lncf(){
-if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) ]]; then
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
@@ -803,7 +803,7 @@ apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 fi
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
@@ -1013,7 +1013,7 @@ cwg(){
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
-sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
 }
 WARPun(){
@@ -1049,7 +1049,7 @@ green " 当前 WARP-GO 已安装内核版本号：${loVERSION} ，已是最新�
 
 WGproxy(){
 if [[ ! $(type -P warp-go) ]]; then
-wget -N --no-check-certificate https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf
@@ -1057,7 +1057,7 @@ mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 done
 fi
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址"
+green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址，不懂就回车吧"
 readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
 if [ -z "${IPet}" ] || [ $IPet == "1" ]; then
 endip=162.159.193.10
@@ -1072,7 +1072,12 @@ sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
 green "当前Wireguard配置文件如下" && sleep 1
 white "$(cat /usr/local/bin/wgwarp.conf)\n"
-yellow "提示：Xray添加出站 Wireguard warp 时，原先 reserved 后三个数字[x,x,x]替换为$(grep -o '\[[^]]*\]' /usr/local/bin/sbwarp.json | awk 'NR==3')\n"
+yellow "说明："
+yellow "一、以上参数可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
+yellow "二、Endpoint参数可替换为各平台本地网络测试后的优选Endpoint的IP"
+yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
+yellow "三、PrivateKey、Address的V6地址、reserved，三个参数相互绑定关联，注意替换(Wireguard客户端无需reserved参数)"
+yellow "当前VPS的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
@@ -1095,12 +1100,13 @@ white "甬哥Github项目  ：github.com/yonggekkk"
 white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 安装warp成功后，进入脚本快捷方式：cf"
+yellow " 任意选择适合自己的warp现实方案（选项1、2、3，可单选，可多选）"
+yellow " 进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换WARP-GO（三模式）"
-[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
-green "  3. 卸载WARP"
-green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
+green "  1. 方案一：安装/切换WARP-GO"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 方案二：安装Socks5-WARP"
+green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
+green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
 green "  6. WARP刷刷刷选项：WARP+流量……"
@@ -1137,8 +1143,8 @@ readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
  2 ) [[ $cpu = amd64* ]] && SOCKS5ins || bash CFwarp.sh;;
- 3 ) WARPun && uncf ;;
- 4 ) WGproxy;;
+ 3 ) WGproxy;;
+ 4 ) WARPun && uncf ;;
  5 ) WARPonoff;;
  6 ) warprefresh;;
  7 ) WARPup;;
@@ -1166,6 +1172,7 @@ fi
 }
 
 ONEWGCFWARP(){
+yellow "/n 请稍等……" && sleep 2
 ud4='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud6='sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
 ud4ud6='sed -i "7 s/^/PostUp = ip -4 rule add from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -4 rule delete from $(ip route get 162.159.192.1 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostUp = ip -6 rule add from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf && sed -i "7 s/^/PostDown = ip -6 rule delete from $(ip route get 2606:4700:d0::a29f:c001 | grep -oP '"'src \K\S+') lookup main\n/"'" /etc/wireguard/wgcf.conf'
@@ -1235,13 +1242,6 @@ systemctl restart wg-quick@wgcf ; bash CFwarp.sh
 fi
 }
 
-lncf(){
-if [[ $(type -P wg-quick) || $(type -P warp-cli) ]]; then
-chmod +x /root/CFwarp.sh 
-ln -sf /root/CFwarp.sh /usr/bin/cf
-fi
-}
-
 fawgcf(){
 rm -f /etc/wireguard/wgcf+p.log
 ID=$(cat /etc/wireguard/buckup-account.toml | grep license_key | awk '{print $3}')
@@ -1255,8 +1255,7 @@ ShowWGCF && WGCFmenu
 
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
-blue "\nWireguard客户端相关设置说明请关注甬哥博客"
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址"
+green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址，不懂就回车吧"
 readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
 if [ -z "${IPet}" ] || [ $IPet == "1" ];then
 endip=162.159.193.10
@@ -1271,6 +1270,7 @@ sed -i "8a AllowedIPs = 0.0.0.0\/0\nAllowedIPs = ::\/0\n" /etc/wireguard/wgproxy
 sed -i "10a Endpoint = $endip:1701" /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 yellow "$(cat /etc/wireguard/wgproxy.conf)\n"
+yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
 green "当前wireguard节点二维码分享链接如下" && sleep 2
 qrencode -t ansiutf8 < /etc/wireguard/wgproxy.conf
 }
@@ -1612,7 +1612,7 @@ systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt remove wireguard-tools
 $yumapt autoremove
 dig9
-sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
 rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
 }
 
@@ -1673,12 +1673,13 @@ white "甬哥Github项目  ：github.com/yonggekkk"
 white "甬哥blogger博客 ：ygkkk.blogspot.com"
 white "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-yellow " 安装warp成功后，进入脚本快捷方式：cf"
+yellow " 任意选择适合自己的warp现实方案（选项1、2、3，可单选，可多选）"
+yellow " 进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 安装/切换WGCF-WARP（三模式）"
-[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 安装Socks5-WARP"
-green "  3. WARP卸载"
-green "  4. 显示WARP代理节点的配置文件、二维码（WireGuard协议）"
+green "  1. 方案一：安装/切换WGCF-WARP"
+[[ $cpu != amd64* ]] && red "  2. 提示：当前VPS的CPU并非AMD64架构，目前不支持安装Socks5-WARP" || green "  2. 方案二：安装Socks5-WARP"
+green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
+green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
 green "  6. WARP刷刷刷选项：WARP+流量……"
@@ -1706,8 +1707,8 @@ readp " 请输入数字:" Input
 case "$Input" in     
  1 ) warpinscha;;
  2 ) [[ $cpu = amd64 ]] && SOCKS5ins || bash CFwarp.sh;;
- 3 ) WARPun && uncf;;
- 4 ) WGproxy;;
+ 3 ) WGproxy;;
+ 4 ) WARPun && uncf;;
  5 ) WARPonoff;;
  6 ) warprefresh;;
  7 ) WARPup;;
