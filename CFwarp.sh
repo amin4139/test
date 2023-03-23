@@ -1073,11 +1073,12 @@ sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
 green "当前Wireguard配置文件如下" && sleep 1
 white "$(cat /usr/local/bin/wgwarp.conf)\n"
 yellow "注意："
-yellow "一、以上参数可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
-yellow "二、Endpoint参数可替换为各平台本地网络测试后的优选Endpoint的IP"
-yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
-yellow "三、PrivateKey、Address的V6地址、reserved(可选)，三个参数相互绑定关联"
-yellow "当前VPS的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
+yellow "一、以上Wireguard-warp配置参数与当前VPS无任何关联，可理解为独立的Wireguard-warp配置，你可以疯狂滥用于各平台\n"
+yellow "二、以上Wireguard-warp配置参数可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
+yellow "三、以上配置中Endpoint默认IP端口可替换为：各平台在本地网络运营商（中国移动、中国联通、中国电信）测试warp优选后的IP端口"
+yellow "当前VPS平台优选Endpoint的IP端口：$endpoint\n"
+yellow "四、PrivateKey、Address的V6地址、reserved(可选)，三个参数相互绑定关联"
+yellow "当前VPS平台的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
