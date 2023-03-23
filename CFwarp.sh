@@ -333,9 +333,10 @@ fi
 
 docker(){
 if [[ -n $(ip a | grep docker) ]]; then
-red "检测到VPS已安装docker，如继续安装WARP，docker就会失效"
+red "检测到VPS已安装docker，如继续安装方案一的WARP，docker就会失效"
+red "为避免docker失效，建议使用方案二或者方案三"
 sleep 3s
-yellow "6秒后继续安装，退出安装请按Ctrl+c"
+yellow "6秒后继续安装方案一的WARP，退出安装请按Ctrl+c"
 sleep 6s
 fi
 }
