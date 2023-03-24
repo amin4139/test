@@ -1057,28 +1057,17 @@ mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 done
 fi
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址，不懂就回车吧"
-readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
-if [ -z "${IPet}" ] || [ $IPet == "1" ]; then
-endip=162.159.193.10
-elif [ $IPet == "2" ]; then
-endip=[2606:4700:d0::]
-else 
-red "输入错误，请重新选择" && WGproxy
-fi
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-wireguard=/usr/local/bin/wgwarp.conf
-sed -i '/Endpoint/d' /usr/local/bin/wgwarp.conf
-sed -i "11a Endpoint = $endip:1701" /usr/local/bin/wgwarp.conf
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
-green "当前Wireguard配置文件如下" && sleep 1
+green "当前Wireguard-warp配置参数如下" && sleep 1
 white "$(cat /usr/local/bin/wgwarp.conf)\n"
 yellow "注意："
-yellow "一、以上Wireguard-warp配置参数与当前VPS无任何关联，可理解为独立的Wireguard-warp配置，你可以疯狂滥用于各平台\n"
-yellow "二、以上Wireguard-warp配置参数可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
-yellow "三、以上配置中Endpoint默认IP端口可替换为：各平台在本地网络运营商（中国移动、中国联通、中国电信）测试warp优选后的IP端口"
-yellow "当前VPS平台优选Endpoint的IP端口：$endpoint\n"
-yellow "四、PrivateKey、Address的V6地址、reserved(可选)，三个参数相互绑定关联"
-yellow "当前VPS平台的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
+yellow "一、此配置与当前VPS无任何关联，根据各平台本地网络来判定CF的IP地区，你可以疯狂滥用\n"
+yellow "二、此配置可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
+yellow "三、此配置中Endpoint的IP端口：$endpoint，为当前VPS平台测试结果"
+yellow "   如应用于其他各平台，建议将 $endpoint 替换为其他平台本地网络测试warp优选后的IP端口\n"
+yellow "四、此配置中PrivateKey、Address的V6地址、reserved(可选)，三个参数相互绑定关联"
+yellow "   当前VPS平台的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
 green "当前Wireguard节点二维码分享链接如下" && sleep 1
 qrencode -t ansiutf8 < /usr/local/bin/wgwarp.conf
 echo
@@ -1256,19 +1245,7 @@ ShowWGCF && WGCFmenu
 
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
-green "\n根据网络环境，选择Wireguard代理节点的Endpoint对端IP地址，不懂就回车吧"
-readp "1. 使用IPV4地址 (支持v4或v6+v4网络环境，回车默认)\n2. 使用IPV6地址 (仅支持v6+v4网络环境)\n请选择：" IPet
-if [ -z "${IPet}" ] || [ $IPet == "1" ];then
-endip=162.159.193.10
-elif [ $IPet == "2" ];then
-endip=[2606:4700:d0::]
-else 
-red "输入错误，请重新选择" && WGproxy
-fi
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
-sed -i '/PostUp/d;/PostDown/d;/AllowedIPs/d;/Endpoint/d' /etc/wireguard/wgproxy.conf
-sed -i "8a AllowedIPs = 0.0.0.0\/0\nAllowedIPs = ::\/0\n" /etc/wireguard/wgproxy.conf
-sed -i "10a Endpoint = $endip:1701" /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 yellow "$(cat /etc/wireguard/wgproxy.conf)\n"
 yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
