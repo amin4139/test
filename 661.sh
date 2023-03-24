@@ -1246,7 +1246,7 @@ ShowWGCF && WGCFmenu
 }
 
 WGproxy(){
-[[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
+[[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP，安装好wgcf-warp才能执行" && sleep 3 && bash CFwarp.sh
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
 sed -i '/PostUp/d;/PostDown/d' /etc/wireguard/wgproxy.conf
 sed -i "10a Endpoint = $endpoint" /etc/wireguard/wgproxy.conf
@@ -1515,7 +1515,7 @@ python3 wp-plus.py
 }
 
 WARPup(){
-[[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp" && bash CFwarp.sh
+[[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp，安装好wgcf-warp才能执行" && sleep 3 && bash CFwarp.sh
 backconf(){
 yellow "升级失败，自动恢复warp普通账户"
 sed -i "2s#.*#$(sed -ne 2p /etc/wireguard/wgcf-profile.conf)#;4s#.*#$(sed -ne 4p /etc/wireguard/wgcf-profile.conf)#" /etc/wireguard/wgcf.conf
