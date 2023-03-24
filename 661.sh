@@ -1248,7 +1248,8 @@ ShowWGCF && WGCFmenu
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP，安装好wgcf-warp才能执行" && sleep 3 && bash CFwarp.sh
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
-sed -i '/PostUp/d;/PostDown/d;/Endpoint/d' /etc/wireguard/wgproxy.conf
+sed -i '/PostUp/d;/PostDown/d;/AllowedIPs/d;/Endpoint/d' /etc/wireguard/wgproxy.conf
+sed -i "8a AllowedIPs = 0.0.0.0\/0\nAllowedIPs = ::\/0\n" /etc/wireguard/wgproxy.conf
 sed -i "10a Endpoint = $endpoint" /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 white "$(cat /etc/wireguard/wgproxy.conf)\n"
