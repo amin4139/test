@@ -1245,11 +1245,11 @@ ShowWGCF && WGCFmenu
 
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
+warpip
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
 sed -i '/PostUp/d;/PostDown/d' /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 yellow "$(cat /etc/wireguard/wgproxy.conf)\n"
-yellow "当前VPS平台优选Endpoint的IP：$endpoint\n"
 green "当前wireguard节点二维码分享链接如下" && sleep 2
 qrencode -t ansiutf8 < /etc/wireguard/wgproxy.conf
 }
