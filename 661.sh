@@ -1245,11 +1245,16 @@ ShowWGCF && WGCFmenu
 
 WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
-warpip
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
 sed -i '/PostUp/d;/PostDown/d' /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
-yellow "$(cat /etc/wireguard/wgproxy.conf)\n"
+white "$(cat /etc/wireguard/wgproxy.conf)\n"
+yellow "注意："
+yellow "一、此配置与当前VPS无任何关联，根据各平台本地网络来判定CF的IP地区，你可以疯狂滥用\n"
+yellow "二、此配置可全部复制用于Wireguard客户端\n"
+yellow "三、此配置中Endpoint的IP端口：$endpoint，为当前VPS平台测试结果"
+yellow "   如应用于其他各平台，建议将 $endpoint 替换为其他平台本地网络测试warp优选后的IP端口\n"
+yellow "四、此配置中PrivateKey、Address的V6地址、两个参数相互绑定关联\n"
 green "当前wireguard节点二维码分享链接如下" && sleep 2
 qrencode -t ansiutf8 < /etc/wireguard/wgproxy.conf
 }
