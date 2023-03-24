@@ -1058,6 +1058,8 @@ sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 done
 fi
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-wireguard=/usr/local/bin/wgwarp.conf
+sed -i '/Endpoint/d' /usr/local/bin/wgwarp.conf
+sed -i "11a Endpoint = $endpoint" /usr/local/bin/wgwarp.conf
 /usr/local/bin/warp-go --config=/usr/local/bin/warp.conf --export-singbox=/usr/local/bin/sbwarp.json
 green "当前Wireguard-warp配置参数如下" && sleep 1
 white "$(cat /usr/local/bin/wgwarp.conf)\n"
@@ -1247,6 +1249,7 @@ WGproxy(){
 [[ ! $(type -P wg-quick) ]] && red "未安装Wgcf-WARP" && bash CFwarp.sh
 cp -f /etc/wireguard/wgcf.conf /etc/wireguard/wgproxy.conf >/dev/null 2>&1
 sed -i '/PostUp/d;/PostDown/d' /etc/wireguard/wgproxy.conf
+sed -i "10a Endpoint = $endpoint" /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 white "$(cat /etc/wireguard/wgproxy.conf)\n"
 yellow "注意："
