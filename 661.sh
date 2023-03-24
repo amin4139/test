@@ -1062,9 +1062,9 @@ fi
 green "当前Wireguard-warp配置参数如下" && sleep 1
 white "$(cat /usr/local/bin/wgwarp.conf)\n"
 yellow "注意："
-yellow "一、此配置与当前VPS无任何关联，根据各平台本地网络来判定CF的IP地区，你可以疯狂滥用\n"
+yellow "一、此配置与当前VPS无任何关联，根据各平台本地网络就近原则来判定CF的IP地区\n"
 yellow "二、此配置可全部复制用于Wireguard客户端，个别参数可复制用于Xray协议的Wireguard-warp出站配置\n"
-yellow "三、此配置中Endpoint的IP端口：$endpoint，为当前VPS平台测试结果"
+yellow "三、此配置中Endpoint的IP端口：$endpoint，为当前VPS平台warp优选测试结果"
 yellow "   如应用于其他各平台，建议将 $endpoint 替换为其他平台本地网络测试warp优选后的IP端口\n"
 yellow "四、此配置中PrivateKey、Address的V6地址、reserved(可选)，三个参数相互绑定关联"
 yellow "   当前VPS平台的reserved参数值：$(grep -o '"reserved":\[[^]]*\]' /usr/local/bin/sbwarp.json)\n"
@@ -1250,11 +1250,11 @@ sed -i '/PostUp/d;/PostDown/d' /etc/wireguard/wgproxy.conf
 green "当前wireguard客户端配置文件wgproxy.conf内容如下，保存到 /etc/wireguard/wgproxy.conf\n" && sleep 2
 white "$(cat /etc/wireguard/wgproxy.conf)\n"
 yellow "注意："
-yellow "一、此配置与当前VPS无任何关联，根据各平台本地网络来判定CF的IP地区，你可以疯狂滥用\n"
+yellow "一、此配置与当前VPS无任何关联，根据各平台本地网络就近原则来判定CF的IP地区\n"
 yellow "二、此配置可全部复制用于Wireguard客户端\n"
-yellow "三、此配置中Endpoint的IP端口：$endpoint，为当前VPS平台测试结果"
+yellow "三、此配置中Endpoint的IP端口：$endpoint，为当前VPS平台warp优选测试结果"
 yellow "   如应用于其他各平台，建议将 $endpoint 替换为其他平台本地网络测试warp优选后的IP端口\n"
-yellow "四、此配置中PrivateKey、Address的V6地址、两个参数相互绑定关联\n"
+yellow "四、此配置中PrivateKey与Address的V6地址，这两个参数相互绑定关联\n"
 green "当前wireguard节点二维码分享链接如下" && sleep 2
 qrencode -t ansiutf8 < /etc/wireguard/wgproxy.conf
 }
