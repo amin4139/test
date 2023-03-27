@@ -643,13 +643,14 @@ red "遗憾！warp的IP获取失败"
 fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-yellow "安装WARP失败，还原VPS，卸载WARP组件中……"
+yellow "安装WARP失败，还原VPS，卸载WARP"
 cwg && rm -rf /root/warpip
 echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
-red "建议选择WGCF核心来安装WARP"
+red "你或许可以使用方案二或方案三来实现WARP"
+red "也可以选择WGCF核心来安装WARP方案一"
 exit
 else 
 green "ok" && systemctl restart warp-go
@@ -1459,7 +1460,8 @@ echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
-red "建议选择WARP-GO核心来安装WARP"
+red "你或许可以使用方案二或方案三来实现WARP"
+red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
 else 
 green "ok"
