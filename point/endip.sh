@@ -168,7 +168,7 @@ chmod +x warpendpoint
 ./warpendpoint
 clear
 cat result.csv | awk -F, '$3!="timeout ms" {print} ' | sort -t, -nk2 -nk3 | uniq | head -11 | awk -F, '{print "端点 "$1" 丢包率 "$2" 平均延迟 "$3}' 
-rm -rf ip.txt
+rm -rf ip.txt warpendpoint
 exit
 }
 
