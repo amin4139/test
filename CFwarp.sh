@@ -86,10 +86,21 @@ fi
 fi
 
 [[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
-[[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
-[[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
-[[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
-[[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
+if [[ ! $(type -P curl) ]]; then
+$yumapt update;$yumapt install curl
+fi
+if [[ ! $(type -P bc) ]]; then
+$yumapt update;$yumapt install bc
+fi
+if [[ ! $(type -P qrencode) ]]; then
+$yumapt update;$yumapt install qrencode
+fi
+if [[ ! $(type -P python3) ]]; then
+$yumapt update;$yumapt install python3
+fi
+if [[ ! $(type -P cron) ]]; then
+$yumapt update;apt install cron -y;yum install cronie -y
+fi
 
 nf4() {
 result=`curl --connect-timeout 5 -4sSL "https://www.netflix.com/" 2>&1`
