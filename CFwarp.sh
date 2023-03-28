@@ -85,13 +85,6 @@ fi
 fi
 fi
 
-#if [[ ! -f /root/nf || ! -s /root/nf ]]; then
-#cpujg
-#wget -O nf https://gitlab.com/rwkgyg/CFwarp/-/raw/main/nf_linux_${cpu}
-#wget -O nf https://raw.githubusercontent.com/rkygogo/netflix-verify/main/nf_linux_$cpu
-#chmod +x nf
-#fi
-
 [[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ $(type -P bc) ]] || ($yumapt update;$yumapt install bc)
@@ -297,7 +290,6 @@ else
 			n=$[$n+1]
 		fi
 	done
-
 fi
 echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u>/root/warpip/ip.txt
 wget -qO /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu && chmod +x /root/warpip/$cpu
@@ -510,7 +502,7 @@ warp-cli --accept-tos register >/dev/null 2>&1 && sleep 2
 warp-cli --accept-tos set-mode proxy >/dev/null 2>&1
 warp-cli --accept-tos set-custom-endpoint "$endpoint" >/dev/null 2>&1
 warp-cli --accept-tos enable-always-on >/dev/null 2>&1
-sleep 2 && ShowSOCKS5 && S5menu && lncf
+sleep 2 && ShowSOCKS5 && S5menu && lncf && reswarp
 }
 
 WGCFmenu(){
@@ -533,11 +525,25 @@ IP_Status_menu(){
 WGCFmenu;S5menu 
 }
 
+reswarp(){
+crontab -l > /tmp/crontab.tmp
+echo  "0 4 * * * systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+crontab /tmp/crontab.tmp
+rm /tmp/crontab.tmp
+}
+
+unreswarp(){
+crontab -l > /tmp/crontab.tmp
+sed -i '/systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc/d' /tmp/crontab.tmp
+crontab /tmp/crontab.tmp
+rm /tmp/crontab.tmp
+}
+
 ONEWARPGO(){
 yellow "\n 请稍等……" && sleep 2
 STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
-red "已安装Socks5-WARP(+)，不支持当前选择的WARP安装方案" 
+red "已安装Socks5-WARP，不支持当前选择的WARP安装方案" 
 systemctl restart warp-go ; bash CFwarp.sh
 fi
 }
@@ -876,7 +882,7 @@ green "恭喜！warp的IP获取成功！" && dns
 else
 CheckWARP
 fi
-ShowWGCF && WGCFmenu && lncf
+ShowWGCF && WGCFmenu && lncf && reswarp
 }
 
 warpinscha(){
@@ -1059,7 +1065,7 @@ readp "$ab" cd
 case "$cd" in
 1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
 2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg && rm -rf /root/warpip && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+3 ) cwg && rm -rf /root/warpip && cso && unreswarp && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
@@ -1266,7 +1272,7 @@ fi
 
 STOPwgcf(){
 if [[ $(type -P warp-cli) ]]; then
-red "已安装Socks5-WARP(+)，不支持当前选择的wgcf-warp安装方案" 
+red "已安装Socks5-WARP，不支持当前选择的wgcf-warp安装方案" 
 systemctl restart wg-quick@wgcf ; bash CFwarp.sh
 fi
 }
@@ -1542,7 +1548,7 @@ ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
-CheckWARP && ShowWGCF && WGCFmenu && lncf
+CheckWARP && ShowWGCF && WGCFmenu && lncf && reswarp
 }
 
 warprefresh(){
@@ -1645,7 +1651,7 @@ readp "$ab" cd
 case "$cd" in
 1 ) cwg && green "warp卸载完成" && ShowWGCF && WGCFmenu;;
 2 ) cso && green "socks5-warp卸载完成" && ShowSOCKS5 && S5menu;;
-3 ) cwg && rm -rf /root/warpip && cso && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
+3 ) cwg && rm -rf /root/warpip && cso && unreswarp && green "warp与socks5-warp都已卸载完成" && ShowWGCF;ShowSOCKS5;IP_Status_menu;;
 esac
 }
 
