@@ -336,16 +336,6 @@ echo -e "search blue.kundencontroller.de\noptions rotate\nnameserver 2a02:180:6:
 fi
 }
 
-get_char(){
-SAVEDSTTY=`stty -g`
-stty -echo
-stty cbreak
-dd if=/dev/tty bs=1 count=1 2> /dev/null
-stty -raw
-stty echo
-stty $SAVEDSTTY
-}
-
 mtuwarp(){
 v4v6
 yellow "开始自动设置warp的MTU最佳网络吞吐量值，以优化WARP网络！"
@@ -537,13 +527,6 @@ white "-------------------------------------------------------------------------
 white " 方案二：当前Socks5-WARP官方客户端本地代理情况如下"
 blue " ${S5Status}"
 white "------------------------------------------------------------------------------------------------"
-}
-
-back(){
-white "------------------------------------------------------------------------------------"
-white " 回主菜单，请按任意键"
-white " 退出脚本，请按Ctrl+C"
-get_char && bash CFwarp.sh
 }
 
 IP_Status_menu(){
@@ -1576,7 +1559,7 @@ backconf(){
 yellow "升级失败，自动恢复warp普通账户"
 sed -i "2s#.*#$(sed -ne 2p /etc/wireguard/wgcf-profile.conf)#;4s#.*#$(sed -ne 4p /etc/wireguard/wgcf-profile.conf)#" /etc/wireguard/wgcf.conf
 systemctl restart wg-quick@wgcf
-ShowWGCF && WGCFmenu && back
+ShowWGCF && WGCFmenu
 }
 ab="1.Teams账户\n2.warp+账户\n3.普通warp账户\n0.返回上一层\n 请选择："
 readp "$ab" cd
@@ -1590,7 +1573,7 @@ sed -i "s#PrivateKey.*#PrivateKey = $Key#g;s#Address.*128#Address = $Add/128#g" 
 systemctl restart wg-quick@wgcf >/dev/null 2>&1
 checkwgcf
 if [[ $wgcfv4 = plus || $wgcfv6 = plus ]]; then
-rm -rf /etc/wireguard/wgcf+p.log && green "wgcf-warp+Teams账户已生效" && ShowWGCF && WGCFmenu && back
+rm -rf /etc/wireguard/wgcf+p.log && green "wgcf-warp+Teams账户已生效" && ShowWGCF && WGCFmenu
 else
 backconf
 fi
