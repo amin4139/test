@@ -1575,8 +1575,7 @@ WARPup(){
 backconf(){
 yellow "升级失败，自动恢复warp普通账户"
 sed -i "2s#.*#$(sed -ne 2p /etc/wireguard/wgcf-profile.conf)#;4s#.*#$(sed -ne 4p /etc/wireguard/wgcf-profile.conf)#" /etc/wireguard/wgcf.conf
-systemctl restart wg-quick@wgcf
-ShowWGCF && WGCFmenu
+CheckWARP && ShowWGCF && WGCFmenu
 }
 ab="1.Teams账户\n2.warp+账户\n3.普通warp账户\n0.返回上一层\n 请选择："
 readp "$ab" cd
