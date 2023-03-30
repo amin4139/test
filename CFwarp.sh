@@ -168,6 +168,7 @@ warpip(){
 checkpt(){
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
 if [[ $a = 100.00% ]]; then
+v4v6
 if [[ -z $v4 ]]; then
 export endpoint=[2606:4700:d0::a29f:c001]:2408
 else
