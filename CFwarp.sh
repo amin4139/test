@@ -1808,6 +1808,6 @@ ONEWGCFWARP
 elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) && -z $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
-bug && sleep 2 && exit
+startCFwarp
 fi
 fi
