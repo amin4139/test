@@ -1811,15 +1811,15 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+if [[ -n $(type -P warp-go) && -z $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) && -z $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
 elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ -n $(type -P wg-quick) && -z $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
-elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) && -z $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
 startCFwarp
