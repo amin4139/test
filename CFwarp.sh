@@ -162,8 +162,24 @@ wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 
+
+
+warpip(){
 checkpt(){
+a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
+if [[ $a = 100.00% ]]; then
+if [[ -z $v4 ]]; then
+export endpoint=[2606:4700:d0::a29f:c001]:2408
+else
+export endpoint=162.159.193.10:1701
+fi
+else
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
+fi
+green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
+}
 mkdir -p /root/warpip
+if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 v4v6
 if [[ -z $v4 ]]; then
@@ -308,27 +324,9 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
-green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
-}
-
-warpip(){
-if [[ ! -f '/root/warpip/result.csv' ]]; then
-checkwgcf
-if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 checkpt
 else
-systemctl stop wg-quick@wgcf >/dev/null 2>&1
-kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 checkpt
-systemctl start wg-quick@wgcf >/dev/null 2>&1
-systemctl restart warp-go >/dev/null 2>&1
-systemctl enable warp-go >/dev/null 2>&1
-systemctl start warp-go >/dev/null 2>&1
-fi
-else
-export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
-green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
 warpip
