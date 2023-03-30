@@ -1761,6 +1761,11 @@ start_menu
 fi
 }
 
+bug(){
+red "检测到WARP安装环境异常"
+yellow "再次运行脚本前，请先运行 rm -rf /usr/local/bin/warp-go /usr/bin/wg-quick"
+}
+
 startCFwarp(){
 clear
 green "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"           
@@ -1803,6 +1808,6 @@ ONEWGCFWARP
 elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) && -z $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
-startCFwarp
+bug && sleep 2 && exit
 fi
 fi
