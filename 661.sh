@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.3.28 V 0.9.7 "
+wpygV="23.3.30 V 0.9.8 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -168,6 +168,7 @@ warpip(){
 checkpt(){
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
 if [[ $a = 100.00% ]]; then
+v4v6
 if [[ -z $v4 ]]; then
 export endpoint=[2606:4700:d0::a29f:c001]:2408
 else
@@ -326,7 +327,18 @@ wait
 cd
 checkpt
 else
+checkwgcf
+if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 checkpt
+else
+systemctl stop wg-quick@wgcf >/dev/null 2>&1
+kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
+checkpt
+systemctl start wg-quick@wgcf >/dev/null 2>&1
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
+systemctl start warp-go >/dev/null 2>&1
+fi
 fi
 }
 warpip
