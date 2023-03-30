@@ -433,6 +433,14 @@ ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
+warprefresh(){
+wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
+sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
+readp "客户端配置ID(36个字符)：" ID
+sed -i "27 s/input/'$ID'/" wp-plus.py
+python3 wp-plus.py
+}
+
 ShowSOCKS5(){
 if [[ $(systemctl is-active warp-svc) = active ]]; then
 mport=`warp-cli --accept-tos settings 2>/dev/null | grep 'WarpProxy on port' | awk -F "port " '{print $2}'`
@@ -569,12 +577,6 @@ STOPwgcf(){
 if [[ -n $(type -P warp-cli) ]]; then
 red "已安装Socks5-WARP，不支持当前选择的WARP安装方案" 
 systemctl restart warp-go ; bash CFwarp.sh
-fi
-}
-
-warpwgcf(){
-if [[ -e "/usr/local/bin/wgcf" ]]; then
-red "请先卸载已安装的WGCF-WARP，否则无法安装当前的WARP-GO，脚本退出" && exit
 fi
 }
 
@@ -930,14 +932,6 @@ fi
 echo
 } 
 
-warprefresh(){
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
-sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
-readp "客户端配置ID(36个字符)：" ID
-sed -i "27 s/input/'$ID'/" wp-plus.py
-python3 wp-plus.py
-}
-
 WARPup(){
 endpost(){
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
@@ -1214,7 +1208,6 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-#warpwgcf
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
@@ -1575,14 +1568,6 @@ systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf && reswarp
 }
 
-warprefresh(){
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
-sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
-readp "客户端配置ID(36个字符)：" ID
-sed -i "27 s/input/'$ID'/" wp-plus.py
-python3 wp-plus.py
-}
-
 WARPup(){
 [[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp，安装好wgcf-warp才能执行" && sleep 3 && bash CFwarp.sh
 backconf(){
@@ -1770,14 +1755,7 @@ case "$Input" in
 esac
 }
 
-warpgo(){
-if [[ -n $(type -P warp-go) ]]; then
-red "请先卸载已安装的WARP-GO，否则无法安装当前的WGCF-WARP，脚本退出" && exit
-fi
-}
-
 if [ $# == 0 ]; then
-#warpgo
 cpujg
 start_menu
 fi
