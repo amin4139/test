@@ -1214,7 +1214,7 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-warpwgcf
+#warpwgcf
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
@@ -1777,7 +1777,7 @@ fi
 }
 
 if [ $# == 0 ]; then
-warpgo
+#warpgo
 cpujg
 start_menu
 fi
