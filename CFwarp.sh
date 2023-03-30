@@ -165,7 +165,7 @@ wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 
 
 warpip(){
-checkpt(){
+checkpt2(){
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
 if [[ $a = 100.00% ]]; then
 v4v6
@@ -179,6 +179,7 @@ export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print}
 fi
 green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 }
+checkpt1(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
@@ -325,20 +326,22 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-checkpt
+checkpt2
 else
+checkpt2
+fi
+}
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-checkpt
+checkpt1
 else
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-checkpt
+checkpt1
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
-fi
 fi
 }
 warpip
