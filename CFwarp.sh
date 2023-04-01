@@ -658,7 +658,7 @@ red "遗憾！warp的IP获取失败"
 fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-yellow "安装WARP失败，还原VPS，卸载WARP"
+red "安装WARP失败，还原VPS，卸载WARP"
 cwg && rm -rf /root/warpip
 echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
@@ -1460,7 +1460,7 @@ checkwgcf
 done
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-yellow "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
+red "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
 cwg && rm -rf /root/warpip
 echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
@@ -1571,7 +1571,7 @@ CheckWARP && ShowWGCF && WGCFmenu && lncf && reswarp
 WARPup(){
 [[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp，安装好wgcf-warp才能执行" && sleep 3 && bash CFwarp.sh
 backconf(){
-yellow "升级失败，自动恢复warp普通账户"
+red "升级失败，自动恢复warp普通账户"
 sed -i "2s#.*#$(sed -ne 2p /etc/wireguard/wgcf-profile.conf)#;4s#.*#$(sed -ne 4p /etc/wireguard/wgcf-profile.conf)#" /etc/wireguard/wgcf.conf
 CheckWARP && ShowWGCF && WGCFmenu
 }
