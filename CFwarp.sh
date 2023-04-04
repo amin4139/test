@@ -1579,6 +1579,7 @@ ab="1.Teams账户\n2.warp+账户\n3.普通warp账户\n0.返回上一层\n 请选
 readp "$ab" cd
 case "$cd" in 
 1 )
+red "建议使用warp-go的方案可大概率直接获取Teams团队账户，无需提取参数升级"
 [[ ! -e /etc/wireguard/wgcf.conf ]] && red "无法找到wgcf-warp配置文件，建议重装wgcf-warp" && bash CFwarp.sh
 readp "请复制privateKey(44个字符）：" Key
 readp "请复制IPV6的Address：" Add
