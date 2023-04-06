@@ -162,8 +162,6 @@ wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 
-
-
 warpip(){
 checkpt2(){
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
@@ -908,7 +906,7 @@ systemctl enable warp-go
 systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
-green "恭喜！warp的IP获取成功！" && dns
+green "恭喜！warp的IP获取成功！" && dns && xyz
 else
 CheckWARP
 fi
