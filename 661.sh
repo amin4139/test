@@ -165,7 +165,7 @@ wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 
 
 warpip(){
-checkpt(){
+checkpt2(){
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
 if [[ $a = 100.00% ]]; then
 v4v6
@@ -179,6 +179,7 @@ export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print}
 fi
 green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 }
+checkpt1(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
@@ -325,20 +326,22 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-checkpt
+checkpt2
 else
+checkpt2
+fi
+}
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-checkpt
+checkpt1
 else
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-checkpt
+checkpt1
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
 systemctl start warp-go >/dev/null 2>&1
-fi
 fi
 }
 warpip
@@ -428,6 +431,14 @@ if [[ -n $(type -P warp-go) || -n $(type -P warp-cli) || -n $(type -P wg-quick) 
 chmod +x /root/CFwarp.sh 
 ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
+}
+
+warprefresh(){
+wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
+sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
+readp "客户端配置ID(36个字符)：" ID
+sed -i "27 s/input/'$ID'/" wp-plus.py
+python3 wp-plus.py
 }
 
 ShowSOCKS5(){
@@ -569,12 +580,6 @@ systemctl restart warp-go ; bash CFwarp.sh
 fi
 }
 
-warpwgcf(){
-if [[ -e "/usr/local/bin/wgcf" ]]; then
-red "请先卸载已安装的WGCF-WARP，否则无法安装当前的WARP-GO，脚本退出" && exit
-fi
-}
-
 ShowWGCF(){
 UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 v4v6
@@ -653,7 +658,7 @@ red "遗憾！warp的IP获取失败"
 fi
 done
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-yellow "安装WARP失败，还原VPS，卸载WARP"
+red "安装WARP失败，还原VPS，卸载WARP"
 cwg && rm -rf /root/warpip
 echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
@@ -926,14 +931,6 @@ red "输入错误，请重新选择" && warpinscha
 fi
 echo
 } 
-
-warprefresh(){
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
-sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
-readp "客户端配置ID(36个字符)：" ID
-sed -i "27 s/input/'$ID'/" wp-plus.py
-python3 wp-plus.py
-}
 
 WARPup(){
 endpost(){
@@ -1211,7 +1208,6 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-warpwgcf
 bit=`uname -m`
 [[ $bit = aarch64 ]] && cpu=arm64
 if [[ $bit = x86_64 ]]; then
@@ -1464,7 +1460,7 @@ checkwgcf
 done
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-yellow "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
+red "安装WARP失败，还原VPS，卸载Wgcf-WARP组件中……"
 cwg && rm -rf /root/warpip
 echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
@@ -1572,18 +1568,10 @@ systemctl enable wg-quick@wgcf >/dev/null 2>&1
 CheckWARP && ShowWGCF && WGCFmenu && lncf && reswarp
 }
 
-warprefresh(){
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
-sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
-readp "客户端配置ID(36个字符)：" ID
-sed -i "27 s/input/'$ID'/" wp-plus.py
-python3 wp-plus.py
-}
-
 WARPup(){
 [[ ! $(type -P wg-quick) ]] && red "未安装wgcf-warp，安装好wgcf-warp才能执行" && sleep 3 && bash CFwarp.sh
 backconf(){
-yellow "升级失败，自动恢复warp普通账户"
+red "升级失败，自动恢复warp普通账户"
 sed -i "2s#.*#$(sed -ne 2p /etc/wireguard/wgcf-profile.conf)#;4s#.*#$(sed -ne 4p /etc/wireguard/wgcf-profile.conf)#" /etc/wireguard/wgcf.conf
 CheckWARP && ShowWGCF && WGCFmenu
 }
@@ -1591,6 +1579,7 @@ ab="1.Teams账户\n2.warp+账户\n3.普通warp账户\n0.返回上一层\n 请选
 readp "$ab" cd
 case "$cd" in 
 1 )
+red "建议使用warp-go的方案可大概率直接获取Teams团队账户，无需提取参数升级"
 [[ ! -e /etc/wireguard/wgcf.conf ]] && red "无法找到wgcf-warp配置文件，建议重装wgcf-warp" && bash CFwarp.sh
 readp "请复制privateKey(44个字符）：" Key
 readp "请复制IPV6的Address：" Add
@@ -1767,14 +1756,7 @@ case "$Input" in
 esac
 }
 
-warpgo(){
-if [[ -n $(type -P warp-go) ]]; then
-red "请先卸载已安装的WARP-GO，否则无法安装当前的WGCF-WARP，脚本退出" && exit
-fi
-}
-
 if [ $# == 0 ]; then
-warpgo
 cpujg
 start_menu
 fi
@@ -1811,15 +1793,15 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-if [[ -n $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+if [[ -n $(type -P warp-go) && -z $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ -n $(type -P warp-go) && -n $(type -P warp-cli) && -z $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
 elif [[ -z $(type -P warp-go) && -z $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWARPGO
-elif [[ -n $(type -P wg-quick) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ -n $(type -P wg-quick) && -z $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
-elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
+elif [[ -n $(type -P wg-quick) && -n $(type -P warp-cli) && -z $(type -P warp-go) ]] && [[ -f '/root/CFwarp.sh' ]]; then
 ONEWGCFWARP
 else
 startCFwarp
