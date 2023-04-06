@@ -613,7 +613,7 @@ WGCFmenu;S5menu
 
 reswarp(){
 crontab -l > /tmp/crontab.tmp
-echo  "*/15 * * * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+echo  "* * * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
