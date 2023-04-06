@@ -399,12 +399,11 @@ wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 warpclose(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&1 ; systemctl disable wg-quick@wgcf >/dev/null 2>&1;systemctl stop warp-go;systemctl disable warp-go
+wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;systemctl stop warp-go;systemctl disable warp-go
 }
 warpopen(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
+wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
 }
-
 warpre(){
 i=0
 while [ $i -le 4 ]; do let i++
@@ -418,30 +417,27 @@ warpclose
 red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
 fi
 }
-
 while true; do
 green "检测warp是否启动中…………"
 wp=$(cat /root/warpip/wp.log)
 if [[ $wp = w4 ]]; then
 checkwgcf
-[[ $wgcfv4 =~ on|plus ]] && green "恭喜！WARP IPV4状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+[[ $wgcfv4 =~ on|plus ]] && green "恭喜！WARP IPV4状态为运行中！下轮检测将在60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在50秒后自动执行" ; sleep 50s)
 elif [[ $wp = w6 ]]; then
 checkwgcf
-[[ $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV6状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+[[ $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV6状态为运行中！下轮检测将在60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在50秒后自动执行" ; sleep 50s)
 else
 checkwgcf
-[[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV4+IPV6状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+[[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV4+IPV6状态为运行中！下轮检测将在60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在50秒后自动执行" ; sleep 50s)
 fi
 done
 EOF
-readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
-[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
-readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
-[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
+#readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
+#[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
+#readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
+#[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
 [[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-green "设置screen窗口名称'up'" && sleep 2
-grep -qE "^ *@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" /etc/crontab || echo "@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" >> /etc/crontab
-green "添加warp在线守护进程功能"
+green "查看screen窗口名称：up"
 fi
 }
 
@@ -624,7 +620,8 @@ WGCFmenu;S5menu
 
 reswarp(){
 crontab -l > /tmp/crontab.tmp
-echo  "0 4 * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+echo "0 4 * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+echo "@reboot screen -UdmS up /bin/bash /root/WARP-UP.sh" >> /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
@@ -632,6 +629,7 @@ rm /tmp/crontab.tmp
 unreswarp(){
 crontab -l > /tmp/crontab.tmp
 sed -i '/systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc/d' /tmp/crontab.tmp
+sed -i '/@reboot screen/d' /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
@@ -1094,7 +1092,7 @@ systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
-rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
+rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service /root/WARP-UP.sh
 }
 WARPun(){
 ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
@@ -1624,7 +1622,7 @@ $yumapt remove wireguard-tools
 $yumapt autoremove
 dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
-rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
+rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf /root/WARP-UP.sh
 }
 
 WARPun(){
