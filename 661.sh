@@ -404,6 +404,7 @@ wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&
 warpopen(){
 wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
 }
+
 warpre(){
 i=0
 while [ $i -le 4 ]; do let i++
@@ -417,10 +418,20 @@ warpclose
 red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
 fi
 }
+
 while true; do
 green "检测warp是否启动中…………"
+wp=$(cat /root/warpip/wp.log)
+if [[ $wp = w4 ]]; then
 checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+[[ $wgcfv4 =~ on|plus ]] && green "恭喜！WARP IPV4状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+elif [[ $wp = w6 ]]; then
+checkwgcf
+[[ $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV6状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+else
+checkwgcf
+[[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV4+IPV6状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+fi
 done
 EOF
 readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
@@ -747,6 +758,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装warp\n现添加WARP IPV4（IP出站表现：仅WARP IPV4）" && sleep 2
 wpgo1=$wgo1 && wpgo2=$wgo4 && wpgo3=$wgo6 && WGCFins
 fi
+echo 'w4' > /root/warpip/wp.log
 first4
 else
 kill -15 $(pgrep warp-go) >/dev/null 2>&1
@@ -763,6 +775,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装warp\n现快速切换WARP IPV4（IP出站表现：仅WARP IPV4）" && sleep 2
 wpgo1=$wgo1 && wpgo2=$wgo4 && wpgo3=$wgo6 && ABC
 fi
+echo 'w4' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -784,6 +797,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装warp\n现添加WARP IPV6（IP出站表现：原生 IPV4 + WARP IPV6）" && sleep 2
 wpgo1=$wgo2 && wpgo2=$wgo4 && wpgo3=$wgo6 && WGCFins
 fi
+echo 'w6' > /root/warpip/wp.log
 else
 kill -15 $(pgrep warp-go) >/dev/null 2>&1
 sleep 2 && v4v6
@@ -799,6 +813,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装warp\n现快速切换WARP IPV6（IP出站表现：原生 IPV4 + WARP IPV6）" && sleep 2
 wpgo1=$wgo2 && wpgo2=$wgo4 && wpgo3=$wgo6 && ABC
 fi
+echo 'w6' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -820,6 +835,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装warp\n现添加WARP IPV4+IPV6（IP出站表现：WARP双栈 IPV4 + IPV6）" && sleep 2
 wpgo1=$wgo3 && wpgo2=$wgo4 && wpgo3=$wgo6 && WGCFins
 fi
+echo 'w64' > /root/warpip/wp.log
 else
 kill -15 $(pgrep warp-go) >/dev/null 2>&1
 sleep 2 && v4v6
@@ -835,6 +851,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装warp\n现快速切换WARP IPV4+IPV6（IP出站表现：WARP双栈 IPV4 + IPV6）" && sleep 2
 wpgo1=$wgo3 && wpgo2=$wgo4 && wpgo3=$wgo6 && ABC
 fi
+echo 'w64' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -1359,6 +1376,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && WGCFins
 fi
+echo 'w4' > /root/warpip/wp.log
 first4
 else
 wg-quick down wgcf >/dev/null 2>&1
@@ -1375,6 +1393,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && ABC
 fi
+echo 'w4' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -1396,6 +1415,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && WGCFins
 fi
+echo 'w6' > /root/warpip/wp.log
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
@@ -1411,6 +1431,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && ABC
 fi
+echo 'w6' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -1432,6 +1453,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && WGCFins
 fi
+echo 'w64' > /root/warpip/wp.log
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
@@ -1447,6 +1469,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && ABC
 fi
+echo 'w64' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
