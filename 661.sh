@@ -380,6 +380,62 @@ MTU=$((${MTUy} - 80))
 green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
 }
 
+xyz(){
+if [[ -n $(screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}') ]]; then
+until [[ -z $(screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}' | awk 'NR==1{print}') ]] 
+do
+Attached=`screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}' | awk 'NR==1{print}'`
+screen -d $Attached
+done
+fi
+if [[ -e /root/WARP-UP.sh ]]; then
+screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+else
+green "安装warp在线监测守护进程"
+cat > /root/WARP-UP.sh << EOF
+#!/bin/bash
+red(){ echo -e "\033[31m\033[01m$1\033[0m";}
+green(){ echo -e "\033[32m\033[01m$1\033[0m";}
+checkwgcf(){
+wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+}
+warpclose(){
+wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&1 ; systemctl disable wg-quick@wgcf >/dev/null 2>&1;systemctl stop warp-go;systemctl disable warp-go
+}
+warpopen(){
+wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
+}
+warpre(){
+i=0
+while [ $i -le 4 ]; do let i++
+warpopen
+checkwgcf
+[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "中断后的warp尝试获取IP成功！" && break || red "中断后的warp尝试获取IP失败！"
+done
+checkwgcf
+if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
+warpclose
+red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
+fi
+}
+while true; do
+green "检测warp是否启动中…………"
+checkwgcf
+[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
+done
+EOF
+readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
+[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
+readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
+[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
+[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+green "设置screen窗口名称'up'" && sleep 2
+grep -qE "^ *@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" /etc/crontab || echo "@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" >> /etc/crontab
+green "添加warp在线守护进程功能"
+fi
+}
+
 first4(){
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
@@ -559,14 +615,14 @@ WGCFmenu;S5menu
 
 reswarp(){
 crontab -l > /tmp/crontab.tmp
-echo  "0 4 * * * systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+echo  "0 4 * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
 
 unreswarp(){
 crontab -l > /tmp/crontab.tmp
-sed -i '/systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc/d' /tmp/crontab.tmp
+sed -i '/systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc/d' /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
@@ -668,60 +724,8 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WGCF核心来安装WARP方案一"
 exit
 else 
-green "ok" && systemctl restart warp-go
+green "ok" && systemctl restart warp-go && xyz
 fi
-xyz(){
-att
-[[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
-[[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
-[[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
-if [[ -e /root/WARP-UP.sh ]]; then
-screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-else
-green "安装warp在线监测守护进程"
-cat>/root/WARP-UP.sh<<-\EOF
-#!/bin/bash
-red(){ echo -e "\033[31m\033[01m$1\033[0m";}
-green(){ echo -e "\033[32m\033[01m$1\033[0m";}
-checkwgcf(){
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-}
-warpclose(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&1 ; systemctl disable wg-quick@wgcf >/dev/null 2>&1
-}
-warpopen(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1
-}
-warpre(){
-i=0
-while [ $i -le 4 ]; do let i++
-warpopen
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "中断后的warp尝试获取IP成功！" && break || red "中断后的warp尝试获取IP失败！"
-done
-checkwgcf
-if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-warpclose
-red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
-fi
-}
-while true; do
-green "检测warp是否启动中…………"
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
-done
-EOF
-readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
-[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
-readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
-[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-green "设置screen窗口名称'up'" && sleep 2
-grep -qE "^ *@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" /etc/crontab || echo "@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" >> /etc/crontab
-green "添加warp在线守护进程功能"
-fi
-}
 }
 
 nat4(){
@@ -1470,60 +1474,8 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
 else 
-green "ok"
+green "ok" && xyz
 fi
-xyz(){
-att
-[[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
-[[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
-[[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
-if [[ -e /root/WARP-UP.sh ]]; then
-screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-else
-green "安装warp在线监测守护进程"
-cat>/root/WARP-UP.sh<<-\EOF
-#!/bin/bash
-red(){ echo -e "\033[31m\033[01m$1\033[0m";}
-green(){ echo -e "\033[32m\033[01m$1\033[0m";}
-checkwgcf(){
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-}
-warpclose(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&1 ; systemctl disable wg-quick@wgcf >/dev/null 2>&1
-}
-warpopen(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1
-}
-warpre(){
-i=0
-while [ $i -le 4 ]; do let i++
-warpopen
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "中断后的warp尝试获取IP成功！" && break || red "中断后的warp尝试获取IP失败！"
-done
-checkwgcf
-if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-warpclose
-red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
-fi
-}
-while true; do
-green "检测warp是否启动中…………"
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
-done
-EOF
-readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
-[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
-readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
-[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-green "设置screen窗口名称'up'" && sleep 2
-grep -qE "^ *@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" /etc/crontab || echo "@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" >> /etc/crontab
-green "添加warp在线守护进程功能"
-fi
-}
 }
 
 WGCFins(){
