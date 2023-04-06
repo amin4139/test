@@ -390,7 +390,7 @@ if [[ -e /root/WARP-UP.sh ]]; then
 screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 else
 green "安装warp在线监测守护进程"
-cat > /root/WARP-UP.sh << EOF
+cat>/root/WARP-UP.sh<<-\EOF
 #!/bin/bash
 red(){ echo -e "\033[31m\033[01m$1\033[0m";}
 green(){ echo -e "\033[32m\033[01m$1\033[0m";}
