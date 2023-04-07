@@ -508,6 +508,8 @@ fi
 elif [[ $warptools == 2 ]]; then
 if [[ -f /root/WARP-UP.sh ]]; then
 screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败"
 else
 red "启动失败，请重装warp脚本"
 fi
