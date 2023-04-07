@@ -98,6 +98,9 @@ fi
 if [[ ! $(type -P python3) ]]; then
 $yumapt update;$yumapt install python3
 fi
+if [[ ! $(type -P screen) ]]; then
+$yumapt update;$yumapt install screen
+fi
 if [[ ! $(type -P cron) ]]; then
 $yumapt update;apt install cron -y;yum install cronie -y
 fi
