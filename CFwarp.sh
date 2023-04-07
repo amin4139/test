@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.3.30 V 0.9.8 "
+wpygV="23.4.7 V 0.9.9 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -161,8 +161,6 @@ checkwgcf(){
 wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
-
-
 
 warpip(){
 checkpt2(){
@@ -380,6 +378,68 @@ MTU=$((${MTUy} - 80))
 green "MTU最佳网络吞吐量值= $MTU 已设置完毕"
 }
 
+xyz(){
+if [[ -n $(screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}') ]]; then
+until [[ -z $(screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}' | awk 'NR==1{print}') ]] 
+do
+Attached=`screen -ls | grep '(Attached)' | awk '{print $1}' | awk -F "." '{print $1}' | awk 'NR==1{print}'`
+screen -d $Attached
+done
+fi
+if [[ -e /root/WARP-UP.sh ]]; then
+screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+else
+green "安装warp在线监测守护进程"
+cat>/root/WARP-UP.sh<<-\EOF
+#!/bin/bash
+red(){ echo -e "\033[31m\033[01m$1\033[0m";}
+green(){ echo -e "\033[32m\033[01m$1\033[0m";}
+checkwgcf(){
+wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+}
+warpclose(){
+wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;systemctl stop warp-go;systemctl disable warp-go
+}
+warpopen(){
+wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
+}
+warpre(){
+i=0
+while [ $i -le 4 ]; do let i++
+warpopen
+checkwgcf
+[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "中断后的warp尝试获取IP成功！" && break || red "中断后的warp尝试获取IP失败！"
+done
+checkwgcf
+if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
+warpclose
+red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
+fi
+}
+while true; do
+green "检测warp是否启动中…………"
+wp=$(cat /root/warpip/wp.log)
+if [[ $wp = w4 ]]; then
+checkwgcf
+[[ $wgcfv4 =~ on|plus ]] && green "恭喜！WARP IPV4状态为运行中！下轮检测将在60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在50秒后自动执行" ; sleep 50s)
+elif [[ $wp = w6 ]]; then
+checkwgcf
+[[ $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV6状态为运行中！下轮检测将在60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在50秒后自动执行" ; sleep 50s)
+else
+checkwgcf
+[[ $wgcfv4 =~ on|plus && $wgcfv6 =~ on|plus ]] && green "恭喜！WARP IPV4+IPV6状态为运行中！下轮检测将在60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在50秒后自动执行" ; sleep 50s)
+fi
+done
+EOF
+#readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
+#[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
+#readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
+#[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
+[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+fi
+}
+
 first4(){
 checkwgcf
 if [[ $wgcfv4 =~ on|plus && -z $wgcfv6 ]]; then
@@ -433,12 +493,35 @@ ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
-warprefresh(){
+WARPtools(){
+green "1. 查看WARP在线监测情况（注意，退出时Ctrl+a+d）"
+green "2. 再次启动WARP在线监测功能"
+green "3. 刷warp+流量"
+readp "请选择：" warptools
+if [[ $warptools == 1 ]]; then
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+if [[ $name =~ "up" ]]; then
+screen -Ur up
+else
+red "未启动WARP监测功能，请选择2再次启动" && WARPtools
+fi
+elif [[ $warptools == 2 ]]; then
+if [[ -f /root/WARP-UP.sh ]]; then
+screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败"
+else
+red "启动失败，请重装warp脚本"
+fi
+elif [[ $warptools == 3 ]]; then
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
 sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
 readp "客户端配置ID(36个字符)：" ID
 sed -i "27 s/input/'$ID'/" wp-plus.py
 python3 wp-plus.py
+else
+WARPtools
+fi
 }
 
 ShowSOCKS5(){
@@ -559,14 +642,16 @@ WGCFmenu;S5menu
 
 reswarp(){
 crontab -l > /tmp/crontab.tmp
-echo  "0 4 * * * systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+echo "0 4 * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
+echo "@reboot screen -UdmS up /bin/bash /root/WARP-UP.sh" >> /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
 
 unreswarp(){
 crontab -l > /tmp/crontab.tmp
-sed -i '/systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc/d' /tmp/crontab.tmp
+sed -i '/systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc/d' /tmp/crontab.tmp
+sed -i '/@reboot screen/d' /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 }
@@ -668,60 +753,8 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WGCF核心来安装WARP方案一"
 exit
 else 
-green "ok" && systemctl restart warp-go
+green "ok" && systemctl restart warp-go && xyz
 fi
-xyz(){
-att
-[[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
-[[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
-[[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
-if [[ -e /root/WARP-UP.sh ]]; then
-screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-else
-green "安装warp在线监测守护进程"
-cat>/root/WARP-UP.sh<<-\EOF
-#!/bin/bash
-red(){ echo -e "\033[31m\033[01m$1\033[0m";}
-green(){ echo -e "\033[32m\033[01m$1\033[0m";}
-checkwgcf(){
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-}
-warpclose(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&1 ; systemctl disable wg-quick@wgcf >/dev/null 2>&1
-}
-warpopen(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1
-}
-warpre(){
-i=0
-while [ $i -le 4 ]; do let i++
-warpopen
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "中断后的warp尝试获取IP成功！" && break || red "中断后的warp尝试获取IP失败！"
-done
-checkwgcf
-if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-warpclose
-red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
-fi
-}
-while true; do
-green "检测warp是否启动中…………"
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
-done
-EOF
-readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
-[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
-readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
-[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-green "设置screen窗口名称'up'" && sleep 2
-grep -qE "^ *@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" /etc/crontab || echo "@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" >> /etc/crontab
-green "添加warp在线守护进程功能"
-fi
-}
 }
 
 nat4(){
@@ -745,6 +778,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装warp\n现添加WARP IPV4（IP出站表现：仅WARP IPV4）" && sleep 2
 wpgo1=$wgo1 && wpgo2=$wgo4 && wpgo3=$wgo6 && WGCFins
 fi
+echo 'w4' > /root/warpip/wp.log
 first4
 else
 kill -15 $(pgrep warp-go) >/dev/null 2>&1
@@ -761,6 +795,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装warp\n现快速切换WARP IPV4（IP出站表现：仅WARP IPV4）" && sleep 2
 wpgo1=$wgo1 && wpgo2=$wgo4 && wpgo3=$wgo6 && ABC
 fi
+echo 'w4' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -782,6 +817,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装warp\n现添加WARP IPV6（IP出站表现：原生 IPV4 + WARP IPV6）" && sleep 2
 wpgo1=$wgo2 && wpgo2=$wgo4 && wpgo3=$wgo6 && WGCFins
 fi
+echo 'w6' > /root/warpip/wp.log
 else
 kill -15 $(pgrep warp-go) >/dev/null 2>&1
 sleep 2 && v4v6
@@ -797,6 +833,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装warp\n现快速切换WARP IPV6（IP出站表现：原生 IPV4 + WARP IPV6）" && sleep 2
 wpgo1=$wgo2 && wpgo2=$wgo4 && wpgo3=$wgo6 && ABC
 fi
+echo 'w6' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -818,6 +855,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装warp\n现添加WARP IPV4+IPV6（IP出站表现：WARP双栈 IPV4 + IPV6）" && sleep 2
 wpgo1=$wgo3 && wpgo2=$wgo4 && wpgo3=$wgo6 && WGCFins
 fi
+echo 'w64' > /root/warpip/wp.log
 else
 kill -15 $(pgrep warp-go) >/dev/null 2>&1
 sleep 2 && v4v6
@@ -833,6 +871,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装warp\n现快速切换WARP IPV4+IPV6（IP出站表现：WARP双栈 IPV4 + IPV6）" && sleep 2
 wpgo1=$wgo3 && wpgo2=$wgo4 && wpgo3=$wgo6 && ABC
 fi
+echo 'w64' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -904,7 +943,7 @@ systemctl enable warp-go
 systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
-green "恭喜！warp的IP获取成功！" && dns
+green "恭喜！warp的IP获取成功！" && xyz && dns
 else
 CheckWARP
 fi
@@ -1075,7 +1114,7 @@ systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
-rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service
+rm -rf /usr/local/bin/warp-go /usr/local/bin/warpplus.log /usr/local/bin/warp.conf /usr/local/bin/wgwarp.conf /usr/local/bin/sbwarp.json /usr/bin/warp-go /lib/systemd/system/warp-go.service /root/WARP-UP.sh
 }
 WARPun(){
 ab="1.仅卸载warp\n2.仅卸载socks5-warp\n3.彻底卸载warp（1+2）\n 请选择："
@@ -1162,7 +1201,7 @@ green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
 green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
-green "  6. WARP刷刷刷选项：WARP+流量……"
+green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本"
 green "  9. 更新WARP-GO内核"
@@ -1199,7 +1238,7 @@ case "$Input" in
  3 ) WGproxy;;
  4 ) WARPun && uncf ;;
  5 ) WARPonoff;;
- 6 ) warprefresh;;
+ 6 ) WARPtools;;
  7 ) WARPup;;
  8 ) UPwpyg;;
  9 ) upwarpgo;;
@@ -1357,6 +1396,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV4单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && WGCFins
 fi
+echo 'w4' > /root/warpip/wp.log
 first4
 else
 wg-quick down wgcf >/dev/null 2>&1
@@ -1373,6 +1413,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c2 && ABC3=$c3 && ABC4=$ud4 && ABC
 fi
+echo 'w4' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -1394,6 +1435,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV6单栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && WGCFins
 fi
+echo 'w6' > /root/warpip/wp.log
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
@@ -1409,6 +1451,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV6单栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c3 && ABC3=$c1 && ABC
 fi
+echo 'w6' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -1430,6 +1473,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps首次安装wgcf-warp\n现添加IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && WGCFins
 fi
+echo 'w64' > /root/warpip/wp.log
 else
 wg-quick down wgcf >/dev/null 2>&1
 sleep 1 && v4v6
@@ -1445,6 +1489,7 @@ if [[ -z $v6 && -n $v4 ]]; then
 green "当前原生v4单栈vps已安装wgcf-warp\n现快速切换IPV4+IPV6双栈wgcf-warp模式" && sleep 2
 conf && ABC1=$c5 && ABC2=$c3 && ABC3=$ud4 && ABC
 fi
+echo 'w64' > /root/warpip/wp.log
 CheckWARP && first4 && ShowWGCF && WGCFmenu
 fi
 }
@@ -1470,60 +1515,8 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
 else 
-green "ok"
+green "ok" && xyz
 fi
-xyz(){
-att
-[[ -e /root/check.sh ]] && screen -S aw -X quit ; screen -UdmS aw bash -c '/bin/bash /root/check.sh'
-[[ -e /root/WARP-CR.sh ]] && screen -S cr -X quit ; screen -UdmS cr bash -c '/bin/bash /root/WARP-CR.sh'
-[[ -e /root/WARP-CP.sh ]] && screen -S cp -X quit ; screen -UdmS cp bash -c '/bin/bash /root/WARP-CP.sh'
-if [[ -e /root/WARP-UP.sh ]]; then
-screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-else
-green "安装warp在线监测守护进程"
-cat>/root/WARP-UP.sh<<-\EOF
-#!/bin/bash
-red(){ echo -e "\033[31m\033[01m$1\033[0m";}
-green(){ echo -e "\033[32m\033[01m$1\033[0m";}
-checkwgcf(){
-wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
-}
-warpclose(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl stop wg-quick@wgcf >/dev/null 2>&1 ; systemctl disable wg-quick@wgcf >/dev/null 2>&1
-}
-warpopen(){
-wg-quick down wgcf >/dev/null 2>&1 ; systemctl enable wg-quick@wgcf >/dev/null 2>&1 ; systemctl start wg-quick@wgcf >/dev/null 2>&1 ; systemctl restart wg-quick@wgcf >/dev/null 2>&1
-}
-warpre(){
-i=0
-while [ $i -le 4 ]; do let i++
-warpopen
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "中断后的warp尝试获取IP成功！" && break || red "中断后的warp尝试获取IP失败！"
-done
-checkwgcf
-if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-warpclose
-red "由于5次尝试获取warp的IP失败，现执行停止并关闭warp，VPS恢复原IP状态"
-fi
-}
-while true; do
-green "检测warp是否启动中…………"
-checkwgcf
-[[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "恭喜！warp状态为运行中！下轮检测将在你设置的60秒后自动执行" && sleep 60s || (warpre ; green "下轮检测将在你设置的50秒后自动执行" ; sleep 50s)
-done
-EOF
-readp "warp状态为运行时，重新检测warp状态间隔时间（回车默认60秒）,请输入间隔时间（例：50秒，输入50）:" stop
-[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
-readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
-[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-green "设置screen窗口名称'up'" && sleep 2
-grep -qE "^ *@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" /etc/crontab || echo "@reboot root screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh' >/dev/null 2>&1" >> /etc/crontab
-green "添加warp在线守护进程功能"
-fi
-}
 }
 
 WGCFins(){
@@ -1651,7 +1644,7 @@ $yumapt remove wireguard-tools
 $yumapt autoremove
 dig9
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf 2>/dev/null
-rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf
+rm -rf /usr/local/bin/wgcf /usr/bin/wg-quick /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.conf /etc/wireguard/buckup-account.toml /etc/wireguard/wgcf-account.toml /etc/wireguard/wgcf+p.log /etc/wireguard/ID /usr/bin/wireguard-go /usr/bin/wgcf wgcf-account.toml wgcf-profile.conf /root/WARP-UP.sh
 }
 
 WARPun(){
@@ -1720,7 +1713,7 @@ green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
 green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
-green "  6. WARP刷刷刷选项：WARP+流量……"
+green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本" 
 green "  9. 卸载WGCF-WARP切换为WARP-GO内核"
@@ -1748,7 +1741,7 @@ case "$Input" in
  3 ) WGproxy;;
  4 ) WARPun && uncf;;
  5 ) WARPonoff;;
- 6 ) warprefresh;;
+ 6 ) WARPtools;;
  7 ) WARPup;;
  8 ) UPwpyg;;
  9 ) changewarp;;
