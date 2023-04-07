@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.3.30 V 0.9.8 "
+wpygV="23.4.7 V 0.9.9 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -494,26 +494,18 @@ fi
 }
 
 WARPtools(){
-green "1. 查看WARP在线监测情况（注意，退出时Ctrl+a+d）"
-green "2. 再次启动WARP在线监测功能"
-green "3. 刷warp+流量"
+green "1. 启动并查看WARP在线监测情况（注意，退出时Ctrl+a+d）"
+green "2. 刷warp+流量"
 readp "请选择：" warptools
 if [[ $warptools == 1 ]]; then
+xyz
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
 if [[ $name =~ "up" ]]; then
-screen -Ur up
+green "WARP在线监测启动成功" && sleep 3 && screen -Ur up
 else
-red "未启动WARP监测功能，请选择2再次启动" && WARPtools
+red "WARP在线监测启动失败"
 fi
 elif [[ $warptools == 2 ]]; then
-if [[ -f /root/WARP-UP.sh ]]; then
-screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
-[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败"
-else
-red "启动失败，请重装warp脚本"
-fi
-elif [[ $warptools == 3 ]]; then
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
 sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
 readp "客户端配置ID(36个字符)：" ID
