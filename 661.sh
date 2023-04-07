@@ -500,7 +500,7 @@ green "3. 刷warp+流量"
 readp "请选择：" warptools
 if [[ $warptools == 1 ]]; then
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
-[[ echo $name | grep -q "up" ]] && screen -Ur up || red "未启动WARP监测功能，请选择2再次启动"
+[[ $name =~ "up" ]] && screen -Ur up || red "未启动WARP监测功能，请选择2再次启动"
 fi
 if [[ $warptools == 2 ]]; then
 if [[ -f /root/WARP-UP.sh ]]; then
