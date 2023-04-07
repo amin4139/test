@@ -437,7 +437,6 @@ EOF
 #readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
 #[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
 [[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
-green "查看screen窗口名称：up"
 fi
 }
 
@@ -494,12 +493,29 @@ ln -sf /root/CFwarp.sh /usr/bin/cf
 fi
 }
 
-warprefresh(){
+WARPtools(){
+green "1. 查看WARP在线监测情况（注意，退出时Ctrl+a+d）"
+green "2. 再次启动WARP在线监测功能"
+green "3. 刷warp+流量"
+readp "请选择：" warptools
+if [[ $warptools == 1 ]]; then
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ echo $name | grep -q "up" ]] && screen -Ur up || red "未启动WARP监测功能，请选择2再次启动"
+fi
+if [[ $warptools == 2 ]]; then
+if [[ -f /root/WARP-UP.sh ]]; then
+screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+else
+red "启动失败，请重装warp脚本"
+fi
+fi
+if [[ $warptools == 3 ]]; then
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
 sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
 readp "客户端配置ID(36个字符)：" ID
 sed -i "27 s/input/'$ID'/" wp-plus.py
 python3 wp-plus.py
+fi
 }
 
 ShowSOCKS5(){
@@ -1179,7 +1195,7 @@ green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
 green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
-green "  6. WARP刷刷刷选项：WARP+流量……"
+green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本"
 green "  9. 更新WARP-GO内核"
@@ -1216,7 +1232,7 @@ case "$Input" in
  3 ) WGproxy;;
  4 ) WARPun && uncf ;;
  5 ) WARPonoff;;
- 6 ) warprefresh;;
+ 6 ) WARPtools;;
  7 ) WARPup;;
  8 ) UPwpyg;;
  9 ) upwarpgo;;
@@ -1691,7 +1707,7 @@ green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
 green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
-green "  6. WARP刷刷刷选项：WARP+流量……"
+green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本" 
 green "  9. 卸载WGCF-WARP切换为WARP-GO内核"
@@ -1719,7 +1735,7 @@ case "$Input" in
  3 ) WGproxy;;
  4 ) WARPun && uncf;;
  5 ) WARPonoff;;
- 6 ) warprefresh;;
+ 6 ) WARPtools;;
  7 ) WARPup;;
  8 ) UPwpyg;;
  9 ) changewarp;;
