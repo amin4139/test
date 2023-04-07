@@ -500,21 +500,25 @@ green "3. 刷warp+流量"
 readp "请选择：" warptools
 if [[ $warptools == 1 ]]; then
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
-[[ $name =~ "up" ]] && screen -Ur up || red "未启动WARP监测功能，请选择2再次启动"
+if [[ $name =~ "up" ]]; then
+screen -Ur up
+else
+red "未启动WARP监测功能，请选择2再次启动" && WARPtools
 fi
-if [[ $warptools == 2 ]]; then
+elif [[ $warptools == 2 ]]; then
 if [[ -f /root/WARP-UP.sh ]]; then
 screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 else
 red "启动失败，请重装warp脚本"
 fi
-fi
-if [[ $warptools == 3 ]]; then
+elif [[ $warptools == 3 ]]; then
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
 sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
 readp "客户端配置ID(36个字符)：" ID
 sed -i "27 s/input/'$ID'/" wp-plus.py
 python3 wp-plus.py
+else
+WARPtools
 fi
 }
 
