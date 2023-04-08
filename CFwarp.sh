@@ -498,18 +498,23 @@ fi
 }
 
 WARPtools(){
-green "1. 启动并查看WARP在线监测情况（注意，退出时Ctrl+a+d）"
-green "2. 刷warp+流量"
+green "1. 查看WARP在线监测情况（注意，退出命令：ctrl+a+d ）"
+green "2. 重启WARP在线监测功能"
+green "3. 刷warp+流量"
 readp "请选择：" warptools
 if [[ $warptools == 1 ]]; then
-xyz
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
 if [[ $name =~ "up" ]]; then
+screen -Ur up
 green "WARP在线监测启动成功" && sleep 3 && screen -Ur up
 else
-red "WARP在线监测启动失败"
+red "未启动WARP监测功能，请选择 2 重启" && WARPtools
 fi
 elif [[ $warptools == 2 ]]; then
+xyz
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败，查看screen是否安装成功"
+elif [[ $warptools == 3 ]]; then
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
 sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
 readp "客户端配置ID(36个字符)：" ID
