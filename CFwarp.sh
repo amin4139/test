@@ -506,7 +506,6 @@ if [[ $warptools == 1 ]]; then
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
 if [[ $name =~ "up" ]]; then
 screen -Ur up
-green "WARP在线监测启动成功" && sleep 3 && screen -Ur up
 else
 red "未启动WARP监测功能，请选择 2 重启" && WARPtools
 fi
