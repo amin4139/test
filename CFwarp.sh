@@ -1108,6 +1108,7 @@ fi
 }
 
 cwg(){
+screen -S up -X quit
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
@@ -1636,6 +1637,7 @@ fi
 }
 
 cwg(){
+screen -S up -X quit
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt remove wireguard-tools
