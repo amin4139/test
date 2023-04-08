@@ -397,6 +397,7 @@ cat>/root/WARP-UP.sh<<-\EOF
 #!/bin/bash
 red(){ echo -e "\033[31m\033[01m$1\033[0m";}
 green(){ echo -e "\033[32m\033[01m$1\033[0m";}
+sleep 10
 checkwgcf(){
 wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
@@ -748,7 +749,7 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WGCF核心来安装WARP方案一"
 exit
 else 
-green "ok" && systemctl restart warp-go && xyz
+green "ok" && systemctl restart warp-go
 fi
 }
 
@@ -938,11 +939,11 @@ systemctl enable warp-go
 systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
-green "恭喜！warp的IP获取成功！" && xyz && dns
+green "恭喜！warp的IP获取成功！" && dns
 else
 CheckWARP
 fi
-ShowWGCF && WGCFmenu && lncf && reswarp
+ShowWGCF && xyz && WGCFmenu && lncf && reswarp
 }
 
 warpinscha(){
@@ -1510,7 +1511,7 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
 else 
-green "ok" && xyz
+green "ok"
 fi
 }
 
@@ -1553,7 +1554,7 @@ ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
-CheckWARP && ShowWGCF && WGCFmenu && lncf && reswarp
+CheckWARP && ShowWGCF && xyz && WGCFmenu && lncf && reswarp
 }
 
 WARPup(){
