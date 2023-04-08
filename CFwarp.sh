@@ -617,11 +617,13 @@ sleep 2 && ShowSOCKS5 && S5menu && lncf && reswarp
 }
 
 WGCFmenu(){
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && keepup="WARP监测已开启" || keepup="WARP监测关闭中"
 white "------------------------------------------------------------------------------------"
-white " 方案一：当前 IPV4 接管出站流量情况如下 "
+white " 方案一：当前 IPV4 接管出站流量情况如下（$keepup）"
 white " ${WARPIPv4Status}"
 white "------------------------------------------------------------------------------------"
-white " 方案一：当前 IPV6 接管出站流量情况如下"
+white " 方案一：当前 IPV6 接管出站流量情况如下（$keepup）"
 white " ${WARPIPv6Status}"
 white "------------------------------------------------------------------------------------"
 }
