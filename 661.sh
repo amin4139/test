@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
-wpygV="23.4.7 V 0.9.9 "
+wpygV="23.4.9 V 0.9.9 "
 remoteV=`wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh | sed -n 4p | cut -d '"' -f 2`
 chmod +x /root/CFwarp.sh
 red='\033[0;31m'
@@ -97,6 +97,9 @@ $yumapt update;$yumapt install qrencode
 fi
 if [[ ! $(type -P python3) ]]; then
 $yumapt update;$yumapt install python3
+fi
+if [[ ! $(type -P screen) ]]; then
+$yumapt update;$yumapt install screen
 fi
 if [[ ! $(type -P cron) ]]; then
 $yumapt update;apt install cron -y;yum install cronie -y
@@ -387,22 +390,23 @@ screen -d $Attached
 done
 fi
 if [[ -e /root/WARP-UP.sh ]]; then
-screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+screen -S up -X quit 2>/dev/null ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 else
 green "安装warp在线监测守护进程"
 cat>/root/WARP-UP.sh<<-\EOF
 #!/bin/bash
 red(){ echo -e "\033[31m\033[01m$1\033[0m";}
 green(){ echo -e "\033[32m\033[01m$1\033[0m";}
+sleep 10
 checkwgcf(){
 wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 warpclose(){
-wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;systemctl stop warp-go;systemctl disable warp-go
+wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;kill -15 $(pgrep warp-go);systemctl stop warp-go;systemctl disable warp-go
 }
 warpopen(){
-wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
+wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;kill -15 $(pgrep warp-go);systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
 }
 warpre(){
 i=0
@@ -436,7 +440,7 @@ EOF
 #[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
 #readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
 #[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit 2>/dev/null ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 fi
 }
 
@@ -494,18 +498,22 @@ fi
 }
 
 WARPtools(){
-green "1. 启动并查看WARP在线监测情况（注意，退出时Ctrl+a+d）"
-green "2. 刷warp+流量"
+green "1. 查看WARP在线监测情况（注意，退出命令：ctrl+a+d ）"
+green "2. 重启WARP在线监测功能"
+green "3. 刷warp+流量"
 readp "请选择：" warptools
 if [[ $warptools == 1 ]]; then
-xyz
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
 if [[ $name =~ "up" ]]; then
-green "WARP在线监测启动成功" && sleep 3 && screen -Ur up
+screen -Ur up
 else
-red "WARP在线监测启动失败"
+red "未启动WARP监测功能，请选择 2 重启" && WARPtools
 fi
 elif [[ $warptools == 2 ]]; then
+xyz
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败，查看screen是否安装成功"
+elif [[ $warptools == 3 ]]; then
 wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/wp-plus.py 
 sed -i "27 s/[(][^)]*[)]//g" wp-plus.py
 readp "客户端配置ID(36个字符)：" ID
@@ -613,11 +621,13 @@ sleep 2 && ShowSOCKS5 && S5menu && lncf && reswarp
 }
 
 WGCFmenu(){
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && keepup="WARP监测已开启" || keepup="WARP监测关闭中"
 white "------------------------------------------------------------------------------------"
-white " 方案一：当前 IPV4 接管出站流量情况如下 "
+white " 方案一：当前 IPV4 接管出站流量情况如下（$keepup）"
 white " ${WARPIPv4Status}"
 white "------------------------------------------------------------------------------------"
-white " 方案一：当前 IPV6 接管出站流量情况如下"
+white " 方案一：当前 IPV6 接管出站流量情况如下（$keepup）"
 white " ${WARPIPv6Status}"
 white "------------------------------------------------------------------------------------"
 }
@@ -745,7 +755,7 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WGCF核心来安装WARP方案一"
 exit
 else 
-green "ok" && systemctl restart warp-go && xyz
+green "ok" && systemctl restart warp-go
 fi
 }
 
@@ -935,11 +945,11 @@ systemctl enable warp-go
 systemctl start warp-go
 checkwgcf
 if [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]]; then
-green "恭喜！warp的IP获取成功！" && xyz && dns
+green "恭喜！warp的IP获取成功！" && dns
 else
 CheckWARP
 fi
-ShowWGCF && WGCFmenu && lncf && reswarp
+ShowWGCF && xyz && WGCFmenu && lncf && reswarp
 }
 
 warpinscha(){
@@ -1102,6 +1112,7 @@ fi
 }
 
 cwg(){
+screen -S up -X quit 2>/dev/null
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
@@ -1507,7 +1518,7 @@ red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
 else 
-green "ok" && xyz
+green "ok"
 fi
 }
 
@@ -1550,7 +1561,7 @@ ABC
 mv -f wgcf-profile.conf /etc/wireguard >/dev/null 2>&1
 mv -f wgcf-account.toml /etc/wireguard >/dev/null 2>&1
 systemctl enable wg-quick@wgcf >/dev/null 2>&1
-CheckWARP && ShowWGCF && WGCFmenu && lncf && reswarp
+CheckWARP && ShowWGCF && xyz && WGCFmenu && lncf && reswarp
 }
 
 WARPup(){
@@ -1630,6 +1641,7 @@ fi
 }
 
 cwg(){
+screen -S up -X quit 2>/dev/null
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt remove wireguard-tools
