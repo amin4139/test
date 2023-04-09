@@ -403,10 +403,10 @@ wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 warpclose(){
-wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;systemctl stop warp-go;systemctl disable warp-go
+wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;kill -15 $(pgrep warp-go);systemctl stop warp-go;systemctl disable warp-go
 }
 warpopen(){
-wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
+wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;kill -15 $(pgrep warp-go);systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
 }
 warpre(){
 i=0
