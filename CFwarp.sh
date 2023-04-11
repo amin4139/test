@@ -390,7 +390,7 @@ screen -d $Attached
 done
 fi
 if [[ -e /root/WARP-UP.sh ]]; then
-screen -S up -X quit 2>/dev/null ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 else
 green "安装warp在线监测守护进程"
 cat>/root/WARP-UP.sh<<-\EOF
@@ -440,7 +440,7 @@ EOF
 #[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
 #readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
 #[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit 2>/dev/null ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+[[ -e /root/WARP-UP.sh ]] && screen -S up -X quit ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 fi
 }
 
@@ -1112,7 +1112,7 @@ fi
 }
 
 cwg(){
-screen -S up -X quit 2>/dev/null
+screen -S up -X quit
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
@@ -1641,7 +1641,7 @@ fi
 }
 
 cwg(){
-screen -S up -X quit 2>/dev/null
+screen -S up -X quit
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt remove wireguard-tools
