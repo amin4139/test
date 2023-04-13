@@ -8,7 +8,7 @@ case "$(uname -m)" in
 	i386 | i686 )
         cpu=386
 	;;
-	armv8 | arm64 | aarch64 )
+	armv8 | armv8l | arm64 | aarch64 )
         cpu=arm64
 	;;
 	armv7l )
