@@ -334,6 +334,7 @@ export endpoint=[2606:4700:d0::a29f:c001]:2408
 else
 export endpoint=162.159.193.10:1701
 fi
+red "注意，VPS优选warp对端IP地址失败，warp申请可能失败，临时地址：$endpoint"
 else
 export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
@@ -342,6 +343,18 @@ else
 export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 fi
+else
+a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
+if [[ $a = 100.00% ]]; then
+if [[ -z $v4 ]]; then
+export endpoint=[2606:4700:d0::a29f:c001]:2408
+else
+export endpoint=162.159.193.10:1701
+fi
+red "注意，VPS优选warp对端IP地址失败，warp申请可能失败，临时地址：$endpoint"
+else
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
+green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 fi
 }
 checkwgcf
