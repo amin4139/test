@@ -166,6 +166,13 @@ wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 }
 
 warpip(){
+	
+checkpt3(){
+
+
+
+}
+
 checkpt2(){
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
 if [[ $a = 100.00% ]]; then
@@ -180,6 +187,7 @@ export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print}
 fi
 green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 }
+
 checkpt1(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
@@ -332,6 +340,7 @@ else
 checkpt2
 fi
 }
+
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 checkpt1
@@ -1204,7 +1213,7 @@ green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
 green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
-green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
+green "  6. WARP其他选项：查看WARP在线监测，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本"
 green "  9. 更新WARP-GO内核"
