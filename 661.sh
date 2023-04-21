@@ -344,6 +344,7 @@ green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 fi
 fi
 }
+warpip
 
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
