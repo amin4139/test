@@ -168,6 +168,7 @@ wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 warpip(){
 checkpt(){
 mkdir -p /root/warpip
+rm -rf /root/warpip/*
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 v4v6
