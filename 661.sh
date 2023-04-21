@@ -390,7 +390,7 @@ screen -d $Attached
 done
 fi
 if [[ -e /root/WARP-UP.sh ]]; then
-screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 else
 green "安装warp在线监测守护进程"
 cat>/root/WARP-UP.sh<<-\EOF
@@ -403,10 +403,10 @@ wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 warpclose(){
-wg-quick down wgcf;systemctl stop wg-quick@wgcf;systemctl disable wg-quick@wgcf;kill -15 $(pgrep warp-go);systemctl stop warp-go;systemctl disable warp-go
+wg-quick down wgcf >/dev/null 2>&1;systemctl stop wg-quick@wgcf >/dev/null 2>&1;systemctl disable wg-quick@wgcf >/dev/null 2>&1;kill -15 $(pgrep warp-go) >/dev/null 2>&1;systemctl stop warp-go >/dev/null 2>&1;systemctl disable warp-go >/dev/null 2>&1
 }
 warpopen(){
-wg-quick down wgcf;systemctl enable wg-quick@wgcf;systemctl start wg-quick@wgcf;systemctl restart wg-quick@wgcf;kill -15 $(pgrep warp-go);systemctl stop warp-go;systemctl enable warp-go;systemctl start warp-go;systemctl restart warp-go
+wg-quick down wgcf >/dev/null 2>&1;systemctl enable wg-quick@wgcf >/dev/null 2>&1;systemctl start wg-quick@wgcf >/dev/null 2>&1;systemctl restart wg-quick@wgcf >/dev/null 2>&1;kill -15 $(pgrep warp-go) >/dev/null 2>&1;systemctl stop warp-go >/dev/null 2>&1;systemctl enable warp-go >/dev/null 2>&1;systemctl start warp-go >/dev/null 2>&1;systemctl restart warp-go >/dev/null 2>&1
 }
 warpre(){
 i=0
@@ -440,7 +440,7 @@ EOF
 #[[ -n $stop ]] && sed -i "s/60s/${stop}s/g;s/60秒/${stop}秒/g" /root/WARP-UP.sh || green "默认间隔60秒"
 #readp "warp状态为中断时(连续5次失败自动关闭warp)，继续检测WARP状态间隔时间（回车默认50秒）,请输入间隔时间（例：50秒，输入50）:" goon
 #[[ -n $goon ]] && sed -i "s/50s/${goon}s/g;s/50秒/${goon}秒/g" /root/WARP-UP.sh || green "默认间隔50秒"
-[[ -e /root/WARP-UP.sh ]] && screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
+[[ -e /root/WARP-UP.sh ]] && screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null ; screen -UdmS up bash -c '/bin/bash /root/WARP-UP.sh'
 fi
 }
 
@@ -1112,7 +1112,7 @@ fi
 }
 
 cwg(){
-screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill
+screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null
 systemctl disable warp-go >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 
 chattr -i /etc/resolv.conf >/dev/null 2>&1
@@ -1641,7 +1641,7 @@ fi
 }
 
 cwg(){
-screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill
+screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null
 wg-quick down wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 $yumapt remove wireguard-tools
