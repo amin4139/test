@@ -166,25 +166,24 @@ wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 }
 
 warpip(){
-checkpt2(){
-a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
-if [[ $a = 100.00% ]]; then
-v4v6
-if [[ -z $v4 ]]; then
-export endpoint=[2606:4700:d0::a29f:c001]:2408
-else
-export endpoint=162.159.193.10:1701
-fi
-else
-export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
-fi
-green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
-}
-checkpt1(){
+checkpt(){
 mkdir -p /root/warpip
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 v4v6
+if [[ -z $v4 ]]; then
+wget -qO /root/warpip/ip.txt https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
+else
+wget -qO /root/warpip/ip.txt https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
+fi
+wget -qO /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/cpu/$cpu && chmod +x /root/warpip/$cpu
+cd /root/warpip
+./$cpu >/dev/null 2>&1 &
+wait
+cd
+a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
+if [[ $a = 100.00% ]]; then
+rm -rf /root/warpip/*
 if [[ -z $v4 ]]; then
 n=0
 	iplist=100
@@ -327,18 +326,33 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
-checkpt2
+a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
+if [[ $a = 100.00% ]]; then
+rm -rf /root/warpip/*
+if [[ -z $v4 ]]; then
+export endpoint=[2606:4700:d0::a29f:c001]:2408
 else
-checkpt2
+export endpoint=162.159.193.10:1701
+fi
+else
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
+green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
+fi
+else
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
+green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
+fi
 fi
 }
+warpip
+
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-checkpt1
+checkpt
 else
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
-checkpt1
+checkpt
 systemctl start wg-quick@wgcf >/dev/null 2>&1
 systemctl restart warp-go >/dev/null 2>&1
 systemctl enable warp-go >/dev/null 2>&1
@@ -1204,7 +1218,7 @@ green "  3. 方案三：显示Xray-WireGuard-WARP代理配置文件、二维码"
 green "  4. 卸载WARP"
 white " -----------------------------------------------------------------"
 green "  5. 关闭、开启/重启WARP"
-green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
+green "  6. WARP其他选项：查看WARP在线监测，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本"
 green "  9. 更新WARP-GO内核"
