@@ -356,7 +356,9 @@ else
 export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
 green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 fi
+fi
 }
+
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 checkpt
