@@ -168,7 +168,6 @@ wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 warpip(){
 checkpt(){
 mkdir -p /root/warpip
-rm -rf /root/warpip/*
 if [[ ! -f '/root/warpip/result.csv' ]]; then
 cpujg
 v4v6
@@ -345,6 +344,7 @@ green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 fi
 fi
 }
+warpip
 
 checkwgcf
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
