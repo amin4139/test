@@ -525,7 +525,7 @@ fi
 }
 
 WARPtools(){
-green "1. 查看WARP在线监测情况（注意！！！退出且继续监测命令：ctrl+a+d，退出且关闭监测命令：ctrl+c ）"
+green "1. 查看WARP在线监测情况（选择前请注意！退出且继续监测命令：ctrl+a+d，退出且关闭监测命令：ctrl+c ）"
 green "2. 重启WARP在线监测功能"
 green "3. 刷warp+流量"
 readp "请选择：" warptools
@@ -670,6 +670,7 @@ WGCFmenu;S5menu
 }
 
 reswarp(){
+unreswarp
 crontab -l > /tmp/crontab.tmp
 echo "0 4 * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
 echo "@reboot screen -UdmS up /bin/bash /root/WARP-UP.sh" >> /tmp/crontab.tmp
@@ -1123,6 +1124,7 @@ if [ $unwp == "1" ]; then
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl disable warp-go
 screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null
+unreswarp
 checkwgcf 
 [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && green "关闭WARP成功" || red "关闭WARP失败"
 ShowWGCF && WGCFmenu
@@ -1134,6 +1136,7 @@ systemctl start warp-go
 xyz
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
 [[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败，查看screen是否安装成功"
+reswarp
 checkwgcf 
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "开启WARP成功" || red "开启WARP失败"
 ShowWGCF && WGCFmenu
@@ -1660,6 +1663,7 @@ wg-quick down wgcf >/dev/null 2>&1
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
 screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null
+unreswarp
 checkwgcf 
 [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && green "关闭warp成功" || red "关闭warp失败"
 elif [ $unwp == "2" ]; then
@@ -1668,6 +1672,7 @@ systemctl restart wg-quick@wgcf >/dev/null 2>&1
 xyz
 name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
 [[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败，查看screen是否安装成功"
+reswarp
 checkwgcf 
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "开启warp成功" || red "开启warp失败"
 else
