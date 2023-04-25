@@ -525,7 +525,7 @@ fi
 }
 
 WARPtools(){
-green "1. 查看WARP在线监测情况（选择前请注意！退出且继续监测命令：ctrl+a+d，退出且关闭监测命令：ctrl+c ）"
+green "1. 查看WARP在线监测情况（进入前请注意！退出且继续执行监测命令：ctrl+a+d，退出且关闭监测命令：ctrl+c ）"
 green "2. 重启WARP在线监测功能"
 green "3. 刷warp+流量"
 readp "请选择：" warptools
@@ -584,9 +584,9 @@ yellow "检测Socks5-WARP安装环境中……"
 if [[ $release = Centos ]]; then
 [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本号：Centos $vsid \nSocks5-WARP仅支持Centos 8 " && bash CFwarp.sh 
 elif [[ $release = Ubuntu ]]; then
-[[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04/22.04系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 20|22 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 20.04/22.04系统 " && bash CFwarp.sh 
 elif [[ $release = Debian ]]; then
-[[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 10/11系统 " && bash CFwarp.sh 
 fi
 [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
 
@@ -779,6 +779,7 @@ echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
+yellow "提示："
 red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WGCF核心来安装WARP方案一"
 exit
@@ -1548,6 +1549,7 @@ echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
+yellow "提示："
 red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
