@@ -658,7 +658,7 @@ white " 方案一：当前 IPV6 接管出站流量情况如下（$keepup）"
 white " ${WARPIPv6Status}"
 white "------------------------------------------------------------------------------------"
 if [[ "$WARPIPv4Status" == *不存在* && "$WARPIPv6Status" == *不存在* ]]; then
-yellow "当前方案一识别出错！建议先选择 4 进行卸载，再重新安装方案一，换用wgcf或warp-go，哪个成功用哪个！"
+yellow "当前IPV4与IPV6都被识别为不存在！建议先选择 4 进行卸载，再换用wgcf或warp-go重新安装方案一，哪个成功用哪个！"
 fi
 }
 S5menu(){
