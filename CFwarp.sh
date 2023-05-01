@@ -101,8 +101,12 @@ fi
 if [[ ! $(type -P screen) ]]; then
 $yumapt update;$yumapt install screen
 fi
+if [[ ! $(type -P yum) ]]; then
 if [[ ! $(type -P cron) ]]; then
-$yumapt update;apt install cron -y;yum install cronie -y
+$yumapt update;$yumapt install cron
+fi
+else
+$yumapt update;$yumapt install cronie
 fi
 
 nf4() {
