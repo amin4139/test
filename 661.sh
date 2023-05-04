@@ -169,24 +169,7 @@ wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 }
 
-warpip(){
-checkpt(){
-mkdir -p /root/warpip
-if [[ ! -f '/root/warpip/result.csv' ]]; then
-cpujg
-v4v6
-if [[ -z $v4 ]]; then
-wget -qO /root/warpip/ip.txt https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
-else
-wget -qO /root/warpip/ip.txt https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
-fi
-wget -qO /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/cpu/$cpu && chmod +x /root/warpip/$cpu
-cd /root/warpip
-./$cpu >/dev/null 2>&1 &
-wait
-cd
-a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
-if [[ $a = 100.00% ]]; then
+ungenip(){
 rm -rf /root/warpip/*
 if [[ -z $v4 ]]; then
 n=0
@@ -330,6 +313,27 @@ cd /root/warpip
 ./$cpu >/dev/null 2>&1 &
 wait
 cd
+}
+
+warpip(){
+checkpt(){
+mkdir -p /root/warpip
+if [[ ! -f '/root/warpip/result.csv' ]]; then
+cpujg
+v4v6
+if [[ -z $v4 ]]; then
+wget -qO /root/warpip/ip.txt https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip6.txt
+else
+wget -qO /root/warpip/ip.txt https://gitlab.com/rwkgyg/CFwarp/raw/main/point/ip.txt
+fi
+wget -qO /root/warpip/$cpu https://gitlab.com/rwkgyg/CFwarp/raw/main/point/cpu/$cpu && chmod +x /root/warpip/$cpu
+cd /root/warpip
+./$cpu >/dev/null 2>&1 &
+wait
+cd
+a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
+if [[ $a = 100.00% ]]; then
+ungenip
 a=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $2}'`
 if [[ $a = 100.00% ]]; then
 rm -rf /root/warpip/*
@@ -623,10 +627,6 @@ fi
 #fi
 if [[ $release = Centos ]]; then 
 if [[ ${vsid} =~ 8 ]]; then
-cd /etc/yum.repos.d/ && mkdir backup && mv *repo backup/ 
-curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
-sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/CentOS-*
-sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
 yum clean all && yum makecache
 fi
 yum -y install epel-release && yum -y install net-tools
@@ -935,10 +935,6 @@ fi
 WGCFins(){
 if [[ $release = Centos ]]; then
 if [[ ${vsid} =~ 8 ]]; then
-cd /etc/yum.repos.d/ && mkdir backup && mv *repo backup/ 
-curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
-sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/CentOS-*
-sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
 yum clean all && yum makecache
 fi
 yum install epel-release -y;yum install iproute iputils-ping -y
@@ -950,10 +946,17 @@ elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 fi
 wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
+yellow "正在申请WARP普通账户，请稍等"
+/usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
+if [[ ！-e /usr/local/bin/warp.conf ]]; then
 until [[ -e /usr/local/bin/warp.conf ]]; do
-yellow "正在申请WARP普通账户，请稍等" && sleep 1
+yellow "正在申请WARP普通账户，请稍等"
+ungenip
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
 done
+fi
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
+green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" /usr/local/bin/warp.conf
 cat > /lib/systemd/system/warp-go.service << EOF
@@ -971,7 +974,6 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ABC
-warpip
 systemctl daemon-reload
 systemctl enable warp-go
 systemctl start warp-go
@@ -1570,10 +1572,6 @@ rm -rf /usr/local/bin/wgcf /etc/wireguard/wgcf.conf /etc/wireguard/wgcf-profile.
 ShowWGCF
 if [[ $release = Centos ]]; then
 if [[ ${vsid} =~ 8 ]]; then
-cd /etc/yum.repos.d/ && mkdir backup && mv *repo backup/ 
-curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
-sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/CentOS-*
-sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
 yum clean all && yum makecache
 fi
 yum install epel-release -y;yum install iproute iptables wireguard-tools -y
@@ -1588,16 +1586,30 @@ wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wgcf_2.2.17_$cpu -O /usr/local
 if [[ $main -lt 5 || $minor -lt 6 ]] || [[ $vi =~ lxc|openvz ]]; then
 [[ -e /usr/bin/wireguard-go ]] || wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
 fi
+
+
+
 echo | wgcf register
 until [[ -e wgcf-account.toml ]]
 do
 yellow "申请warp普通账户过程中可能会多次提示：429 Too Many Requests，请等待30秒" && sleep 1
 echo | wgcf register --accept-tos
 done
+
+yellow "正在申请WARP普通账户，请稍等"
+echo | wgcf register
+if [[ ！-e wgcf-account.toml ]]; then
+until [[ -e wgcf-account.toml ]]; do
+yellow "正在申请WARP普通账户，请稍等"
+ungenip
+echo | wgcf register --accept-tos
+done
+fi
+export endpoint=`cat /root/warpip/result.csv | awk -F, '$3!="timeout ms" {print} ' | sed -n '2p' | awk -F ',' '{print $1}'`
+green "脚本将自动应用本地VPS优选的warp对端IP地址：$endpoint"
 wgcf generate
 mtuwarp
 sed -i "s/MTU.*/MTU = $MTU/g" wgcf-profile.conf
-warpip
 cp -f wgcf-profile.conf /etc/wireguard/wgcf.conf >/dev/null 2>&1
 cp -f wgcf-account.toml /etc/wireguard/buckup-account.toml  >/dev/null 2>&1
 ABC
