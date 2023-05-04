@@ -710,7 +710,8 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /usr/local/bin/warpplus.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(sed -n 1p /usr/local/bin/warpplus.log)" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+curl -s4 "https://chat.openai.com/" | grep -qw "Sorry, you have been blocked" && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+#[[ $(curl -s4 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -732,7 +733,8 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+curl -s6 "https://chat.openai.com/" | grep -qw "Sorry, you have been blocked" && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+#[[ $(curl -s6 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1327,7 +1329,8 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /etc/wireguard/wgcf+p.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+curl -s4 "https://chat.openai.com/" | grep -qw "Sorry, you have been blocked" && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+#[[ $(curl -s4 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1349,7 +1352,8 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+curl -s6 "https://chat.openai.com/" | grep -qw "Sorry, you have been blocked" && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+#[[ $(curl -s6 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
