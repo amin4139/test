@@ -951,7 +951,7 @@ apt update -y;apt install iproute2 openresolv dnsutils iputils-ping -y
 fi
 wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 until [[ -e /usr/local/bin/warp.conf ]]; do
-yellow "正在申请WARP普通账户，请稍等" && sleep 1
+yellow "正在申请WARP普通账户，请稍等！如多次出现，请按ctrl+c退出，并选择WGCF核心安装WARP" && sleep 1
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
 done
 mtuwarp
