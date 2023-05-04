@@ -948,7 +948,7 @@ fi
 wget -N https://gitlab.com/rwkgyg/CFwarp/-/raw/main/warp-go_1.0.8_linux_${cpu} -O /usr/local/bin/warp-go && chmod +x /usr/local/bin/warp-go
 yellow "正在申请WARP普通账户，请稍等"
 /usr/local/bin/warp-go --register --config=/usr/local/bin/warp.conf >/dev/null 2>&1
-if [[ ！-e /usr/local/bin/warp.conf ]]; then
+if [[ ! -e /usr/local/bin/warp.conf ]]; then
 until [[ -e /usr/local/bin/warp.conf ]]; do
 yellow "正在申请WARP普通账户，请稍等"
 ungenip
@@ -1586,19 +1586,9 @@ wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wgcf_2.2.17_$cpu -O /usr/local
 if [[ $main -lt 5 || $minor -lt 6 ]] || [[ $vi =~ lxc|openvz ]]; then
 [[ -e /usr/bin/wireguard-go ]] || wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
 fi
-
-
-
-echo | wgcf register
-until [[ -e wgcf-account.toml ]]
-do
-yellow "申请warp普通账户过程中可能会多次提示：429 Too Many Requests，请等待30秒" && sleep 1
-echo | wgcf register --accept-tos
-done
-
 yellow "正在申请WARP普通账户，请稍等"
 echo | wgcf register
-if [[ ！-e wgcf-account.toml ]]; then
+if [[ ! -e wgcf-account.toml ]]; then
 until [[ -e wgcf-account.toml ]]; do
 yellow "正在申请WARP普通账户，请稍等"
 ungenip
