@@ -101,8 +101,12 @@ fi
 if [[ ! $(type -P screen) ]]; then
 $yumapt update;$yumapt install screen
 fi
+if [[ ! $(type -P yum) ]]; then
 if [[ ! $(type -P cron) ]]; then
-$yumapt update;apt install cron -y;yum install cronie -y
+$yumapt update;$yumapt install cron
+fi
+else
+$yumapt update;$yumapt install cronie
 fi
 
 nf4() {
@@ -525,7 +529,7 @@ fi
 }
 
 WARPtools(){
-green "1. 查看WARP在线监测情况（注意，退出命令：ctrl+a+d ）"
+green "1. 查看WARP在线监测情况（进入前请注意！退出且继续执行监测命令：ctrl+a+d，退出且关闭监测命令：ctrl+c ）"
 green "2. 重启WARP在线监测功能"
 green "3. 刷warp+流量"
 readp "请选择：" warptools
@@ -584,9 +588,9 @@ yellow "检测Socks5-WARP安装环境中……"
 if [[ $release = Centos ]]; then
 [[ ! ${vsid} =~ 8 ]] && yellow "当前系统版本号：Centos $vsid \nSocks5-WARP仅支持Centos 8 " && bash CFwarp.sh 
 elif [[ $release = Ubuntu ]]; then
-[[ ! ${vsid} =~ 16|18|20|22 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 16.04/18.04/20.04/22.04系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 20|22 ]] && yellow "当前系统版本号：Ubuntu $vsid \nSocks5-WARP仅支持 Ubuntu 20.04/22.04系统 " && bash CFwarp.sh 
 elif [[ $release = Debian ]]; then
-[[ ! ${vsid} =~ 9|10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 9/10/11系统 " && bash CFwarp.sh 
+[[ ! ${vsid} =~ 10|11 ]] && yellow "当前系统版本号：Debian $vsid \nSocks5-WARP仅支持 Debian 10/11系统 " && bash CFwarp.sh 
 fi
 [[ $(warp-cli --accept-tos status 2>/dev/null) =~ 'Connected' ]] && red "当前Socks5-WARP已经在运行中" && bash CFwarp.sh
 
@@ -657,6 +661,9 @@ white "-------------------------------------------------------------------------
 white " 方案一：当前 IPV6 接管出站流量情况如下（$keepup）"
 white " ${WARPIPv6Status}"
 white "------------------------------------------------------------------------------------"
+if [[ "$WARPIPv4Status" == *不存在* && "$WARPIPv6Status" == *不存在* ]]; then
+yellow "当前IPV4与IPV6都被识别为不存在！建议先选择 4 进行卸载，再换用wgcf或warp-go重新安装方案一，哪个成功用哪个！"
+fi
 }
 S5menu(){
 white "------------------------------------------------------------------------------------------------"
@@ -670,6 +677,7 @@ WGCFmenu;S5menu
 }
 
 reswarp(){
+unreswarp
 crontab -l > /tmp/crontab.tmp
 echo "0 4 * * * systemctl stop warp-go;systemctl restart warp-go;systemctl restart wg-quick@wgcf;systemctl restart warp-svc" >> /tmp/crontab.tmp
 echo "@reboot screen -UdmS up /bin/bash /root/WARP-UP.sh" >> /tmp/crontab.tmp
@@ -702,7 +710,7 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /usr/local/bin/warpplus.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(sed -n 1p /usr/local/bin/warpplus.log)" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+[[ $(curl -s4 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -724,7 +732,7 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+[[ $(curl -s6 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -778,6 +786,7 @@ echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
+yellow "提示："
 red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WGCF核心来安装WARP方案一"
 exit
@@ -1118,10 +1127,12 @@ fi
 
 WARPonoff(){
 [[ ! $(type -P warp-go) ]] && red "WARP未安装，建议重新安装" && bash CFwarp.sh
-readp "1. 关闭WARP功能\n2. 开启/重启WARP功能\n0. 返回上一层\n 请选择：" unwp
+readp "1. 关闭WARP功能（关闭WARP在线监测）\n2. 开启/重启WARP功能（启动WARP在线监测）\n0. 返回上一层\n 请选择：" unwp
 if [ $unwp == "1" ]; then
 kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl disable warp-go
+screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null
+unreswarp
 checkwgcf 
 [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && green "关闭WARP成功" || red "关闭WARP失败"
 ShowWGCF && WGCFmenu
@@ -1130,6 +1141,10 @@ kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 systemctl restart warp-go
 systemctl enable warp-go
 systemctl start warp-go
+xyz
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败，查看screen是否安装成功"
+reswarp
 checkwgcf 
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "开启WARP成功" || red "开启WARP失败"
 ShowWGCF && WGCFmenu
@@ -1235,7 +1250,7 @@ green "  6. WARP其他选项：查看WARP在线监测，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本"
 green "  9. 更新WARP-GO内核"
-green " 10. 卸载WARP-GO切换为WGCF-WARP内核"
+green " 10. 将当前WARP-GO内核替换为WGCF-WARP内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${wpygV}" = "${remoteV}" ]; then
@@ -1258,7 +1273,7 @@ fi
 fi
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
-white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
+white " 操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
 IP_Status_menu
 echo
 readp " 请输入数字:" Input
@@ -1312,7 +1327,7 @@ flow=`echo "scale=2; $warppflow/1000000000" | bc`
 [[ -e /etc/wireguard/wgcf+p.log ]] && cfplus="WARP+普通账户(有限WARP+流量：$flow GB)，设备名称：$(grep -s 'Device name' /etc/wireguard/wgcf+p.log | awk '{ print $NF }')" || cfplus="WARP+Teams账户(无限WARP+流量)"
 if [[ -n $v4 ]]; then
 nf4
-[[ $(curl -s4S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+[[ $(curl -s4 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv4=$(curl -s4 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp4a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v4?lang=zh-CN -k | cut -f13 -d ":" | cut -f2 -d '"'`
 isp4b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v4 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1334,7 +1349,7 @@ WARPIPv4Status=$(white "IPV4状态：\c" ; red "不存在IPV4地址 ")
 fi 
 if [[ -n $v6 ]]; then
 nf6
-[[ $(curl -s6S https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
+[[ $(curl -s6 https://chat.openai.com/ -I | grep "text/plain") != "" ]] && chat='遗憾，当前IP无法访问ChatGPT官网服务' || chat='恭喜，当前IP支持访问ChatGPT官网服务'
 wgcfv6=$(curl -s6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
 isp6a=`curl -sm6 --user-agent "${UA_Browser}" http://ip-api.com/json/$v6?lang=zh-CN -k | cut -f13 -d":" | cut -f2 -d '"'`
 isp6b=`curl -sm6 --user-agent "${UA_Browser}" https://api.ip.sb/geoip/$v6 -k | awk -F "isp" '{print $2}' | awk -F "offset" '{print $1}' | sed "s/[,\":]//g"`
@@ -1541,6 +1556,7 @@ echo
 [[ $release = Centos && ${vsid} -lt 7 ]] && yellow "当前系统版本号：Centos $vsid \n建议使用 Centos 7 以上系统 " 
 [[ $release = Ubuntu && ${vsid} -lt 18 ]] && yellow "当前系统版本号：Ubuntu $vsid \n建议使用 Ubuntu 18 以上系统 " 
 [[ $release = Debian && ${vsid} -lt 10 ]] && yellow "当前系统版本号：Debian $vsid \n建议使用 Debian 10 以上系统 "
+yellow "提示："
 red "你或许可以使用方案二或方案三来实现WARP"
 red "也可以选择WARP-GO核心来安装WARP方案一"
 exit
@@ -1568,7 +1584,7 @@ apt update -y;apt install iproute2 openresolv dnsutils iptables -y;apt install w
 elif [[ $release = Ubuntu ]]; then
 apt update -y;apt install iproute2 openresolv dnsutils iptables -y;apt install wireguard-tools --no-install-recommends -y			
 fi
-wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wgcf_2.2.15_$cpu -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf         
+wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wgcf_2.2.17_$cpu -O /usr/local/bin/wgcf && chmod +x /usr/local/bin/wgcf         
 if [[ $main -lt 5 || $minor -lt 6 ]] || [[ $vi =~ lxc|openvz ]]; then
 [[ -e /usr/bin/wireguard-go ]] || wget -N https://gitlab.com/rwkgyg/cfwarp/raw/main/wireguard-go -O /usr/bin/wireguard-go && chmod +x /usr/bin/wireguard-go
 fi
@@ -1650,16 +1666,22 @@ esac
 
 WARPonoff(){
 [[ ! $(type -P wg-quick) ]] && red "WARP未安装，建议重新安装" && bash CFwarp.sh
-readp "1. 关闭WARP功能\n2. 开启/重启WARP功能\n0. 返回上一层\n 请选择：" unwp
+readp "1. 关闭WARP功能（关闭WARP在线监测）\n2. 开启/重启WARP功能（启动WARP在线监测）\n0. 返回上一层\n 请选择：" unwp
 if [ $unwp == "1" ]; then
 wg-quick down wgcf >/dev/null 2>&1
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 systemctl disable wg-quick@wgcf >/dev/null 2>&1
+screen -ls | awk '/\.up/ {print $1}' | cut -d "." -f 1 | xargs kill 2>/dev/null
+unreswarp
 checkwgcf 
 [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && green "关闭warp成功" || red "关闭warp失败"
 elif [ $unwp == "2" ]; then
 wg-quick down wgcf >/dev/null 2>&1
 systemctl restart wg-quick@wgcf >/dev/null 2>&1
+xyz
+name=`screen -ls | grep '(Detached)' | awk '{print $1}' | awk -F "." '{print $2}'`
+[[ $name =~ "up" ]] && green "WARP在线监测启动成功" || red "WARP在线监测启动失败，查看screen是否安装成功"
+reswarp
 checkwgcf 
 [[ $wgcfv4 =~ on|plus || $wgcfv6 =~ on|plus ]] && green "开启warp成功" || red "开启warp失败"
 else
@@ -1747,7 +1769,7 @@ green "  5. 关闭、开启/重启WARP"
 green "  6. WARP其他选项：查看WARP进程守护，刷WARP+流量……"
 green "  7. WARP三类账户升级/切换(WARP/WARP+/WARP Teams)"
 green "  8. 更新CFwarp安装脚本" 
-green "  9. 卸载WGCF-WARP切换为WARP-GO内核"
+green "  9. 将当前WGCF-WARP内核替换为WARP-GO内核"
 green "  0. 退出脚本 "
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ $(type -P wg-quick) || $(type -P warp-cli) ]] && [[ -f '/root/CFwarp.sh' ]]; then
@@ -1762,7 +1784,7 @@ fi
 fi
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
-white " VPS操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
+white " 操作系统: $(blue "$op") \c" && white " 内核版本: $(blue "$version") \c" && white " CPU架构 : $(blue "$cpu") \c" && white " 虚拟化类型: $(blue "$vi")"
 IP_Status_menu
 echo
 readp " 请输入数字:" Input
@@ -1804,8 +1826,8 @@ yellow " 提示："
 yellow " 一、选项1与2任意选，支持相互切换"
 yellow " 二、进入脚本快捷方式：cf"
 white " ================================================================="
-green "  1. 使用 WARP-GO 安装WARP(推荐)" 
-green "  2. 使用 WGCF    安装WARP"
+green "  1. 选择 warp-go 内核安装WARP" 
+green "  2. 选择   wgcf  内核安装WARP"
 green "  0. 退出脚本"
 white " ================================================================="
 echo
