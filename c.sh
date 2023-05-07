@@ -20,7 +20,7 @@ release="centos"
 else
 red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统" && exit
 fi
-mv /root/CFwarp.sh /root/cf.sh
+mv /root/c.sh /root/cf.sh
 bit=`uname -m`
 if [[ $bit = aarch64 ]]; then
 wget -O /root/CFwarp.sh https://gitlab.com/rwkgyg/CFwarp/-/raw/main/version/CFwarp.sh.a && chmod +x /root/CFwarp.sh
