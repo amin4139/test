@@ -30,6 +30,3 @@ wget -O /root/CFwarp.sh https://gitlab.com/rwkgyg/CFwarp/-/raw/main/version/CFwa
 else
 red "目前脚本不支持$bit架构" && exit
 fi
-
-
-
