@@ -23,10 +23,10 @@ fi
 bit=`uname -m`
 if [[ $bit = aarch64 ]]; then
 wget -O /root/CFwarp.sh https://gitlab.com/rwkgyg/CFwarp/-/raw/main/version/CFwarp.sh.a && chmod +x /root/CFwarp.sh
-./root/CFwarp.sh
+./CFwarp.sh
 elif [[ $bit = x86_64 ]]; then
 wget -O /root/CFwarp.sh https://gitlab.com/rwkgyg/CFwarp/-/raw/main/version/CFwarp.sh && chmod +x /root/CFwarp.sh
-./root/CFwarp.sh
+./CFwarp.sh
 else
 red "目前脚本不支持$bit架构" && exit
 fi
