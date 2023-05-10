@@ -18,7 +18,7 @@ release="ubuntu"
 elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
 release="centos"
 else
-red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统" && exit
+echo "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统" && exit
 fi
 rm -rf /root/CFwarp.sh
 bit=`uname -m`
@@ -29,5 +29,5 @@ elif [[ $bit = x86_64 ]]; then
 wget -O /root/CFwarp.sh https://gitlab.com/rwkgyg/CFwarp/-/raw/main/version/CFwarp.sh && chmod +x /root/CFwarp.sh
 ./CFwarp.sh
 else
-red "目前脚本不支持$bit架构" && exit
+echo "目前脚本不支持$bit架构" && exit
 fi
