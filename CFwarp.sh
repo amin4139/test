@@ -2,7 +2,7 @@
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export LANG=en_US.UTF-8
 wpygV="23.5.4 V 0.9.9 "
-[[ $EUID -ne 0 ]] && "请以root模式运行脚本" && exit
+[[ $EUID -ne 0 ]] && echo "请以root模式运行脚本" && exit
 if [[ -f /etc/redhat-release ]]; then
 release="centos"
 elif cat /etc/issue | grep -Eqi "debian"; then
