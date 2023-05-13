@@ -13,6 +13,7 @@ curl -sSL https://gitlab.com/rwkgyg/CFwarp/raw/main/point/endip.sh -o endip.sh &
 ```
 -------------------------------------------------------------------------------------------------------------------------
 
+#### [脚本代码查看方式](https://www.fythonfang.com/blog/2019/10/16/linux-core-dump-decrypt-script)
 
 #### 感谢WGCF源项目代码地址：https://github.com/ViRb3/wgcf
 #### 感谢CoiaPrant，WARP-GO源项目代码地址：https://gitlab.com/ProjectWARP/warp-go
