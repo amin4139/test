@@ -159,7 +159,7 @@ ulimit -n 102400
 chmod +x warpendpoint
 ./warpendpoint
 clear
-cat result.csv | awk -F, '$3!="timeout ms" {print} ' | sort -t, -nk2 -nk3 | uniq | head -11 | awk -F, '{print "端点 "$1" 丢包率 "$2" 平均延迟 "$3}' 
+cat result.csv | awk -F, '$3!="timeout ms" {print} ' | sort -t, -nk2 -nk3 | uniq | awk -F, '{if($1~/^[0-9]/ && ipv4_count<5) {print; ipv4_count++} else if($1~/^\[/ && ipv6_count<5) {print; ipv6_count++}}' | awk -F, '{print "端点 "$1" 丢包率 "$2" 平均延迟 "$3}'
 rm -rf ip.txt warpendpoint
 exit
 }
