@@ -1,4 +1,5 @@
 #!/bin/bash
+
 warpcheck(){
 case "$(uname -m)" in
 	x86_64 | x64 | amd64 )
@@ -72,6 +73,18 @@ then
 		then
 			break
 		fi
+temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
+		temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
+		n=$[$n+1]
+		if [ $n -ge $iplist ]
+		then
+			break
+		fi
 	done
 	while true
 	do
@@ -124,26 +137,7 @@ then
 			temp[$n]=$(echo 188.114.99.$(($RANDOM%256)))
 			n=$[$n+1]
 		fi
-	done
-  
-	while true
-	do
-		temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
-		n=$[$n+1]
-		if [ $n -ge $iplist ]
-		then
-			break
-		fi
-		temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
-		n=$[$n+1]
-		if [ $n -ge $iplist ]
-		then
-			break
-		fi
-	done
-	while true
-	do
-		if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
+if [ $(echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]
 		then
 			break
 		else
@@ -158,6 +152,7 @@ then
 			n=$[$n+1]
 		fi
 	done
+
 fi
 echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u > ip.txt
 ulimit -n 102400
