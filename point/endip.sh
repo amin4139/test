@@ -1,6 +1,5 @@
 #!/bin/bash
 
-warpcheck(){
 case "$(uname -m)" in
 	x86_64 | x64 | amd64 )
 	    cpu=amd64
@@ -19,14 +18,33 @@ case "$(uname -m)" in
 	exit
 	;;
 esac
+
+cfwarpreg(){
+curl -sSL https://gitlab.com/rwkgyg/CFwarp/-/raw/main//point/acwarp.sh -o acwarp.sh && chmod +x acwarp.sh && ./acwarp.sh
+}
+
+warpendipv4v6(){
+echo "1.IPV4优选对端IP"
+echo "2.IPV6优选对端IP"
+echo "0.退出"
+read -p "请选择: " menu
+if [ "$menu" == "1" ];then
+cfwarpIP && endipv4 && endipresult
+elif [ "$menu" == "2" ];then
+cfwarpIP && endipv6 && endipresult
+else 
+exit
+fi
+}
+
+cfwarpIP(){
+echo "下载warp优选程序"
 if [[ -n $cpu ]]; then
 curl -L -o warpendpoint -# --retry 2 https://proxy.freecdn.ml?url=https://gitlab.com/rwkgyg/CFwarp/raw/main/point/$cpu
 fi
 }
 
-cfwarp(){
-if [ $menu == 1 ]
-then
+endipv4(){
 	n=0
 	iplist=100
 	while true
@@ -126,7 +144,9 @@ then
 			n=$[$n+1]
 		fi
 	done
-else
+}
+
+endipv6(){
 	n=0
 	iplist=100
 	while true
@@ -161,7 +181,9 @@ else
 			n=$[$n+1]
 		fi
 	done
-fi
+}
+
+endipresult(){
 echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u > ip.txt
 ulimit -n 102400
 chmod +x warpendpoint
@@ -172,27 +194,21 @@ rm -rf ip.txt warpendpoint
 exit
 }
 
-list(){
-clear
-echo "WARP-Endpoint优选IP，感谢CF网友开发"
-echo "1.WARP-V4优选"
-echo "2.WARP-V6优选"
-echo -e "0.退出\n"
-read -p "请选择菜单(默认1): " menu
-if [ -z "$menu" ] || [ $menu == "1" ];then
-menu=1
-cfwarp
-elif [ $menu == "2" ];then
-menu=2
-cfwarp
+echo "------------------------------------------------------"
+echo "甬哥Github项目  ：github.com/yonggekkk"
+echo "甬哥blogger博客 ：ygkkk.blogspot.com"
+echo "甬哥YouTube频道 ：www.youtube.com/@ygkkk"
+echo "脚本支持WARP优选IP、WARP配置文件生成，感谢CF网友开发"
+echo "------------------------------------------------------"
+echo
+echo "1.WARP-V4V6优选对端IP"
+echo "2.三模式生成WARP配置文件"
+echo "0.退出"
+read -p "请选择: " menu
+if [ "$menu" == "1" ];then
+warpendipv4v6
+elif [ "$menu" == "2" ];then
+cfwarpreg
 else 
 exit
-fi
-}
-
-if [ ! -f "warpendpoint" ]; then
-echo "下载warp优选程序"
-warpcheck && list
-else
-list
 fi
