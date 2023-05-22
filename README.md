@@ -1,4 +1,4 @@
-### CFwarp脚本相关说明请查看[甬哥博客](https://ygkkk.blogspot.com/2022/09/gitlabcfwarpwarpwarp.html)
+### CFwarp脚本相关说明请查看[甬哥博客](https://ygkkk.blogspot.com/2022/09/cfwarp-script.html)
 ### 相关说明及注意点请查看[warp系列视频说明](https://www.youtube.com/playlist?list=PLMgly2AulGG-WqPXPkHlqWVSfQ3XjHNw8)
 ------------------------------------------------------------------------------------------------------------------------------
 #### vps一键脚本：
