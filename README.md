@@ -3,7 +3,11 @@
 ------------------------------------------------------------------------------------------------------------------------------
 #### vps一键脚本：
 ```
-wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh && bash CFwarp.sh
+bash <(wget -qO- https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh 2> /dev/null)
+```
+或者
+```
+bash <(curl -Ls https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh)
 ```
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -13,8 +17,6 @@ curl -sSL https://gitlab.com/rwkgyg/CFwarp/raw/main/point/endip.sh -o endip.sh &
 ```
 -------------------------------------------------------------------------------------------------------------------------
 
-#### [脚本代码查看方式](https://www.fythonfang.com/blog/2019/10/16/linux-core-dump-decrypt-script)
-
 #### 感谢WGCF源项目代码地址：https://github.com/ViRb3/wgcf
 #### 感谢CoiaPrant，WARP-GO源项目代码地址：https://gitlab.com/ProjectWARP/warp-go
-#### 相关功能参考来源： [P3terx](https://github.com/P3TERX/warp.sh)、[fscarmen](https://github.com/fscarmen/warp)、不愿意透露ID的热心网友提供的endpoint优选IP脚本及程序
+#### 相关功能参考来源： [P3terx](https://github.com/P3TERX/warp.sh)、[fscarmen](https://github.com/fscarmen/warp)、[热心的CF网友](https://github.com/badafans)提供的warp endpoint优选IP脚本及注册程序
