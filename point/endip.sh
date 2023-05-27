@@ -46,7 +46,7 @@ fi
 
 endipv4(){
 	n=0
-	iplist=100
+	iplist=500
 	while true
 	do
 		temp[$n]=$(echo 162.159.192.$(($RANDOM%256)))
@@ -148,7 +148,7 @@ endipv4(){
 
 endipv6(){
 	n=0
-	iplist=100
+	iplist=500
 	while true
 	do
 		temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2))):$(printf '%x\n' $(($RANDOM*2+$RANDOM%2)))])
@@ -189,7 +189,7 @@ ulimit -n 102400
 chmod +x warpendpoint
 ./warpendpoint
 clear
-cat result.csv | awk -F, '$3!="timeout ms" {print} ' | sort -t, -nk2 -nk3 | uniq | head -11 | awk -F, '{print "端点 "$1" 丢包率 "$2" 平均延迟 "$3}' 
+cat result.csv | awk -F, '$3!="timeout ms" {print} ' | sort -t, -nk2 -nk3 | uniq | head -100 | awk -F, '{print "端点 "$1" 丢包率 "$2" 平均延迟 "$3}' 
 rm -rf ip.txt warpendpoint
 exit
 }
