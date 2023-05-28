@@ -20,6 +20,7 @@ case "$(uname -m)" in
 esac
 
 cfwarpreg(){
+//اینجا بر اساس لینک گیت خودتون 
 curl -sSL https://raw.githubusercontent.com/amin4139/test/main/point/acwarp.sh -o acwarp.sh && chmod +x acwarp.sh && ./acwarp.sh
 }
 
@@ -40,6 +41,7 @@ fi
 cfwarpIP(){
 echo "下载warp优选程序"
 if [[ -n $cpu ]]; then
+//اینجا بر اساس لینک گیت خودتون 
 curl -L -o warpendpoint -# --retry 2 https://proxy.freecdn.ml?url=https://raw.githubusercontent.com/amin4139/test/main/point/$cpu
 fi
 }
